@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE validators PUBLIC '-//OpenSymphony Group//XWork Validator 1.0.2//EN' 'http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd'>
+<validators>
+    <field name="nombre">
+        <field-validator type="requiredstring">
+            <message>Debe ingresar un nombre</message>
+        </field-validator>
+    </field>
+
+    <field name="email">
+        <field-validator type="requiredstring">
+            <message>Debe ingresar una dirección de e-mail</message>
+        </field-validator>
+        <field-validator type="email">
+            <message>Dirección no válida</message>
+        </field-validator>
+    </field>
+    
+    <field name="contrasenia">
+        <field-validator type="requiredstring">
+            <message>Debe ingresar una contraseña</message>
+        </field-validator>
+        <field-validator type="stringlength">
+            <param name="maxLength">8</param>
+            <param name="minLength">5</param>
+            <message>La contraseña debe poseer tener entre ${minLength} y ${maxLength} carácteres</message>
+        </field-validator>
+    </field>
+
+    <field name="rptContrasenia">
+        <field-validator type="requiredstring">
+            <message>Debe volver a ingresar la contraseña</message>
+        </field-validator>
+    </field>
+
+    <validator type="expression">
+        <param name="expression">email != contrasenia</param>
+        <message>La dirección de e-mail no puede ser la misma que la contraseña</message>
+    </validator>
+    <validator type="expression">
+        <param name="expression">contrasenia == rptContrasenia</param>
+        <message>Las contraseñas ingresadas no son iguales</message>
+    </validator>
+</validators>

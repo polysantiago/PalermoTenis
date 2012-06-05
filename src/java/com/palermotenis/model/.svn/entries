@@ -1,0 +1,40 @@
+10
+
+dir
+27
+svn+ssh://palermotenis.com.ar/home/palermot/svn/palermotenis/trunk/src/java/com/palermotenis/model
+svn+ssh://palermotenis.com.ar/home/palermot/svn
+
+
+
+2010-09-17T03:38:23.617891Z
+21
+root
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2be0d6ef-bfa6-4087-bed9-eac418d82db7
+
+exceptions
+dir
+
+hibernate
+dir
+
+beans
+dir
+
+ws
+dir
+

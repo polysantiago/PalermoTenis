@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <package name="carrito_operations" namespace="/carrito" extends="struts-default">
+        <action name="CarritoAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.carrito.CarritoAction">
+            <result>Carrito.jsp</result>
+            <result name="edit" type="stream">
+                <param name="contentType">application/json;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+    </package>
+
+</struts>

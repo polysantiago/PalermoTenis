@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : ventas.xml
+    Created on : 15 de octubre de 2009, 14:29
+    Author     : Poly
+    Description:
+        Purpose of the document follows.
+-->
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <package name="ventas_operations" namespace="/admin/ventas" extends="struts-default">
+        <action name="BuscarPedido" class="com.palermotenis.controller.struts.actions.admin.ventas.BuscarPedido">
+            <result type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+        <action name="ConfirmarVenta_*" method="{1}" class="com.palermotenis.controller.struts.actions.admin.ventas.ConfirmarVenta">
+            <result>ConfirmarVentaOK.jsp</result>
+        </action>
+       <action name="PedidoProductoAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.ventas.PedidoProductoAction">
+            <result name="list">VerProductosPedido.jsp</result>
+            <result name="json" type="stream">
+                <param name="contentType">application/json;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+       <action name="PedidoAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.ventas.PedidoAction">            
+            <result name="json" type="stream">
+                <param name="contentType">application/json;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+        <action name="NuevoCliente">
+            <result>NuevoCliente.jsp</result>
+        </action>
+        <action name="Resumen" class="com.palermotenis.controller.struts.actions.admin.ventas.Resumen">
+            <result>Resumen.jsp</result>
+        </action>
+
+        <action name="ListadoAction" class="com.palermotenis.controller.struts.actions.admin.ventas.ListadoAction">
+            <result>Resumen.jsp</result>
+            <result type="redirectAction" name="needAuth">
+                <param name="actionName">Autorizacion</param>
+                <param name="listadoId">${listadoId}</param>
+                <param name="edit">false</param>
+            </result>
+            <result name="zeroPrices">Resumen.jsp?error=zp</result>            
+        </action>
+
+        <action name="ListarListado" class="com.palermotenis.controller.struts.actions.admin.ventas.ListarListado">
+            <result>Listado.jsp</result>
+        </action>
+
+        <action name="Autorizacion">
+            <result>Autorizacion.jsp</result>
+        </action>
+
+        <action name="Autorizar" class="com.palermotenis.controller.struts.actions.admin.ventas.Autorizar">
+            <result>Resumen.jsp</result>
+            <result name="badCredentials" type="redirectAction">
+                <param name="actionName">Autorizacion</param>
+                <param name="listadoId">${listadoId}</param>
+                <param name="edit">false</param>
+                <param name="login_error">bc</param>
+            </result>
+            <result name="accessDenied" type="redirectAction">
+                <param name="actionName">Autorizacion</param>
+                <param name="listadoId">${listadoId}</param>
+                <param name="edit">false</param>
+                <param name="login_error">ad</param>
+            </result>
+        </action>
+
+    </package>
+</struts>

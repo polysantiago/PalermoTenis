@@ -1,0 +1,96 @@
+/* 
+Document   : admin-style
+Created on : 10/07/2009, 18:52:17
+Author     : Poly
+Description:
+Purpose of the stylesheet follows.
+*/
+
+/* 
+TODO customize this sample style
+Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+root { 
+    display: block;
+}
+
+body {
+    height: 100%;
+}
+
+.container {
+    min-height: 419px;
+    height: auto;
+    float: left;
+}
+
+* html .container {
+    height: 419px;
+}
+
+fieldset {
+    padding-bottom: 3px;
+}
+
+.izq {
+    float: left;
+    width: 200px;
+}
+
+.ctr {
+    float:left;
+    margin-left: 5px;
+}
+
+#columnaIzquierda {
+    float:left;
+}
+
+#columnaDerecha {
+    min-height: 300px;
+    height: auto;
+}
+
+* html #columnaDerecha {
+    height: 300px;
+}
+
+.treeview li.selected span {
+    background-color: #FFFF00;
+}
+
+#producto {
+    margin-left: 2px;
+    font-size: 14px;
+    font-weight: bolder;
+}
+#central {
+    float: left;
+    min-height:411px;
+    height: auto;
+    width:100%;
+}
+
+* html #central {
+    height: 411px;
+}
+
+.wwFormTable {
+    float:left;
+}
+
+label {
+    font-size: 12px;
+}
+
+.checkboxLabel {
+    text-align: left;
+}
+
+.loader {
+    margin-left:35%;
+    margin-top:50%;
+    display: inline-block;
+}
+

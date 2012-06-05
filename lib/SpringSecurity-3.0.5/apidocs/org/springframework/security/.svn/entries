@@ -1,0 +1,67 @@
+10
+
+dir
+40
+svn+ssh://palermotenis.com.ar/home/palermot/svn/palermotenis/trunk/lib/SpringSecurity-3.0.5/apidocs/org/springframework/security
+svn+ssh://palermotenis.com.ar/home/palermot/svn
+
+
+
+2010-12-09T08:36:30.813109Z
+40
+root
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2be0d6ef-bfa6-4087-bed9-eac418d82db7
+
+authentication
+dir
+
+ldap
+dir
+
+access
+dir
+
+acls
+dir
+
+remoting
+dir
+
+config
+dir
+
+taglibs
+dir
+
+provisioning
+dir
+
+cas
+dir
+
+core
+dir
+
+web
+dir
+
+util
+dir
+
+openid
+dir
+

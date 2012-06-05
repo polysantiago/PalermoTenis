@@ -1,0 +1,118 @@
+10
+
+dir
+40
+svn+ssh://palermotenis.com.ar/home/palermot/svn/palermotenis/trunk/lib/Spring-3.0.5/javadoc-api/org/springframework
+svn+ssh://palermotenis.com.ar/home/palermot/svn
+
+
+
+2010-12-09T08:36:30.813109Z
+40
+root
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2be0d6ef-bfa6-4087-bed9-eac418d82db7
+
+http
+dir
+
+test
+dir
+
+aop
+dir
+
+mail
+dir
+
+context
+dir
+
+remoting
+dir
+
+jndi
+dir
+
+transaction
+dir
+
+scheduling
+dir
+
+format
+dir
+
+beans
+dir
+
+core
+dir
+
+jms
+dir
+
+mock
+dir
+
+validation
+dir
+
+jca
+dir
+
+orm
+dir
+
+jmx
+dir
+
+expression
+dir
+
+ejb
+dir
+
+jdbc
+dir
+
+scripting
+dir
+
+oxm
+dir
+
+dao
+dir
+
+cache
+dir
+
+stereotype
+dir
+
+instrument
+dir
+
+web
+dir
+
+ui
+dir
+
+util
+dir
+

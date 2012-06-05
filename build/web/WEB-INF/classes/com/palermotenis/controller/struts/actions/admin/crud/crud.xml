@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+"http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+    <package name="crud_operations" namespace="/admin/crud" extends="struts-default">
+
+        <result-types>
+            <result-type name="bytesResult" class="com.palermotenis.controller.results.BytesResult" />
+        </result-types>
+
+        <action name="ModeloAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.ModeloAction">
+            <result name="json" type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="ProductoAction_*" method="{1}" class="com.palermotenis.controller.struts.actions.admin.crud.ProductoAction">
+            <result name="show">/admin/objetos/Producto/Producto.jsp</result>
+            <result name="prepare">/admin/objetos/Producto/ProductoAgregar.jsp</result>
+            <result name="createSuccess">/admin/objetos/Producto/ProductoAgregarSuccess.jsp</result>
+            <result name="createError">/admin/objetos/Producto/ProductoAgregarError.jsp</result>
+            <result name="editSuccess">/admin/objetos/Producto/ProductoEditarSuccess.jsp</result>
+            <result name="editError">/admin/objetos/Producto/ProductoEditarError.jsp</result>
+            <result name="json" type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="MonedaAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.MonedaAction">
+            <result name="show">/admin/objetos/Moneda/Moneda.jsp</result>
+            <result name="json" type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="PagoAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.PagoAction">
+            <result name="show">/admin/objetos/Pago/Pago.jsp</result>
+            <result name="json" type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="TipoPresentacionAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.TipoPresentacionAction">
+            <result name="show">/admin/objetos/TipoPresentacion/TipoPresentacion.jsp</result>
+            <result name="json" type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="PresentacionAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.PresentacionAction">
+            <result name="show">/admin/objetos/Presentacion/PresentacionesList.jsp</result>
+            <result name="json" type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="TipoProductoAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.TipoProductoAction">
+            <result name="show">/admin/objetos/TipoProducto/TipoProducto.jsp</result>
+            <result name="json" type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="MarcaAction_*" method="{1}" class="com.palermotenis.controller.struts.actions.admin.crud.MarcaAction">
+            <result name="show">/admin/objetos/Marca/Marca.jsp</result>
+            <result name="json" type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+            <result name="showImage" type="bytesResult" />
+        </action>
+
+        <action name="TipoAtributoAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.TipoAtributoAction">
+            <result name="show">/admin/objetos/TipoAtributo/TipoAtributo.jsp</result>
+            <result name="json" type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="ImagenAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.ImagenAction">
+            <result name="upload" type="redirect">/admin/objetos/Imagen/Imagen.jsp?modeloId=${modeloId}</result>
+            <result name="json" type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="UnidadAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.UnidadAction">
+            <result name="show">/admin/objetos/Unidad/Unidad.jsp</result>
+            <result name="json" type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="ValorPosibleAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.ValorPosibleAction">
+            <result name="show">/admin/objetos/ValorPosible/ValorPosible.jsp</result>
+            <result name="json" type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="StockAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.StockAction">
+            <result name="showOne">/admin/objetos/Stock/Stock_one.jsp</result>
+            <result name="showByClasif">/admin/objetos/Stock/Stock_by_clasif.jsp</result>
+            <result name="json" type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="ClienteAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.ClienteAction">
+            <result name="create">/admin/ventas/NuevaVenta.jsp</result>
+            <result name="input">/admin/ventas/NuevoCliente.jsp</result>
+        </action>
+
+        <action name="CostoAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.CostoAction">
+            <result name="show">/admin/objetos/Costo/Costo.jsp</result>
+            <result name="json" type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="PrecioAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.PrecioAction">
+            <result name="json" type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="ProveedorAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.ProveedorAction">
+            <result name="show">/admin/objetos/Proveedor/Proveedor.jsp</result>
+            <result name="json" type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="SuscriptorAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.SuscriptorAction">
+            <result name="list">/admin/objetos/Suscriptor/Suscriptor.jsp</result>
+        </action>
+
+        <action name="MiUsuarioAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.MiUsuarioAction">
+            <result name="edit">/admin/usuarios/MiUsuarioEditOK.jsp</result>
+            <result name="input">/admin/usuarios/MiUsuario.jsp</result>
+        </action>
+
+        <action name="SucursalAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.SucursalAction">
+            <result name="show">/admin/objetos/Sucursal/Sucursal.jsp</result>
+            <result name="json" type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+    </package>
+
+</struts>

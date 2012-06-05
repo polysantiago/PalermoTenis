@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+"http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+    <constant name="struts.enable.DynamicMethodInvocation" value="false" />
+    <constant name="struts.devMode" value="true" />
+    <constant name="struts.locale" value="en_US" />
+    <constant name="struts.convention.exclude.packages" value="org.apache.struts2.config_browser.*,com.palermotenis.controller.struts.actions.*" />
+    <constant name="struts.convention.action.suffix" value="Controller"/>
+    <constant name="struts.convention.package.locators" value="controllers"/>
+
+    <package name="default" namespace="/" extends="struts-default">
+        <result-types>
+            <result-type name="bytesResult" class="com.palermotenis.controller.results.BytesResult" />
+            <result-type name="gzipResult" class="com.palermotenis.controller.results.GZIPResult" />
+        </result-types>
+
+        <default-action-ref name="index" />
+
+        <global-results>
+            <result name="error">/error.jsp</result>
+        </global-results>
+
+        <action name="index">
+            <result>/index.jsp</result>
+        </action>
+
+        <action name="Test" class="com.palermotenis.controller.struts.actions.Test">
+            <result>/Envios.jsp</result>
+        </action>
+
+        <action name="ListarTipoProductos" class="com.palermotenis.controller.struts.actions.ListarTipoProductos">
+            <result type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="ListarTipoProductoMarcas" class="com.palermotenis.controller.struts.actions.ListarTipoProductoMarcas">
+            <result type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="ListarModelos_*" method="{1}" class="com.palermotenis.controller.struts.actions.ListarModelos">
+            <result type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+            <result type="gzipResult" name="xml">
+                <param name="contentType">application/xml;charset=ISO-8859-1</param>
+            </result>
+        </action>
+
+        <action name="GetCotizacion" class="com.palermotenis.controller.struts.actions.GetCotizacion">
+            <result type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="MostrarProducto" class="com.palermotenis.controller.struts.actions.MostrarProducto">
+            <result>/Producto.jsp</result>
+        </action>
+
+        <action name="GetPrecioValorPosible" class="com.palermotenis.controller.struts.actions.GetPrecioValorPosible">
+            <result>/Precio.jsp</result>
+        </action>
+
+        <action name="MostrarMiniaturas_*" method="{1}" class="com.palermotenis.controller.struts.actions.MostrarMiniaturas">
+            <result>/Modelos.jsp</result>
+        </action>
+
+        <action name="MostrarOfertas" class="com.palermotenis.controller.struts.actions.MostrarOfertas">
+            <result>/Ofertas.jsp</result>
+        </action>
+
+        <action name="GetImagen" class="com.palermotenis.controller.struts.actions.GetImagen">
+            <result name="imagenResult" type="bytesResult" />
+        </action>
+        <action name="GetImagenes" class="com.palermotenis.controller.struts.actions.GetImagen" method="doList">
+            <result name="imagenesList">/WEB-INF/jspf/Imagenes.jspf</result>
+        </action>
+
+        <action name="PrepararPrecios" class="com.palermotenis.controller.struts.actions.PrepararPrecios">
+            <result>${redirectPage}</result>
+        </action>
+
+        <action name="GetProducto" class="com.palermotenis.controller.struts.actions.GetProducto">
+            <result>${redirectPage}</result>
+        </action>
+
+        <action name="GetPrecioUnidadOptions" class="com.palermotenis.controller.struts.actions.GetPrecioUnidadOptions">
+            <result type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="GetPrecioPresentacionOptions" class="com.palermotenis.controller.struts.actions.GetPrecioPresentacionOptions">
+            <result type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="GetValoresClasificatoriosByPresentacion" class="com.palermotenis.controller.struts.actions.GetValoresClasificatoriosByPresentacion">
+            <result type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="GetPresentacionesByTipo" class="com.palermotenis.controller.struts.actions.GetPresentacionesByTipo">
+            <result type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="PrepararPresentaciones" class="com.palermotenis.controller.struts.actions.PrepararPresentaciones">
+            <result type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="GetClasificaciones" class="com.palermotenis.controller.struts.actions.GetClasificaciones">
+            <result type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="ValidarCampos" class="com.palermotenis.controller.struts.actions.ValidarCampos">
+            <result type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+        <action name="GetCiudades" class="com.palermotenis.controller.struts.actions.GetCiudades">
+            <result type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="GetProductosAutoCompleteList_*" method="{1}" class="com.palermotenis.controller.struts.actions.GetProductosAutoCompleteList">
+            <result type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="CheckRol_*" method="{1}" class="com.palermotenis.controller.struts.actions.CheckRol">
+            <result type="stream">
+                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+
+        <action name="GetProductosRelacionados" class="com.palermotenis.controller.struts.actions.GetProductosRelacionados" />
+
+        <!-- Login -->
+        <action name="Login" class="com.palermotenis.controller.struts.actions.Login">
+            <result type="redirect" name="admin">/admin/login.jsp</result>
+            <result type="redirect" name="standard">/clientes_web/LoginForm.jsp</result>
+            <result type="redirect" name="admin_error">/admin/login.jsp</result>
+            <result type="redirect" name="standard_error">/clientes_web/LoginForm.jsp</result>
+        </action>
+        <action name="SetDefaultTargetUrl" class="com.palermotenis.controller.struts.actions.SetDefaultTargetUrl">
+            <result type="redirect">/admin/index.jsp</result>
+        </action>
+    </package>
+
+    <!--- Admin -->
+    <include file="com/palermotenis/controller/struts/actions/admin/admin.xml" />
+
+    <!-- Carrito Operations -->
+    <include file="com/palermotenis/controller/struts/actions/carrito/carrito.xml" />
+    <include file="com/palermotenis/controller/struts/actions/carrito/checkout/checkout.xml" />
+
+    <!-- Newsletter Operations -->
+    <include file="com/palermotenis/controller/struts/actions/newsletter/newsletter.xml" />
+
+    <!-- Cliente Operations -->
+    <include file="com/palermotenis/controller/struts/actions/clientes/clientes.xml" />
+
+</struts>

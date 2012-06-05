@@ -1,0 +1,79 @@
+10
+
+dir
+27
+svn+ssh://palermotenis.com.ar/home/palermot/svn/palermotenis/trunk/web/admin/js/pack
+svn+ssh://palermotenis.com.ar/home/palermot/svn
+
+
+
+2010-09-19T08:49:18.407563Z
+22
+root
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2be0d6ef-bfa6-4087-bed9-eac418d82db7
+
+modelo
+dir
+
+precio
+dir
+
+marca
+dir
+
+stock
+dir
+
+tipoAtributo
+dir
+
+pago
+dir
+
+tipoPresentacion
+dir
+
+costo
+dir
+
+presentacion
+dir
+
+tipoProducto
+dir
+
+producto
+dir
+
+global
+dir
+
+sucursal
+dir
+
+valorPosible
+dir
+
+moneda
+dir
+
+unidad
+dir
+
+proveedor
+dir
+

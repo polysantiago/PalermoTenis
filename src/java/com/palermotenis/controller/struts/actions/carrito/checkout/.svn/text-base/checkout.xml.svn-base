@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <package name="checkout_operations" namespace="/carrito/checkout" extends="struts-default">
+        <action name="EnviarPedido" class="com.palermotenis.controller.struts.actions.carrito.checkout.EnviarPedido">
+            <result>EnviarPedidoOk.jsp</result>
+            <result name="error">EnviarPedidoError.jsp</result>
+        </action>
+        <action name="ConfirmarPedido" class="com.palermotenis.controller.struts.actions.carrito.checkout.ConfirmarPedido">
+            <result>ConfirmarPedidoOk.jsp</result>
+            <result name="error">ConfirmarPedidoError.jsp</result>
+        </action>
+        <action name="Checkout">
+            <result>Checkout.jsp</result>
+        </action>
+    </package>
+
+</struts>
