@@ -235,7 +235,7 @@
         <property name="driverClass" value="org.gjt.mm.mysql.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/palermotenis"/>
         <property name="user" value="root"/>
-        <property name="password" value="policapo"/>
+        <property name="password" value="mayandbarrow2012"/>
         <property name="acquireIncrement" value="5" />
         <property name="acquireRetryAttempts" value="50" />
         <property name="acquireRetryDelay" value="1000" />
