@@ -4,9 +4,9 @@
  */
 package com.palermotenis.model.beans;
 
-import com.palermotenis.model.beans.productos.tipos.TipoProducto;
-import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.imagenes.Imagen;
+import com.palermotenis.model.beans.productos.Producto;
+import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.exceptions.IllegalValueException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -118,10 +118,10 @@ public class Modelo implements Serializable, Comparable<Modelo> {
     private Producto producto;
 
     @ManyToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(name = "deportes_modelos",
+    @JoinTable(name = "categorias_modelos",
         joinColumns = @JoinColumn(name = "modelo"),
-        inverseJoinColumns = @JoinColumn(name = "deporte"))
-    private Collection<Deporte> deportes;
+        inverseJoinColumns = @JoinColumn(name = "categoria"))
+    private Collection<Categoria> categorias;
 
     @Fetch(FetchMode.SUBSELECT)
     @OneToMany(mappedBy = "modelo", cascade = CascadeType.REMOVE)
@@ -273,41 +273,41 @@ public class Modelo implements Serializable, Comparable<Modelo> {
     }
 
     /**
-     * @return the deporte
+     * @return the categoria
      */
-    public Collection<Deporte> getDeportes() {
-        return deportes;
+    public Collection<Categoria> getCategorias() {
+        return categorias;
     }
 
     /**
-     * @param deporte the deporte to set
+     * @param categoria the categoria to set
      */
-    public void setDeportes(Collection<Deporte> deportes) {
-        this.deportes = deportes;
+    public void setCategorias(Collection<Categoria> categorias) {
+        this.categorias = categorias;
     }
 
-    public void addDeporte(Deporte deporte) {
-        if (deporte == null) {
-            throw new IllegalValueException("El deporte no puede ser null");
-        } else if (deportes == null) {
-            deportes = new ArrayList<Deporte>();
-        } else if (hasDeporte(deporte)) {
-            throw new IllegalValueException("El deporte " + deporte.getNombre() + " ya está registrado para el modelo " + nombre);
+    public void addCategoria(Categoria categoria) {
+        if (categoria == null) {
+            throw new IllegalValueException("El categoria no puede ser null");
+        } else if (categorias == null) {
+            categorias = new ArrayList<Categoria>();
+        } else if (hasCategoria(categoria)) {
+            throw new IllegalValueException("El categoria " + categoria.getNombre() + " ya está registrado para el modelo " + nombre);
         }
-        deportes.add(deporte);
+        categorias.add(categoria);
     }
 
-    public void removeDeporte(Deporte deporte) {
-        if (deporte == null) {
-            throw new IllegalValueException("El deporte no puede ser null");
-        } else if (!hasDeporte(deporte)) {
-            throw new IllegalValueException("El deporte " + deporte.getNombre() + " no está registrado para el modelo " + nombre);
+    public void removeCategoria(Categoria categoria) {
+        if (categoria == null) {
+            throw new IllegalValueException("El categoria no puede ser null");
+        } else if (!hasCategoria(categoria)) {
+            throw new IllegalValueException("El categoria " + categoria.getNombre() + " no está registrado para el modelo " + nombre);
         }
-        deportes.remove(deporte);
+        categorias.remove(categoria);
     }
 
-    public boolean hasDeporte(Deporte deporte) {
-        return deportes.contains(deporte);
+    public boolean hasCategoria(Categoria categoria) {
+        return categorias.contains(categoria);
     }
 
     /**

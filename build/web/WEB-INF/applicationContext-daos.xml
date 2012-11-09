@@ -19,7 +19,7 @@
     <bean class="com.palermotenis.controller.daos.ApplicationInitListener">
         <property name="daos">
             <list>
-                <value>com.palermotenis.model.beans.Deporte</value>
+                <value>com.palermotenis.model.beans.Categoria</value>
                 <value>com.palermotenis.model.beans.Idioma</value>
                 <value>com.palermotenis.model.beans.Marca</value>
                 <value>com.palermotenis.model.beans.Modelo</value>

@@ -6,12 +6,11 @@ package com.palermotenis.controller.struts.actions.admin.crud;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
-import com.palermotenis.model.beans.Deporte;
+import com.palermotenis.model.beans.Categoria;
 import com.palermotenis.model.beans.Marca;
 import com.palermotenis.model.beans.Modelo;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.Sucursal;
-import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.beans.atributos.Atributo;
 import com.palermotenis.model.beans.atributos.AtributoMultipleValores;
 import com.palermotenis.model.beans.atributos.AtributoTipado;
@@ -25,6 +24,7 @@ import com.palermotenis.model.beans.productos.tipos.DefaultState;
 import com.palermotenis.model.beans.productos.tipos.PresentableAndClasificableState;
 import com.palermotenis.model.beans.productos.tipos.PresentableState;
 import com.palermotenis.model.beans.productos.tipos.State;
+import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.beans.valores.Valor;
 import com.palermotenis.model.beans.valores.ValorClasificatorio;
 import com.palermotenis.model.beans.valores.ValorPosible;
@@ -32,7 +32,6 @@ import com.palermotenis.util.Convertor;
 import com.palermotenis.util.StringUtility;
 import com.thoughtworks.xstream.converters.ConversionException;
 import java.io.InputStream;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,7 +63,7 @@ public class ProductoAction extends ActionSupport {
     private GenericDao<TipoProducto, Integer> tipoProductoService;
     private GenericDao<Producto, Integer> productoService;
     private GenericDao<Modelo, Integer> modeloService;
-    private GenericDao<Deporte, Integer> deporteService;
+    private GenericDao<Categoria, Integer> categoriaService;
     private GenericDao<Atributo, Integer> atributoService;
     private GenericDao<AtributoTipado, Integer> atributoTipadoService;
     private GenericDao<AtributoMultipleValores, Integer> atributoMultipleValoresService;
@@ -87,19 +86,19 @@ public class ProductoAction extends ActionSupport {
     private Marca marca;
     private Modelo modelo;
     private Producto producto;
-    private Collection<Deporte> deportes;
+    private Collection<Categoria> categorias;
     private Collection<Marca> marcas;
     private Collection<TipoProducto> tiposProducto;
     private Convertor convertor;
     private Collection<String> errores = new ArrayList<String>();
-    private Collection<Integer> deportesIds;
+    private Collection<Integer> categoriasIds;
     private Map<Integer, String> atributosSimples = new HashMap<Integer, String>();
     private Map<Integer, Integer> atributosTipados = new HashMap<Integer, Integer>();
     private Map<Integer, Collection<String>> atributosMultiples = new HashMap<Integer, Collection<String>>();
     private InputStream inputStream;
 
     public String prepare() {
-        deportes = deporteService.findAll();
+        categorias = categoriaService.findAll();
         marcas = marcaService.findAll();
         tiposProducto = tipoProductoService.findAll();
 
@@ -114,7 +113,7 @@ public class ProductoAction extends ActionSupport {
         if (getModeloId() != -1) {
             setProducto(((Modelo) modeloService.find(getModeloId())).getProducto());
         }
-        deportes = deporteService.findAll();
+        categorias = categoriaService.findAll();
         marcas = marcaService.findAll();
         tiposProducto = tipoProductoService.findAll();
 
@@ -133,11 +132,11 @@ public class ProductoAction extends ActionSupport {
             p.setTipoProducto(tipoProductoService.find(tipoProductoId));
             p.setDescripcion(descripcion);
 
-            Collection<Deporte> dpts = new ArrayList<Deporte>();
-            for (Integer i : getDeportesIds()) {
-                dpts.add(deporteService.find(i));
+            Collection<Categoria> dpts = new ArrayList<Categoria>();
+            for (Integer i : getCategoriasIds()) {
+                dpts.add(categoriaService.find(i));
             }
-            p.getModelo().setDeportes(dpts);
+            p.getModelo().setCategorias(dpts);
 
             productoService.create(p);
 
@@ -239,11 +238,11 @@ public class ProductoAction extends ActionSupport {
 
         p.setDescripcion(descripcion);
         p.setActivo(activo);
-        Collection<Deporte> newDeportes = new ArrayList<Deporte>();
-        for (Integer i : getDeportesIds()) {
-            newDeportes.add(deporteService.find(i));
+        Collection<Categoria> newCategorias = new ArrayList<Categoria>();
+        for (Integer i : getCategoriasIds()) {
+            newCategorias.add(categoriaService.find(i));
         }
-        m.setDeportes(newDeportes);
+        m.setCategorias(newCategorias);
 
         Map<String, Object> args = new HashMap<String, Object>();
         args.put("producto", p);
@@ -416,10 +415,10 @@ public class ProductoAction extends ActionSupport {
     }
 
     /**
-     * @param deporteService the deportesService to set
+     * @param categoriaService the categoriasService to set
      */
-    public void setDeporteService(GenericDao<Deporte, Integer> deporteService) {
-        this.deporteService = deporteService;
+    public void setCategoriaService(GenericDao<Categoria, Integer> categoriaService) {
+        this.categoriaService = categoriaService;
     }
 
     /**
@@ -522,17 +521,17 @@ public class ProductoAction extends ActionSupport {
     }
 
     /**
-     * @return the deportesIds
+     * @return the categoriasIds
      */
-    public Collection<Integer> getDeportesIds() {
-        return deportesIds;
+    public Collection<Integer> getCategoriasIds() {
+        return categoriasIds;
     }
 
     /**
-     * @param deportesIds the deportesIds to set
+     * @param categoriasIds the categoriasIds to set
      */
-    public void setDeportesIds(Collection<Integer> deportesIds) {
-        this.deportesIds = deportesIds;
+    public void setCategoriasIds(Collection<Integer> categoriasIds) {
+        this.categoriasIds = categoriasIds;
     }
 
     /**
@@ -603,10 +602,10 @@ public class ProductoAction extends ActionSupport {
     }
 
     /**
-     * @return the deportes
+     * @return the categorias
      */
-    public Collection<Deporte> getDeportes() {
-        return deportes;
+    public Collection<Categoria> getCategorias() {
+        return categorias;
     }
 
     /**

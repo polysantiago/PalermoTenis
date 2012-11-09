@@ -1,2 +1,0 @@
-com.palermotenis.util.RollingCalendar
-com.palermotenis.util.CustodianDailyRollingFileAppender

@@ -69,6 +69,6 @@
 
     -->
     <target name="-post-dist">
-        <exec dir="/home/poly" executable="/home/poly/build_palermot" />
+        <exec dir="." executable="./build_palermot" />
     </target>
 </project>

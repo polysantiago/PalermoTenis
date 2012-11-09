@@ -21,7 +21,7 @@
             <sec:filter-chain filters="none" pattern="/flash/**" />
             <sec:filter-chain filters="none" pattern="/images/**" />
             <sec:filter-chain filters="none" pattern="/js/jquery/**" />
-            <sec:filter-chain filters="none" pattern="/admin/css/**" />
+            <sec:filter-chain filters="none" pattern="/js/bootstrap/**" />
             <sec:filter-chain filters="none" pattern="/admin/css/**" />
             <sec:filter-chain filters="none" pattern="/admin/images/**" />
             <sec:filter-chain filters="none" pattern="/admin/login.jsp" />

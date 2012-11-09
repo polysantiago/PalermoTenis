@@ -48,7 +48,8 @@
         </div>
         <div id="barra-sup2-carrito-mini">
             <div id="carrito-mini-detalles">
-                <s:a action="CarritoAction_show" namespace="/carrito">Ver detalles</s:a>
+                <s:url action="CarritoAction_show" namespace="/carrito" var="verDetalles" />
+                <s:a href="%{#verDetalles}">Ver detalles</s:a>
             </div>
             <s:set value="#session['scopedTarget.carrito']" var="carrito" />
             <div id="carrito-mini-total">

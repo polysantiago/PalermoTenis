@@ -65,8 +65,8 @@ public class Marca implements Serializable, Comparable {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "modelos",
         joinColumns = @JoinColumn(name = "marca"),
-        inverseJoinColumns = @JoinColumn(name = "deporte"))
-    private Collection<Deporte> deportes;
+        inverseJoinColumns = @JoinColumn(name = "categoria"))
+    private Collection<Categoria> categorias;
 
     @OneToMany(mappedBy = "marca", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Collection<Modelo> modelos;
@@ -86,10 +86,10 @@ public class Marca implements Serializable, Comparable {
     }
 
     /**
-     * @return the deportes
+     * @return the categorias
      */
-    public Collection<Deporte> getDeportes() {
-        return deportes;
+    public Collection<Categoria> getCategorias() {
+        return categorias;
     }
 
     /**
@@ -150,10 +150,10 @@ public class Marca implements Serializable, Comparable {
 
 
     /**
-     * @param deportes the deportes to set
+     * @param categorias the categorias to set
      */
-    public void setDeportes(Collection<Deporte> deportes) {
-        this.deportes = deportes;
+    public void setCategorias(Collection<Categoria> categorias) {
+        this.categorias = categorias;
     }
 
     /**
@@ -171,22 +171,22 @@ public class Marca implements Serializable, Comparable {
     }
 
 
-    public void addDeporte(Deporte deporte) {
-        if (hasDeporte(deporte)) {
+    public void addCategoria(Categoria categoria) {
+        if (hasCategoria(categoria)) {
             //TODO handle exception
         }
-        deportes.add(deporte);
+        categorias.add(categoria);
     }
 
-    public void removeDeporte(Deporte deporte) {
-        if (!hasDeporte(deporte)) {
+    public void removeCategoria(Categoria categoria) {
+        if (!hasCategoria(categoria)) {
             //TODO handle exception
         }
-        deportes.remove(deporte);
+        categorias.remove(categoria);
     }
 
-    public boolean hasDeporte(Deporte deporte) {
-        return deportes.contains(deporte);
+    public boolean hasCategoria(Categoria categoria) {
+        return categorias.contains(categoria);
     }
 
     public void addModelo(Modelo modelo) {
@@ -224,7 +224,7 @@ public class Marca implements Serializable, Comparable {
         int hash = 3;
         hash = 53 * hash + (this.id != null ? this.id.hashCode() : 0);
         hash = 53 * hash + (this.nombre != null ? this.nombre.hashCode() : 0);
-        hash = 53 * hash + (this.deportes != null ? this.deportes.hashCode() : 0);
+        hash = 53 * hash + (this.categorias != null ? this.categorias.hashCode() : 0);
         return hash;
     }
 

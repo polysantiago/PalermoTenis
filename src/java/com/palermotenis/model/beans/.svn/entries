@@ -26,12 +26,35 @@ root
 
 2be0d6ef-bfa6-4087-bed9-eac418d82db7
 
+Categoria.java
+file
+
+
+
+add
+
+fa0fa5b89553ad933dc09ed420643f67
+
+
+
+
+
+
+
+
+
+
+
+copied
+svn+ssh://palermotenis.com.ar/home/palermot/svn/palermotenis/trunk/src/java/com/palermotenis/model/beans/Deporte.java
+40
+
 Deporte.java
 file
 40
 
 
-
+delete
 2010-12-08T05:35:44.074688Z
 fa0fa5b89553ad933dc09ed420643f67
 2010-12-09T08:36:30.813109Z

@@ -55,7 +55,7 @@
     <!-- END tasks -->
 
     <!-- XStream -->
-    <bean id="xstreamMarshaller" class="com.palermotenis.xstream.XStreamMarshaller">
+    <!--<bean id="xstreamMarshaller" class="com.palermotenis.xstream.XStreamMarshaller">
         <property name="aliases">
             <props>
                 <prop key="modelo">com.palermotenis.model.beans.Modelo</prop>
@@ -150,7 +150,7 @@
                 </entry>
             </map>
         </property>
-    </bean>
+    </bean>-->
     <!-- END XStream -->
 
     <!-- Currency Convertor -->
@@ -233,9 +233,9 @@
 
     <bean class="com.mchange.v2.c3p0.ComboPooledDataSource" id="dataSource" destroy-method="close">
         <property name="driverClass" value="org.gjt.mm.mysql.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/palermotenis"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/palermotenis"/>
         <property name="user" value="root"/>
-        <property name="password" value="mayandbarrow2012"/>
+        <property name="password" value="root"/>
         <property name="acquireIncrement" value="5" />
         <property name="acquireRetryAttempts" value="50" />
         <property name="acquireRetryDelay" value="1000" />

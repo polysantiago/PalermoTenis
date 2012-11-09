@@ -43,7 +43,7 @@
             </div>
             <s:form action="ProductoAction_edit" namespace="/admin/crud" id="frmEditarProducto" >
                 <s:checkbox label="Activo" labelposition="left" value="producto.activo" name="activo"  cssClass="chkActivo" id="chkActivo"/>
-                <s:select label="Deportes" list="deportes" listKey="id" listValue="nombre" multiple="true" value="producto.modelo.deportes.{id}" name="deportesIds" cssClass="ui-selectmenu ui-widget ui-state-default ui-widget-content ui-corner-bottom ui-selectmenu-menu-dropdown"/>
+                <s:select label="Categorias" list="categorias" listKey="id" listValue="nombre" multiple="true" value="producto.modelo.categorias.{id}" name="categoriasIds" cssClass="ui-selectmenu ui-widget ui-state-default ui-widget-content ui-corner-bottom ui-selectmenu-menu-dropdown"/>
                 <s:select label="Marca" disabled="true" list="marcas" listKey="id" listValue="nombre" value="marca.id" name="marcaId" cssClass="coolSelectMenu" />
                 <s:select label="Tipo de Producto" disabled="true" list="tiposProducto" listKey="id" listValue="nombre" value="tipoProducto.id" name="tipoProductoId" cssClass="coolSelectMenu" />
                 <s:textfield label="Nombre" value="%{producto.modelo.nombre}" name="nombre" required="true" cssClass="ui-widget ui-state-default ui-corner-all" />
