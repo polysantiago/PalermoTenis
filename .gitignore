@@ -16,3 +16,4 @@ web/js/jquery/ui/pack/*
 dist/*
 
 .DS_Store
+/target
