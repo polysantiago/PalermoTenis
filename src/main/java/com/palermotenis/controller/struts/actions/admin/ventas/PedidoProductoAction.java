@@ -1,161 +1,160 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions.admin.ventas;
 
-import com.opensymphony.xwork2.ActionSupport;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import net.sf.json.JSONObject;
+
+import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.ImmutableMap;
 import com.palermotenis.controller.daos.GenericDao;
+import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.pedidos.Pedido;
 import com.palermotenis.model.beans.pedidos.PedidoProducto;
 import com.palermotenis.model.beans.pedidos.PedidoProductoPK;
 import com.palermotenis.util.Convertor;
-import com.palermotenis.util.StringUtility;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.sf.json.JSONObject;
-import org.hibernate.HibernateException;
 
 /**
- *
+ * 
  * @author Poly
  */
-public class PedidoProductoAction extends ActionSupport {
+public class PedidoProductoAction extends JsonActionSupport {
 
-    private GenericDao<PedidoProducto, PedidoProductoPK> pedidoProductoService;
-    private GenericDao<Pedido, Integer> pedidoService;
-    private GenericDao<Stock, Integer> stockService;
-    private Convertor convertor;
+    private static final long serialVersionUID = -2042943340293648023L;
+
     private Integer pedidoId;
     private List<PedidoProducto> pedidosProductos;
     private Pedido pedido;
     private int cantidad;
     private Integer stockId;
     private Integer newStockId;
-    private InputStream inputStream;
+
+    @Autowired
+    private GenericDao<PedidoProducto, PedidoProductoPK> pedidoProductoDao;
+
+    @Autowired
+    private GenericDao<Pedido, Integer> pedidoDao;
+
+    @Autowired
+    private GenericDao<Stock, Integer> stockDao;
+
+    @Autowired
+    private Convertor convertor;
 
     public String list() {
-        pedido = pedidoService.find(getPedidoId());
-        Map<String, Object> args = new HashMap<String, Object>();
-        args.put("pedido", getPedido());
-        pedidosProductos = pedidoProductoService.queryBy("Pedido", args);
+        pedido = pedidoDao.find(getPedidoId());
+        pedidosProductos = pedidoProductoDao.queryBy("Pedido",
+            new ImmutableMap.Builder<String, Object>().put("pedido", getPedido()).build());
         return "list";
     }
 
     public String add() {
         try {
-            Stock s = stockService.find(stockId);
-            Pedido p = pedidoService.find(pedidoId);
-            PedidoProducto pp = new PedidoProducto(new PedidoProductoPK(p, s), 1);
+            Stock stock = stockDao.find(stockId);
+            Pedido pedido = pedidoDao.find(pedidoId);
+            PedidoProducto pp = new PedidoProducto(new PedidoProductoPK(pedido, stock), 1);
             pp.setSubtotal(convertor.calculateSubtotalPesos(convertor.estimarPrecio(pp), 1));
-            pedidoProductoService.create(pp);
+            pedidoProductoDao.create(pp);
 
-            double total = convertor.calculateTotalPesos(p.getPedidosProductos());
-            p.setTotal(total);
-            pedidoService.edit(p);
+            double total = convertor.calculateTotalPesos(pedido.getPedidosProductos());
+            pedido.setTotal(total);
+            pedidoDao.edit(pedido);
 
             createJSON(SUCCESS, "OK", total);
         } catch (HibernateException ex) {
-            createJSON(ERROR, ex.getLocalizedMessage(),0.00);
-            Logger.getLogger(PedidoProductoAction.class.getName()).log(Level.SEVERE, null, ex);
+            createErrorJSON(ex);
         } catch (Exception ex) {
-            createJSON(ERROR, ex.getLocalizedMessage(),0.00);
-            Logger.getLogger(PedidoProductoAction.class.getName()).log(Level.SEVERE, null, ex);
+            createErrorJSON(ex);
         }
-        return "json";
+        return JSON;
     }
 
     public String editCantidad() {
-        Pedido p = pedidoService.find(pedidoId);
-        Stock s = stockService.find(stockId);
-        PedidoProducto pp = pedidoProductoService.find(new PedidoProductoPK(p, s));
-        pp.setCantidad(cantidad);
-        
-        double subtotal = convertor.calculateSubtotalPesos(convertor.estimarPrecio(pp), cantidad);
-        double total = convertor.calculateTotalPesos(p.getPedidosProductos());
-        pp.setSubtotal(subtotal);
-        p.setTotal(total);
-        
+        Pedido pedido = pedidoDao.find(pedidoId);
+        Stock stock = stockDao.find(stockId);
+        PedidoProducto pedidoProducto = pedidoProductoDao.find(new PedidoProductoPK(pedido, stock));
+        pedidoProducto.setCantidad(cantidad);
+
+        double subtotal = convertor.calculateSubtotalPesos(convertor.estimarPrecio(pedidoProducto), cantidad);
+        double total = convertor.calculateTotalPesos(pedido.getPedidosProductos());
+        pedidoProducto.setSubtotal(subtotal);
+        pedido.setTotal(total);
+
         try {
-            pedidoProductoService.edit(pp);
-            pedidoService.edit(p);
+            pedidoProductoDao.edit(pedidoProducto);
+            pedidoDao.edit(pedido);
             createJSON(subtotal, total, 0);
         } catch (HibernateException ex) {
-            createJSON(ERROR, ex.getLocalizedMessage(),0.00);
-            Logger.getLogger(PedidoProductoAction.class.getName()).log(Level.SEVERE, null, ex);            
+            createErrorJSON(ex);
         } catch (Exception ex) {
-            createJSON(ERROR, ex.getLocalizedMessage(),0.00);
-            Logger.getLogger(PedidoProductoAction.class.getName()).log(Level.SEVERE, null, ex);
+            createErrorJSON(ex);
         }
-        return "json";
+        return JSON;
     }
 
     public String editStock() {
         try {
-            Pedido p = pedidoService.find(pedidoId);
-            PedidoProducto pedidoProducto = pedidoProductoService.find(new PedidoProductoPK(p, stockService.find(stockId)));
-            pedidoProductoService.destroy(pedidoProducto);
+            Pedido p = pedidoDao.find(pedidoId);
+            PedidoProducto pedidoProducto = pedidoProductoDao.find(new PedidoProductoPK(p, stockDao.find(stockId)));
+            pedidoProductoDao.destroy(pedidoProducto);
 
-            Stock newStock = stockService.find(newStockId);
-            PedidoProducto pp = new PedidoProducto(new PedidoProductoPK(p, newStock),1);
-            double subtotal = convertor.calculateSubtotalPesos(convertor.estimarPrecio(pp),1);
+            Stock newStock = stockDao.find(newStockId);
+            PedidoProducto pp = new PedidoProducto(new PedidoProductoPK(p, newStock), 1);
+            double subtotal = convertor.calculateSubtotalPesos(convertor.estimarPrecio(pp), 1);
             pp.setSubtotal(subtotal);
-            pedidoProductoService.create(pp);
+            pedidoProductoDao.create(pp);
 
             double total = convertor.calculateTotalPesos(p.getPedidosProductos());
-            p.setTotal(total);            
-            pedidoService.edit(p);
+            p.setTotal(total);
+            pedidoDao.edit(p);
 
             int stock = newStock.getStock();
             createJSON(subtotal, total, stock);
         } catch (HibernateException ex) {
-            Logger.getLogger(PedidoProductoAction.class.getName()).log(Level.SEVERE, null, ex);
+            createErrorJSON(ex);
         } catch (Exception ex) {
-            Logger.getLogger(PedidoProductoAction.class.getName()).log(Level.SEVERE, null, ex);
+            createErrorJSON(ex);
         }
-        return "json";
+        return JSON;
     }
 
     public String destroy() {
         try {
-            Pedido p = pedidoService.find(pedidoId);
-            PedidoProducto pedidoProducto = pedidoProductoService.find(new PedidoProductoPK(p, stockService.find(stockId)));
-            pedidoProductoService.destroy(pedidoProducto);
+            Pedido p = pedidoDao.find(pedidoId);
+            PedidoProducto pedidoProducto = pedidoProductoDao.find(new PedidoProductoPK(p, stockDao.find(stockId)));
+            pedidoProductoDao.destroy(pedidoProducto);
             p.setTotal(convertor.calculateTotalPesos(p.getPedidosProductos()));
-            createJSON(SUCCESS, "OK",p.getTotal());
+            createJSON(SUCCESS, "OK", p.getTotal());
         } catch (HibernateException ex) {
-            createJSON(ERROR, ex.getLocalizedMessage(),0.00);
-            Logger.getLogger(PedidoProductoAction.class.getName()).log(Level.SEVERE, null, ex);
+            createErrorJSON(ex);
         }
-        return "json";
+        return JSON;
     }
 
-    private void createJSON(double subtotal, double total, int stock){
+    private void createJSON(double subtotal, double total, int stock) {
         JSONObject jo = new JSONObject();
-        jo.element("subtotal",subtotal);
+        jo.element("subtotal", subtotal);
         jo.element("total", total);
         jo.element("stock", stock);
-        inputStream = StringUtility.getInputString(jo.toString());
+        writeResponse(jo);
     }
 
-    private void createJSON(String result, String msg, double total){
+    private void createJSON(String result, String msg, double total) {
         JSONObject jo = new JSONObject();
         jo.element("result", result);
         jo.element("msg", msg);
-        jo.element("total",total);
-        inputStream = StringUtility.getInputString(jo.toString());
+        jo.element("total", total);
+        writeResponse(jo);
     }
 
-
-    public void setPedidoProductoService(GenericDao<PedidoProducto, PedidoProductoPK> pedidoProductoService) {
-        this.pedidoProductoService = pedidoProductoService;
+    private void createErrorJSON(Exception ex) {
+        createJSON(ERROR, ex.getLocalizedMessage(), 0.00);
+        Logger.getLogger(PedidoProductoAction.class.getName()).log(Level.SEVERE, null, ex);
     }
-
 
     public void setPedidoId(Integer pedidoId) {
         this.pedidoId = pedidoId;
@@ -166,13 +165,6 @@ public class PedidoProductoAction extends ActionSupport {
      */
     public Integer getPedidoId() {
         return pedidoId;
-    }
-
-    /**
-     * @param pedidoService the pedidoService to set
-     */
-    public void setPedidoService(GenericDao<Pedido, Integer> pedidoService) {
-        this.pedidoService = pedidoService;
     }
 
     /**
@@ -190,44 +182,27 @@ public class PedidoProductoAction extends ActionSupport {
     }
 
     /**
-     * @param stockService the stockService to set
-     */
-    public void setStockService(GenericDao<Stock, Integer> stockService) {
-        this.stockService = stockService;
-    }
-
-    /**
-     * @param cantidad the cantidad to set
+     * @param cantidad
+     *            the cantidad to set
      */
     public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
     }
 
     /**
-     * @param stockId the stockId to set
+     * @param stockId
+     *            the stockId to set
      */
     public void setStockId(Integer stockId) {
         this.stockId = stockId;
     }
 
     /**
-     * @param convertor the convertor to set
-     */
-    public void setConvertor(Convertor convertor) {
-        this.convertor = convertor;
-    }
-
-    /**
-     * @param newStockId the newStockId to set
+     * @param newStockId
+     *            the newStockId to set
      */
     public void setNewStockId(Integer newStockId) {
         this.newStockId = newStockId;
     }
 
-    /**
-     * @return the inputStream
-     */
-    public InputStream getInputStream() {
-        return inputStream;
-    }
 }

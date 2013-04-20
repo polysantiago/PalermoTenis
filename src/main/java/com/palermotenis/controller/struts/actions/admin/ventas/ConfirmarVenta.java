@@ -1,8 +1,17 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 package com.palermotenis.controller.struts.actions.admin.ventas;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
@@ -15,37 +24,39 @@ import com.palermotenis.model.beans.ventas.ProductoVenta;
 import com.palermotenis.model.beans.ventas.StockListado;
 import com.palermotenis.model.beans.ventas.Venta;
 import com.palermotenis.util.StringUtility;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- *
+ * 
  * @author Poly
  */
 public class ConfirmarVenta extends ActionSupport {
 
+    private static final long serialVersionUID = 1135420464751868634L;
+    private static final Logger logger = Logger.getLogger(ConfirmarVenta.class);
     private static final String ZERO_PRICES = "zeroPrices";
+
     private int pedidoId;
+
     private String listadoId;
-    private GenericDao<Pedido, Integer> pedidoService;
-    private GenericDao<Listado, String> listadoService;
-    private GenericDao<Venta, Integer> ventaService;
-    private GenericDao<Stock, Integer> stockService;
 
     private Map<Integer, Double> precios = new HashMap<Integer, Double>();
     private Map<Integer, Integer> cantidades = new HashMap<Integer, Integer>();
-    
-    private Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    private static final Logger logger = Logger.getLogger(ConfirmarVenta.class);
+
+    @Autowired
+    private GenericDao<Pedido, Integer> pedidoDao;
+
+    @Autowired
+    private GenericDao<Listado, String> listadoDao;
+
+    @Autowired
+    private GenericDao<Venta, Integer> ventaDao;
+
+    @Autowired
+    private GenericDao<Stock, Integer> stockDao;
 
     public String confirmarPedido() {
 
-        Pedido pedido = pedidoService.find(pedidoId);
+        Pedido pedido = pedidoDao.find(pedidoId);
         Venta venta = new Venta(pedido.getCliente(), pedido.getPago());
 
         List<ProductoVenta> productosVenta = new ArrayList<ProductoVenta>();
@@ -58,13 +69,13 @@ public class ConfirmarVenta extends ActionSupport {
             pv.setVenta(venta);
             pv.setStock(s);
             productosVenta.add(pv);
-                        
+
             int current = s.getStock();
             if (current - pp.getCantidad() >= 0) {
                 s.setStock(current - pp.getCantidad());
             }
             try {
-                stockService.edit(s);
+                stockDao.edit(s);
             } catch (HibernateException ex) {
                 logger.error("Error al actualizar el stock", ex);
             } catch (Exception ex) {
@@ -74,11 +85,11 @@ public class ConfirmarVenta extends ActionSupport {
         venta.setProductos(productosVenta);
         venta.setTotal(pedido.getTotal());
         venta.setCuotas(pedido.getCuotas());
-        venta.setUsuario(usuario);
-        ventaService.create(venta);
+        venta.setUsuario(getUsuario());
+        ventaDao.create(venta);
 
         try {
-            pedidoService.destroy(pedido);
+            pedidoDao.destroy(pedido);
         } catch (HibernateException ex) {
             logger.error("Error al eliminar el pedido", ex);
         }
@@ -88,7 +99,7 @@ public class ConfirmarVenta extends ActionSupport {
 
     public String confirmarNuevaVenta() {
 
-       Listado listado = listadoService.find(listadoId);
+        Listado listado = listadoDao.find(listadoId);
 
         Venta venta = new Venta(listado.getCliente(), listado.getPago());
         List<ProductoVenta> productosVenta = new ArrayList<ProductoVenta>();
@@ -108,13 +119,13 @@ public class ConfirmarVenta extends ActionSupport {
             pv.setVenta(venta);
             pv.setStock(stock);
             productosVenta.add(pv);
-            
+
             int current = stock.getStock();
             if (current - stock.getStock() >= 0) {
                 stock.setStock(current - sl.getCantidad());
             }
             try {
-                stockService.edit(stock);
+                stockDao.edit(stock);
             } catch (HibernateException ex) {
                 logger.error("Error al actualizar la entidad", ex);
                 return ERROR;
@@ -126,11 +137,11 @@ public class ConfirmarVenta extends ActionSupport {
         venta.setCuotas(listado.getCuotas());
         venta.setTotal(listado.getTotal());
         venta.setProductos(productosVenta);
-        venta.setUsuario(usuario);
-        ventaService.create(venta);
+        venta.setUsuario(getUsuario());
+        ventaDao.create(venta);
 
         try {
-            listadoService.destroy(listado);
+            listadoDao.destroy(listado);
         } catch (HibernateException ex) {
             logger.error("No existe la entidad", ex);
             return ERROR;
@@ -138,45 +149,16 @@ public class ConfirmarVenta extends ActionSupport {
         return SUCCESS;
     }
 
-    /**
-     * @param pedidoId the pedidoId to set
-     */
+    private Usuario getUsuario() {
+        return (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
     public void setPedidoId(int pedidoId) {
         this.pedidoId = pedidoId;
     }
 
-    /**
-     * @param pedidoService the pedidoService to set
-     */
-    public void setPedidoService(GenericDao<Pedido, Integer> pedidoService) {
-        this.pedidoService = pedidoService;
-    }
-
-    /**
-     * @param ventaService the ventasService to set
-     */
-    public void setVentaService(GenericDao<Venta, Integer> ventaService) {
-        this.ventaService = ventaService;
-    }
-    /**
-     * @param stockService the stockService to set
-     */
-    public void setStockService(GenericDao<Stock, Integer> stockService) {
-        this.stockService = stockService;
-    }
-
-    /**
-     * @param listadoId the listadoId to set
-     */
     public void setListadoId(String listadoId) {
         this.listadoId = listadoId;
-    }
-
-    /**
-     * @param listadoService the listadosService to set
-     */
-    public void setListadoService(GenericDao<Listado, String> listadoService) {
-        this.listadoService = listadoService;
     }
 
     public Map<Integer, Integer> getCantidades() {
@@ -194,5 +176,5 @@ public class ConfirmarVenta extends ActionSupport {
     public void setPrecios(Map<Integer, Double> precios) {
         this.precios = precios;
     }
-    
+
 }

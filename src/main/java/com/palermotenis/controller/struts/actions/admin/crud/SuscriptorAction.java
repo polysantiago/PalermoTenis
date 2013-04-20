@@ -1,36 +1,34 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions.admin.crud;
+
+import java.util.Collection;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.newsletter.Suscriptor;
-import java.util.Collection;
 
 /**
- *
+ * 
  * @author Poly
  */
 public class SuscriptorAction extends ActionSupport {
 
+    private static final long serialVersionUID = 3824524208833901840L;
+
     private final String LIST = "list";
-    private GenericDao<Suscriptor, Integer> suscriptorService;
+
     private Collection<Suscriptor> suscriptores;
+
     private int maxResults = 30;
     private int firstResult;
 
-    public String list() {
-        suscriptores = suscriptorService.findAll(getMaxResults(), getFirstResult());
-        return LIST;
-    }
+    @Autowired
+    private GenericDao<Suscriptor, Integer> suscriptorDao;
 
-    /**
-     * @param suscriptorService the suscriptoresService to set
-     */
-    public void setSuscriptorService(GenericDao<Suscriptor, Integer> suscriptorService) {
-        this.suscriptorService = suscriptorService;
+    public String list() {
+        suscriptores = suscriptorDao.findAll(getMaxResults(), getFirstResult());
+        return LIST;
     }
 
     /**
@@ -48,7 +46,8 @@ public class SuscriptorAction extends ActionSupport {
     }
 
     /**
-     * @param maxResults the maxResults to set
+     * @param maxResults
+     *            the maxResults to set
      */
     public void setMaxResults(int maxResults) {
         this.maxResults = maxResults;
@@ -62,13 +61,14 @@ public class SuscriptorAction extends ActionSupport {
     }
 
     /**
-     * @param firstResult the firstResult to set
+     * @param firstResult
+     *            the firstResult to set
      */
     public void setFirstResult(int firstResult) {
         this.firstResult = firstResult;
     }
 
     public int getTotal() {
-        return suscriptorService.count();
+        return suscriptorDao.count();
     }
 }

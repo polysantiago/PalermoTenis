@@ -1,101 +1,84 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.palermotenis.controller.struts.actions.admin.crud;
 
-import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
-import com.palermotenis.model.beans.Unidad;
-import com.palermotenis.util.StringUtility;
-import java.io.InputStream;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONSerializer;
 import net.sf.json.JsonConfig;
+
 import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.palermotenis.controller.daos.GenericDao;
+import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.model.beans.Unidad;
 
 /**
- *
+ * 
  * @author Poly
  */
-public class UnidadAction extends ActionSupport {
+public class UnidadAction extends JsonActionSupport {
 
-    private final String CREATE = "create";
-    private final String EDIT = "edit";
-    private final String DESTROY = "destroy";
+    private static final long serialVersionUID = 9051985059330393430L;
+
     private final String SHOW = "show";
-    private final String JSON = "json";
 
-    private GenericDao<Unidad, Integer> unidadService;
     private Collection<Unidad> unidades;
 
     private Integer unidadId;
+
     private String nombre;
     private String descripcion;
 
-    private InputStream inputStream;
+    @Autowired
+    private GenericDao<Unidad, Integer> unidadDao;
 
-    public String show(){
-        unidades = unidadService.findAll();
+    public String show() {
+        unidades = unidadDao.findAll();
         return SHOW;
     }
 
-    public String getJson(){
-        unidades = unidadService.findAll();
-        
+    public String getJson() {
+        unidades = unidadDao.findAll();
+
         JsonConfig config = new JsonConfig();
-        config.setExcludes(new String[]{"tipoAtributoCollection"});
+        config.setExcludes(new String[]
+            { "tipoAtributoCollection" });
 
-        JSONArray uArr = (JSONArray) JSONSerializer.toJSON(unidades, config);
-        inputStream = StringUtility.getInputString(uArr.toString());
+        writeResponse((JSONArray) JSONSerializer.toJSON(unidades, config));
         return JSON;
     }
 
-    public String create(){
-        Unidad u = new Unidad(null, nombre, descripcion);
-        unidadService.create(u);
-        inputStream = StringUtility.getInputString("OK");
+    public String create() {
+        unidadDao.create(new Unidad(null, nombre, descripcion));
+        success();
         return JSON;
     }
 
-    public String edit(){
+    public String edit() {
         try {
-            Unidad u = unidadService.find(unidadId);
+            Unidad u = unidadDao.find(unidadId);
             u.setNombre(nombre);
             u.setDescripcion(descripcion);
-            unidadService.edit(u);
-            
-            inputStream = StringUtility.getInputString("OK");
+            unidadDao.edit(u);
+
+            success();
         } catch (HibernateException ex) {
-            Logger.getLogger(UnidadAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+            failure(ex);
         } catch (Exception ex) {
-            Logger.getLogger(UnidadAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+            failure(ex);
         }
         return JSON;
     }
 
-    public String destroy(){
+    public String destroy() {
         try {
-            unidadService.destroy(unidadService.find(unidadId));
-            inputStream = StringUtility.getInputString("OK");
+            unidadDao.destroy(unidadDao.find(unidadId));
+            success();
         } catch (HibernateException ex) {
-            Logger.getLogger(UnidadAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+            failure(ex);
         }
         return JSON;
-    }
-
-    /**
-     * @param unidadService the unidadesService to set
-     */
-    public void setUnidadService(GenericDao<Unidad, Integer> unidadService) {
-        this.unidadService = unidadService;
     }
 
     /**
@@ -106,28 +89,24 @@ public class UnidadAction extends ActionSupport {
     }
 
     /**
-     * @return the inputStream
-     */
-    public InputStream getInputStream() {
-        return inputStream;
-    }
-
-    /**
-     * @param unidadId the unidadId to set
+     * @param unidadId
+     *            the unidadId to set
      */
     public void setUnidadId(Integer unidadId) {
         this.unidadId = unidadId;
     }
 
     /**
-     * @param nombre the nombre to set
+     * @param nombre
+     *            the nombre to set
      */
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
     /**
-     * @param descripcion the descripcion to set
+     * @param descripcion
+     *            the descripcion to set
      */
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;

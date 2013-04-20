@@ -1,17 +1,21 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions.admin.crud;
 
-import com.opensymphony.xwork2.ActionSupport;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.palermotenis.controller.daos.GenericDao;
-import com.palermotenis.model.beans.productos.Producto;
+import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.Sucursal;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributoClasificatorio;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion;
+import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.productos.tipos.ClasificableState;
 import com.palermotenis.model.beans.productos.tipos.DefaultState;
 import com.palermotenis.model.beans.productos.tipos.PresentableAndClasificableState;
@@ -19,30 +23,18 @@ import com.palermotenis.model.beans.productos.tipos.PresentableState;
 import com.palermotenis.model.beans.productos.tipos.State;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.beans.valores.ValorClasificatorio;
-import com.palermotenis.util.StringUtility;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.hibernate.HibernateException;
 
 /**
- *
+ * 
  * @author Poly
  */
-public class StockAction extends ActionSupport {
+public class StockAction extends JsonActionSupport {
+
+    private static final long serialVersionUID = 5299928945994232297L;
 
     private final String SHOW_ONE = "showOne";
     private final String SHOW_CLASF = "showByClasif";
-    private final String JSON = "json";
-    private GenericDao<Stock, Integer> stockService;
-    private GenericDao<ValorClasificatorio, Integer> valorClasificatorioService;
-    private GenericDao<Producto, Integer> productoService;
-    private GenericDao<Presentacion, Integer> presentacionService;
-    private GenericDao<Sucursal, Integer> sucursalService;
+
     private Collection<Stock> stocks;
     private Stock stock;
     private Producto producto;
@@ -52,28 +44,42 @@ public class StockAction extends ActionSupport {
     private Integer valorClasificatorioId;
     private Integer total;
     private boolean clasificable;
-    private InputStream inputStream;
+
+    @Autowired
+    private GenericDao<Stock, Integer> stockDao;
+
+    @Autowired
+    private GenericDao<ValorClasificatorio, Integer> valorClasificatorioDao;
+
+    @Autowired
+    private GenericDao<Producto, Integer> productoDao;
+
+    @Autowired
+    private GenericDao<Presentacion, Integer> presentacionDao;
+
+    @Autowired
+    private GenericDao<Sucursal, Integer> sucursalDao;
 
     public String show() {
-        producto = productoService.find(productoId);
+        producto = productoDao.find(productoId);
         Map<String, Object> args = new HashMap<String, Object>();
         args.put("producto", producto);
         if (clasificable) {
-            stocks = stockService.queryBy("ProductoClasificable", args);
-            total = stockService.getIntResultBy("Producto,SumOfStock", "producto", producto);
+            stocks = stockDao.queryBy("ProductoClasificable", args);
+            total = stockDao.getIntResultBy("Producto,SumOfStock", "producto", producto);
             return SHOW_CLASF;
         } else {
-            stock = stockService.findBy("ProductoClasificable", "producto", producto);
+            stock = stockDao.findBy("ProductoClasificable", "producto", producto);
             return SHOW_ONE;
         }
     }
 
     public String fixStock() {
-        Producto p = productoService.find(productoId);
+        Producto p = productoDao.find(productoId);
 
         try {
             for (Stock s : p.getStocks()) {
-                stockService.destroy(s);
+                stockDao.destroy(s);
             }
 
             TipoProducto tp = p.getTipoProducto();
@@ -82,15 +88,15 @@ public class StockAction extends ActionSupport {
 
             Collection<TipoAtributoClasificatorio> tac = tp.getTiposAtributoClasificatorios();
             if (tp.isClasificable() && tac != null && !tac.isEmpty()) {
-                vc = valorClasificatorioService.queryBy("TipoAtributoList", "tipoAtributoList", tac);
+                vc = valorClasificatorioDao.queryBy("TipoAtributoList", "tipoAtributoList", tac);
             }
 
             Collection<TipoPresentacion> tpr = tp.getTiposPresentacion();
             if (tp.isPresentable() && tpr != null && !tpr.isEmpty()) {
-                prs = presentacionService.queryBy("TipoList", "tipoList", tpr);
+                prs = presentacionDao.queryBy("TipoList", "tipoList", tpr);
             }
 
-            List<Sucursal> ss = sucursalService.findAll();
+            List<Sucursal> ss = sucursalDao.findAll();
 
             State state = new DefaultState(p, ss);
             if (isClasificable(tp, tac) && isPresentable(tp, tpr)) {
@@ -100,13 +106,12 @@ public class StockAction extends ActionSupport {
             } else if (isPresentable(tp, tpr)) {
                 state = new PresentableState(p, ss, prs);
             }
-            state.setStockService(stockService);
+            state.setStockDao(stockDao);
             state.createStock();
 
-            inputStream = StringUtility.getInputString("OK");
+            success();
         } catch (HibernateException ex) {
-            Logger.getLogger(StockAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+            failure(ex);
         }
         return JSON;
     }
@@ -114,38 +119,35 @@ public class StockAction extends ActionSupport {
     public String create() {
         Stock s = new Stock();
         if (clasificable) {
-            s.setValorClasificatorio(valorClasificatorioService.find(valorClasificatorioId));
+            s.setValorClasificatorio(valorClasificatorioDao.find(valorClasificatorioId));
         }
-        s.setProducto(productoService.find(productoId));
+        s.setProducto(productoDao.find(productoId));
         s.setStock(cantidad);
-        stockService.create(s);
-        inputStream = StringUtility.getInputString("OK");
+        stockDao.create(s);
+        success();
         return JSON;
     }
 
     public String edit() {
         try {
-            Stock s = stockService.find(stockId);
+            Stock s = stockDao.find(stockId);
             s.setStock(cantidad);
-            stockService.edit(s);
-            inputStream = StringUtility.getInputString("OK");
+            stockDao.edit(s);
+            success();
         } catch (HibernateException ex) {
-            Logger.getLogger(StockAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+            failure(ex);
         } catch (Exception ex) {
-            Logger.getLogger(StockAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+            failure(ex);
         }
         return JSON;
     }
 
     public String destroy() {
         try {
-            stockService.destroy(stockService.find(stockId));
-            inputStream = StringUtility.getInputString("OK");
+            stockDao.destroy(stockDao.find(stockId));
+            success();
         } catch (HibernateException ex) {
-            Logger.getLogger(StockAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+            failure(ex);
         }
         return JSON;
     }
@@ -156,27 +158,6 @@ public class StockAction extends ActionSupport {
 
     private boolean isPresentable(TipoProducto tipoProducto, Collection<TipoPresentacion> collection) {
         return tipoProducto.isPresentable() && collection != null && !collection.isEmpty();
-    }
-
-    /**
-     * @param stockService the stockService to set
-     */
-    public void setStockService(GenericDao<Stock, Integer> stockService) {
-        this.stockService = stockService;
-    }
-
-    /**
-     * @param valorClasificatorioService the valorPosibleService to set
-     */
-    public void setValorClasificatorioService(GenericDao<ValorClasificatorio, Integer> valorClasificatorioService) {
-        this.valorClasificatorioService = valorClasificatorioService;
-    }
-
-    /**
-     * @param productoService the productoService to set
-     */
-    public void setProductoService(GenericDao<Producto, Integer> productoService) {
-        this.productoService = productoService;
     }
 
     /**
@@ -194,53 +175,43 @@ public class StockAction extends ActionSupport {
     }
 
     /**
-     * @param stockId the stockId to set
+     * @param stockId
+     *            the stockId to set
      */
     public void setStockId(Integer stockId) {
         this.stockId = stockId;
     }
 
     /**
-     * @param cantidad the cantidad to set
+     * @param cantidad
+     *            the cantidad to set
      */
     public void setCantidad(Integer cantidad) {
         this.cantidad = cantidad;
     }
 
     /**
-     * @param productoId the productoId to set
+     * @param productoId
+     *            the productoId to set
      */
     public void setProductoId(Integer productoId) {
         this.productoId = productoId;
     }
 
     /**
-     * @param valorClasificatorioId the valorClasificatorioId to set
+     * @param valorClasificatorioId
+     *            the valorClasificatorioId to set
      */
     public void setValorClasificatorioId(Integer valorClasificatorioId) {
         this.valorClasificatorioId = valorClasificatorioId;
     }
 
     /**
-     * @param clasificable the clasificable to set
+     * @param clasificable
+     *            the clasificable to set
      */
     public void setClasificable(boolean clasificable) {
         this.clasificable = clasificable;
-    }
-
-    public void setPresentacionService(GenericDao<Presentacion, Integer> presentacionService) {
-        this.presentacionService = presentacionService;
-    }
-
-    public void setSucursalService(GenericDao<Sucursal, Integer> sucursalService) {
-        this.sucursalService = sucursalService;
-    }
-
-    /**
-     * @return the inputStream
-     */
-    public InputStream getInputStream() {
-        return inputStream;
     }
 
     /**

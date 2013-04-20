@@ -1,47 +1,41 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions.admin.crud;
 
-import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
-import com.palermotenis.model.beans.Pago;
-import com.palermotenis.util.StringUtility;
-import java.io.InputStream;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONSerializer;
+
 import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.palermotenis.controller.daos.GenericDao;
+import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.model.beans.Pago;
 
 /**
- *
+ * 
  * @author Poly
  */
-public class PagoAction extends ActionSupport {
+public class PagoAction extends JsonActionSupport {
 
-    private final static String CREATE = "create";
-    private final static String EDIT = "edit";
-    private final static String DESTROY = "destroy";
+    private static final long serialVersionUID = 2529039104976965428L;
+
     private final static String SHOW = "show";
-    private final static String JSON = "json";
-    
-    private GenericDao<Pago, Integer> pagoService;
+
     private Integer pagoId;
     private String nombre;
-    private InputStream inputStream;
-    private Collection<Pago> pagos;    
+    private Collection<Pago> pagos;
+
+    @Autowired
+    private GenericDao<Pago, Integer> pagoDao;
 
     public String show() {
-        pagos = pagoService.findAll();
+        pagos = pagoDao.findAll();
         return SHOW;
     }
 
-    public String list() {        
-        JSONArray jsonArray = (JSONArray) JSONSerializer.toJSON(pagoService.findAll());
-        inputStream = StringUtility.getInputString(jsonArray.toString());
+    public String list() {
+        writeResponse((JSONArray) JSONSerializer.toJSON(pagoDao.findAll()));
         return JSON;
     }
 
@@ -49,66 +43,51 @@ public class PagoAction extends ActionSupport {
 
         Pago pago = new Pago();
         pago.setNombre(nombre);
-        pagoService.create(pago);
+        pagoDao.create(pago);
 
-        inputStream = StringUtility.getInputString("OK");
+        success();
         return JSON;
     }
 
     public String edit() {
         try {
-            Pago pago = pagoService.find(pagoId);
+            Pago pago = pagoDao.find(pagoId);
             pago.setNombre(nombre);
 
-            pagoService.edit(pago);
-            inputStream = StringUtility.getInputString("OK");
+            pagoDao.edit(pago);
+            success();
         } catch (HibernateException ex) {
-            Logger.getLogger(PagoAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+            failure(ex);
         } catch (Exception ex) {
-            Logger.getLogger(PagoAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+            failure(ex);
         }
         return JSON;
     }
 
     public String destroy() {
         try {
-            pagoService.destroy(pagoService.find(pagoId));
-            inputStream = StringUtility.getInputString("OK");
+            pagoDao.destroy(pagoDao.find(pagoId));
+            success();
         } catch (HibernateException ex) {
-            Logger.getLogger(PagoAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+            failure(ex);
         }
         return JSON;
     }
 
     /**
-     * @param pagoService the pagosService to set
-     */
-    public void setPagoService(GenericDao<Pago, Integer> pagoService) {
-        this.pagoService = pagoService;
-    }
-
-    /**
-     * @param pagoId the pagoId to set
+     * @param pagoId
+     *            the pagoId to set
      */
     public void setPagoId(Integer pagoId) {
         this.pagoId = pagoId;
     }
 
     /**
-     * @param nombre the nombre to set
+     * @param nombre
+     *            the nombre to set
      */
     public void setNombre(String nombre) {
         this.nombre = nombre;
-    }
-
-    /**
-     * @return the inputStream
-     */
-    public InputStream getInputStream() {
-        return inputStream;
     }
 
     /**

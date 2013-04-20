@@ -1,11 +1,20 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 package com.palermotenis.controller.struts.actions.admin.crud;
 
-import com.opensymphony.xwork2.ActionSupport;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
+
 import com.palermotenis.controller.daos.GenericDao;
+import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.Moneda;
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.beans.precios.PrecioPresentacion;
@@ -14,33 +23,25 @@ import com.palermotenis.model.beans.precios.pks.PrecioPresentacionPK;
 import com.palermotenis.model.beans.precios.pks.PrecioProductoPK;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
-import com.palermotenis.util.StringUtility;
-import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import org.hibernate.HibernateException;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- *
+ * 
  * @author Poly
  */
-public class PrecioAction extends ActionSupport {
+public class PrecioAction extends JsonActionSupport {
 
-    private static final String JSON = "json";
+    private static final long serialVersionUID = -4112606099516303261L;
+
     private Integer productoId;
     private Integer newPagoId;
     private Integer newMonedaId;
     private Integer newPresentacionId;
     private Integer newCuotas;
+
     private Double valor;
     private boolean enOferta;
     private Double valorOferta;
+
     private Integer pagoId;
     private Integer monedaId;
     private Integer presentacionId;
@@ -48,15 +49,27 @@ public class PrecioAction extends ActionSupport {
     private Integer productoOrden;
     private Integer productoRgtId;
     private Integer productoRgtOrden;
-    private GenericDao<PrecioPresentacion, PrecioPresentacionPK> precioPresentacionService;
-    private GenericDao<PrecioUnidad, PrecioProductoPK> precioUnidadService;
-    private GenericDao<Producto, Integer> productoService;
-    private GenericDao<Pago, Integer> pagoService;
-    private GenericDao<Moneda, Integer> monedaService;
-    private GenericDao<Presentacion, Integer> presentacionService;
+
     private EntityManager entityManager;
     private PlatformTransactionManager transactionManager;
-    private InputStream inputStream;
+
+    @Autowired
+    private GenericDao<PrecioPresentacion, PrecioPresentacionPK> precioPresentacionDao;
+
+    @Autowired
+    private GenericDao<PrecioUnidad, PrecioProductoPK> precioUnidadDao;
+
+    @Autowired
+    private GenericDao<Producto, Integer> productoDao;
+
+    @Autowired
+    private GenericDao<Pago, Integer> pagoDao;
+
+    @Autowired
+    private GenericDao<Moneda, Integer> monedaDao;
+
+    @Autowired
+    private GenericDao<Presentacion, Integer> presentacionDao;
 
     public String create() {
         if (isPresentable(productoId)) {
@@ -92,71 +105,73 @@ public class PrecioAction extends ActionSupport {
 
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    entityManager.createNativeQuery("{call moverOferta(?,?,?,?)}").setParameter(1, productoId).setParameter(2, productoOrden).setParameter(3, productoRgtId).setParameter(4, productoRgtOrden).executeUpdate();
+                    entityManager
+                        .createNativeQuery("{call moverOferta(?,?,?,?)}")
+                        .setParameter(1, productoId)
+                        .setParameter(2, productoOrden)
+                        .setParameter(3, productoRgtId)
+                        .setParameter(4, productoRgtOrden)
+                        .executeUpdate();
                 }
             });
-            inputStream = StringUtility.getInputString("OK");
+            success();
         } catch (HibernateException ex) {
-            Logger.getLogger(PrecioAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getMessage());
+            failure(ex);
         }
         return JSON;
     }
 
     private boolean isPresentable(Integer productoId) {
-        Producto producto = productoService.find(productoId);
+        Producto producto = productoDao.find(productoId);
         return producto.getTipoProducto().isPresentable();
     }
 
     private void createByPresentacion() {
         try {
-            Producto producto = productoService.find(productoId);
-            Pago pago = pagoService.find(pagoId);
-            Moneda moneda = monedaService.find(monedaId);
-            Presentacion presentacion = presentacionService.find(presentacionId);
+            Producto producto = productoDao.find(productoId);
+            Pago pago = pagoDao.find(pagoId);
+            Moneda moneda = monedaDao.find(monedaId);
+            Presentacion presentacion = presentacionDao.find(presentacionId);
 
             if (cuotas == null) {
-                setCuotas((Integer) 1);
+                setCuotas(1);
             }
 
             PrecioPresentacionPK pk = new PrecioPresentacionPK(moneda, pago, producto, presentacion, cuotas);
 
-            if (precioPresentacionService.find(pk) != null) {
-                inputStream = StringUtility.getInputString("Ya existe un precio con esas características");
+            if (precioPresentacionDao.find(pk) != null) {
+                writeResponse("Ya existe un precio con esas características");
             } else {
-
                 PrecioPresentacion precio = new PrecioPresentacion(pk, valor);
                 precio.setEnOferta(enOferta);
                 if (enOferta) {
                     precio.setOrden(productoId);
                 }
                 precio.setValorOferta(valorOferta);
-                precioPresentacionService.create(precio);
-                inputStream = StringUtility.getInputString("OK");
+                precioPresentacionDao.create(precio);
+                success();
             }
         } catch (HibernateException ex) {
-            Logger.getLogger(PrecioAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getMessage());
+            failure(ex);
         } catch (Exception ex) {
-            Logger.getLogger(PrecioAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getMessage());
+            failure(ex);
         }
     }
 
     private void createByUnidad() {
         try {
-            Producto producto = productoService.find(productoId);
-            Pago pago = pagoService.find(pagoId);
-            Moneda moneda = monedaService.find(monedaId);
+            Producto producto = productoDao.find(productoId);
+            Pago pago = pagoDao.find(pagoId);
+            Moneda moneda = monedaDao.find(monedaId);
 
             if (cuotas == null) {
-                setCuotas((Integer) 1);
+                setCuotas(1);
             }
 
             PrecioProductoPK pk = new PrecioProductoPK(moneda, pago, producto, cuotas);
 
-            if (precioUnidadService.find(pk) != null) {
-                inputStream = StringUtility.getInputString("Ya existe un precio con esas características");
+            if (precioUnidadDao.find(pk) != null) {
+                writeResponse("Ya existe un precio con esas características");
             } else {
                 PrecioUnidad precio = new PrecioUnidad(pk, valor);
                 precio.setEnOferta(enOferta);
@@ -164,35 +179,33 @@ public class PrecioAction extends ActionSupport {
                     precio.setOrden(productoId);
                 }
                 precio.setValorOferta(valorOferta);
-                precioUnidadService.create(precio);
-                inputStream = StringUtility.getInputString("OK");
+                precioUnidadDao.create(precio);
+                success();
             }
         } catch (HibernateException ex) {
-            Logger.getLogger(PrecioAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getMessage());
+            failure(ex);
         } catch (Exception ex) {
-            Logger.getLogger(PrecioAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getMessage());
+            failure(ex);
         }
     }
 
     private void editByPresentacion() {
         try {
-            Producto producto = productoService.find(productoId);
-            Pago pago = pagoService.find(pagoId);
-            Moneda moneda = monedaService.find(monedaId);
-            Presentacion presentacion = presentacionService.find(presentacionId);
+            Producto producto = productoDao.find(productoId);
+            Pago pago = pagoDao.find(pagoId);
+            Moneda moneda = monedaDao.find(monedaId);
+            Presentacion presentacion = presentacionDao.find(presentacionId);
 
-            Pago newPago = pagoService.find(newPagoId);
-            Moneda newMoneda = monedaService.find(newMonedaId);
-            Presentacion newPresentacion = presentacionService.find(newPresentacionId);
+            Pago newPago = pagoDao.find(newPagoId);
+            Moneda newMoneda = monedaDao.find(newMonedaId);
+            Presentacion newPresentacion = presentacionDao.find(newPresentacionId);
 
-            PrecioPresentacionPK pk = new PrecioPresentacionPK(moneda, pago, producto, presentacion, cuotas); //precioAnterior
-            PrecioPresentacion precioPresentacion = precioPresentacionService.find(pk);
+            PrecioPresentacionPK pk = new PrecioPresentacionPK(moneda, pago, producto, presentacion, cuotas); // precioAnterior
+            PrecioPresentacion precioPresentacion = precioPresentacionDao.find(pk);
 
-            PrecioPresentacionPK newPK = new PrecioPresentacionPK(newMoneda, newPago, producto, newPresentacion, newCuotas); //nuevoPrecio
-            PrecioPresentacion newPrecioPresentacion = precioPresentacionService.find(newPK);
-
+            PrecioPresentacionPK newPK = new PrecioPresentacionPK(newMoneda, newPago, producto, newPresentacion,
+                newCuotas); // nuevoPrecio
+            PrecioPresentacion newPrecioPresentacion = precioPresentacionDao.find(newPK);
 
             if (pk.equals(newPK)) {
                 precioPresentacion.setValor(valor);
@@ -204,13 +217,12 @@ public class PrecioAction extends ActionSupport {
                 if (precioPresentacion.getOrden() == null) {
                     precioPresentacion.setOrden(producto.getId());
                 }
-                precioPresentacionService.edit(precioPresentacion);
+                precioPresentacionDao.edit(precioPresentacion);
             } else {
                 if (newPrecioPresentacion != null) {
-                    inputStream = StringUtility.getInputString("Ya existe un precio con esas características");
-                    return;
+                    writeResponse("Ya existe un precio con esas características");
                 } else {
-                    precioPresentacionService.destroy(precioPresentacion);
+                    precioPresentacionDao.destroy(precioPresentacion);
 
                     PrecioPresentacion precio = new PrecioPresentacion();
 
@@ -219,38 +231,34 @@ public class PrecioAction extends ActionSupport {
                     precioPresentacion.setValorOferta(valorOferta);
                     precio.setId(newPK);
 
-                    precioPresentacionService.create(precio);
+                    precioPresentacionDao.create(precio);
                 }
             }
 
-            inputStream = StringUtility.getInputString("OK");
+            success();
         } catch (IllegalArgumentException ex) {
-            Logger.getLogger(PrecioAction.class.getName()).log(Level.WARNING, null, ex);
-            inputStream = StringUtility.getInputString(ex.getMessage());
+            failure(ex);
         } catch (HibernateException ex) {
-            Logger.getLogger(PrecioAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getMessage());
+            failure(ex);
         } catch (Exception ex) {
-            Logger.getLogger(PrecioAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getMessage());
+            failure(ex);
         }
     }
 
     private void editByUnidad() {
         try {
-            Producto producto = productoService.find(productoId);
-            Pago pago = pagoService.find(pagoId);
-            Moneda moneda = monedaService.find(monedaId);
+            Producto producto = productoDao.find(productoId);
+            Pago pago = pagoDao.find(pagoId);
+            Moneda moneda = monedaDao.find(monedaId);
 
-            Pago newPago = pagoService.find(newPagoId);
-            Moneda newMoneda = monedaService.find(newMonedaId);
+            Pago newPago = pagoDao.find(newPagoId);
+            Moneda newMoneda = monedaDao.find(newMonedaId);
 
-            PrecioProductoPK pk = new PrecioProductoPK(moneda, pago, producto, cuotas); //precioUnidadAnterior
-            PrecioUnidad precioUnidad = precioUnidadService.find(pk);
+            PrecioProductoPK pk = new PrecioProductoPK(moneda, pago, producto, cuotas); // precioUnidadAnterior
+            PrecioUnidad precioUnidad = precioUnidadDao.find(pk);
 
-            PrecioProductoPK newPK = new PrecioProductoPK(newMoneda, newPago, producto, newCuotas); //nuevoPrecioUnidad
-            PrecioUnidad newPrecioUnidad = precioUnidadService.find(newPK);
-
+            PrecioProductoPK newPK = new PrecioProductoPK(newMoneda, newPago, producto, newCuotas); // nuevoPrecioUnidad
+            PrecioUnidad newPrecioUnidad = precioUnidadDao.find(newPK);
 
             if (pk.equals(newPK)) {
                 precioUnidad.setValor(valor);
@@ -262,13 +270,13 @@ public class PrecioAction extends ActionSupport {
                 if (precioUnidad.getOrden() == null) {
                     precioUnidad.setOrden(producto.getId());
                 }
-                precioUnidadService.edit(precioUnidad);
+                precioUnidadDao.edit(precioUnidad);
             } else {
                 if (newPrecioUnidad != null) {
-                    inputStream = StringUtility.getInputString("Ya existe un precio con esas características");
+                    writeResponse("Ya existe un precio con esas características");
                     return;
                 } else {
-                    precioUnidadService.destroy(precioUnidad);
+                    precioUnidadDao.destroy(precioUnidad);
 
                     PrecioUnidad precio = new PrecioUnidad();
 
@@ -277,135 +285,142 @@ public class PrecioAction extends ActionSupport {
                     precioUnidad.setValorOferta(valorOferta);
                     precio.setId(newPK);
 
-                    precioUnidadService.create(precio);
+                    precioUnidadDao.create(precio);
                 }
             }
 
-            inputStream = StringUtility.getInputString("OK");
+            success();
         } catch (IllegalArgumentException ex) {
-            Logger.getLogger(PrecioAction.class.getName()).log(Level.WARNING, null, ex);
-            inputStream = StringUtility.getInputString(ex.getMessage());
+            failure(ex);
         } catch (HibernateException ex) {
-            Logger.getLogger(PrecioAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getMessage());
+            failure(ex);
         } catch (Exception ex) {
-            Logger.getLogger(PrecioAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getMessage());
+            failure(ex);
         }
     }
 
     private void destroyByPresentacion() {
         try {
-            Moneda moneda = monedaService.find(monedaId);
-            Pago pago = pagoService.find(pagoId);
-            Producto producto = productoService.find(productoId);
-            Presentacion presentacion = presentacionService.find(presentacionId);
+            Moneda moneda = monedaDao.find(monedaId);
+            Pago pago = pagoDao.find(pagoId);
+            Producto producto = productoDao.find(productoId);
+            Presentacion presentacion = presentacionDao.find(presentacionId);
 
             PrecioPresentacionPK pk = new PrecioPresentacionPK(moneda, pago, producto, presentacion, cuotas);
-            precioPresentacionService.destroy(precioPresentacionService.find(pk));
+            precioPresentacionDao.destroy(precioPresentacionDao.find(pk));
 
-            inputStream = StringUtility.getInputString("OK");
+            success();
         } catch (HibernateException ex) {
-            Logger.getLogger(PrecioAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getMessage());
+            failure(ex);
         }
     }
 
     private void destroyByUnidad() {
         try {
-            Moneda moneda = monedaService.find(monedaId);
-            Pago pago = pagoService.find(pagoId);
-            Producto producto = productoService.find(productoId);
+            Moneda moneda = monedaDao.find(monedaId);
+            Pago pago = pagoDao.find(pagoId);
+            Producto producto = productoDao.find(productoId);
 
             PrecioProductoPK pk = new PrecioProductoPK(moneda, pago, producto, cuotas);
-            precioUnidadService.destroy(precioUnidadService.find(pk));
+            precioUnidadDao.destroy(precioUnidadDao.find(pk));
 
-            inputStream = StringUtility.getInputString("OK");
+            success();
         } catch (HibernateException ex) {
-            Logger.getLogger(PrecioAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getMessage());
+            failure(ex);
         }
     }
 
     /**
-     * @param productoId the productoId to set
+     * @param productoId
+     *            the productoId to set
      */
     public void setProductoId(Integer productoId) {
         this.productoId = productoId;
     }
 
     /**
-     * @param newPagoId the newPagoId to set
+     * @param newPagoId
+     *            the newPagoId to set
      */
     public void setNewPagoId(Integer newPagoId) {
         this.newPagoId = newPagoId;
     }
 
     /**
-     * @param newMonedaId the newMonedaId to set
+     * @param newMonedaId
+     *            the newMonedaId to set
      */
     public void setNewMonedaId(Integer newMonedaId) {
         this.newMonedaId = newMonedaId;
     }
 
     /**
-     * @param newPresentacionId the newPresentacionId to set
+     * @param newPresentacionId
+     *            the newPresentacionId to set
      */
     public void setNewPresentacionId(Integer newPresentacionId) {
         this.newPresentacionId = newPresentacionId;
     }
 
     /**
-     * @param newCuotas the newCuotas to set
+     * @param newCuotas
+     *            the newCuotas to set
      */
     public void setNewCuotas(Integer newCuotas) {
         this.newCuotas = newCuotas;
     }
 
     /**
-     * @param valor the valor to set
+     * @param valor
+     *            the valor to set
      */
     public void setValor(Double valor) {
         this.valor = valor;
     }
 
     /**
-     * @param enOferta the enOferta to set
+     * @param enOferta
+     *            the enOferta to set
      */
     public void setEnOferta(boolean enOferta) {
         this.enOferta = enOferta;
     }
 
     /**
-     * @param valorOferta the valorOferta to set
+     * @param valorOferta
+     *            the valorOferta to set
      */
     public void setValorOferta(Double valorOferta) {
         this.valorOferta = valorOferta;
     }
 
     /**
-     * @param pagoId the pagoId to set
+     * @param pagoId
+     *            the pagoId to set
      */
     public void setPagoId(Integer pagoId) {
         this.pagoId = pagoId;
     }
 
     /**
-     * @param monedaId the monedaId to set
+     * @param monedaId
+     *            the monedaId to set
      */
     public void setMonedaId(Integer monedaId) {
         this.monedaId = monedaId;
     }
 
     /**
-     * @param presentacionId the presentacionId to set
+     * @param presentacionId
+     *            the presentacionId to set
      */
     public void setPresentacionId(Integer presentacionId) {
         this.presentacionId = presentacionId;
     }
 
     /**
-     * @param cuotas the cuotas to set
+     * @param cuotas
+     *            the cuotas to set
      */
     public void setCuotas(Integer cuotas) {
         this.cuotas = cuotas;
@@ -421,55 +436,6 @@ public class PrecioAction extends ActionSupport {
 
     public void setProductoRgtOrden(Integer productoRgtOrden) {
         this.productoRgtOrden = productoRgtOrden;
-    }
-
-    /**
-     * @param precioPresentacionService the precioPresentacionService to set
-     */
-    public void setPrecioPresentacionService(GenericDao<PrecioPresentacion, PrecioPresentacionPK> precioPresentacionService) {
-        this.precioPresentacionService = precioPresentacionService;
-    }
-
-    /**
-     * @param precioUnidadService the preciosUnidadService to set
-     */
-    public void setPrecioUnidadService(GenericDao<PrecioUnidad, PrecioProductoPK> precioUnidadService) {
-        this.precioUnidadService = precioUnidadService;
-    }
-
-    /**
-     * @param productoService the productoService to set
-     */
-    public void setProductoService(GenericDao<Producto, Integer> productoService) {
-        this.productoService = productoService;
-    }
-
-    /**
-     * @param pagoService the pagosService to set
-     */
-    public void setPagoService(GenericDao<Pago, Integer> pagoService) {
-        this.pagoService = pagoService;
-    }
-
-    /**
-     * @param monedaService the monedasService to set
-     */
-    public void setMonedaService(GenericDao<Moneda, Integer> monedaService) {
-        this.monedaService = monedaService;
-    }
-
-    /**
-     * @param presentacionService the presentacionService to set
-     */
-    public void setPresentacionService(GenericDao<Presentacion, Integer> presentacionService) {
-        this.presentacionService = presentacionService;
-    }
-
-    /**
-     * @return the inputStream
-     */
-    public InputStream getInputStream() {
-        return inputStream;
     }
 
     @PersistenceContext

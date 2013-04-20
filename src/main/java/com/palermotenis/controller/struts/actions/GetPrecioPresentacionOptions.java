@@ -1,21 +1,21 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions;
+
+import java.io.InputStream;
+import java.util.Collection;
+
+import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Moneda;
 import com.palermotenis.model.beans.Pago;
-import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion;
+import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.util.StringUtility;
-import java.io.InputStream;
-import java.util.Collection;
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
 
 /**
  *
@@ -23,22 +23,30 @@ import net.sf.json.JsonConfig;
  */
 public class GetPrecioPresentacionOptions extends ActionSupport {
 
-    private GenericDao<Pago, Integer> pagoService;
-    private GenericDao<Moneda, Integer> monedaService;
-    private GenericDao<TipoPresentacion, Integer> tipoPresentacionService;
-    private GenericDao<TipoProducto, Integer> tipoProductoService;
+	private static final long serialVersionUID = 3609468539847111988L;
 
-    private Integer tipoProductoId;
+	private Integer tipoProductoId;
 
     private InputStream inputStream;
+    
+    @Autowired
+    private GenericDao<Pago, Integer> pagoDao;
+    
+    @Autowired
+    private GenericDao<Moneda, Integer> monedaDao;
+    
+    @Autowired
+    private GenericDao<TipoPresentacion, Integer> tipoPresentacionDao;
+    
+    @Autowired
+    private GenericDao<TipoProducto, Integer> tipoProductoDao;
 
     @Override
     public String execute() {
-
-        Collection<Pago> pagos = pagoService.findAll();
-        Collection<Moneda> monedas = monedaService.findAll();
-        TipoProducto tipoProducto = tipoProductoService.find(tipoProductoId);
-        Collection<TipoPresentacion> tiposPresentacion = tipoPresentacionService.queryBy("TipoProducto",
+        Collection<Pago> pagos = pagoDao.findAll();
+        Collection<Moneda> monedas = monedaDao.findAll();
+        TipoProducto tipoProducto = tipoProductoDao.find(tipoProductoId);
+        Collection<TipoPresentacion> tiposPresentacion = tipoPresentacionDao.queryBy("TipoProducto",
                 new ImmutableMap.Builder<String, Object>().put("tipoProducto", tipoProducto).build());
 
         JSONObject jsonObject = new JSONObject();
@@ -59,38 +67,10 @@ public class GetPrecioPresentacionOptions extends ActionSupport {
     }
 
     /**
-     * @param pagoService the pagosService to set
-     */
-    public void setPagoService(GenericDao<Pago, Integer> pagoService) {
-        this.pagoService = pagoService;
-    }
-
-    /**
-     * @param monedaService the monedasService to set
-     */
-    public void setMonedaService(GenericDao<Moneda, Integer> monedaService) {
-        this.monedaService = monedaService;
-    }
-
-    /**
      * @return the inputStream
      */
     public InputStream getInputStream() {
         return inputStream;
-    }
-
-    /**
-     * @param tipoPresentacionService the tipoPresentacionService to set
-     */
-    public void setTipoPresentacionService(GenericDao<TipoPresentacion, Integer> tipoPresentacionService) {
-        this.tipoPresentacionService = tipoPresentacionService;
-    }
-
-    /**
-     * @param tiposProductoService the tiposProductoService to set
-     */
-    public void setTipoProductoService(GenericDao<TipoProducto, Integer> tipoProductoService) {
-        this.tipoProductoService = tipoProductoService;
     }
 
     /**

@@ -1,9 +1,28 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions.carrito.checkout;
 
+import java.util.Locale;
+import java.util.Map;
+
+import javax.mail.Message;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.struts2.interceptor.ServletRequestAware;
+import org.apache.velocity.app.VelocityEngine;
+import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.number.CurrencyFormatter;
+import org.springframework.mail.MailException;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.mail.javamail.MimeMessagePreparator;
+import org.springframework.ui.velocity.VelocityEngineUtils;
+
+import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.carrito.Carrito;
 import com.palermotenis.controller.carrito.Item;
@@ -16,65 +35,54 @@ import com.palermotenis.model.beans.pedidos.Pedido;
 import com.palermotenis.model.beans.pedidos.PedidoProducto;
 import com.palermotenis.model.beans.pedidos.PedidoProductoPK;
 import com.palermotenis.model.beans.usuarios.Usuario;
+import com.palermotenis.util.SecurityUtil;
 import com.palermotenis.util.StringUtility;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import javax.mail.Message;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.struts2.interceptor.ServletRequestAware;
-import org.apache.velocity.app.VelocityEngine;
-import org.hibernate.HibernateException;
-import org.springframework.format.number.CurrencyFormatter;
-import org.springframework.mail.MailException;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.mail.javamail.MimeMessagePreparator;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.ui.velocity.VelocityEngineUtils;
-
 /**
- *
+ * 
  * @author Poly
  */
 public class EnviarPedido extends ActionSupport implements ServletRequestAware {
 
+    private static final long serialVersionUID = -8773400739393474328L;
+    private static final Logger logger = Logger.getLogger(CarritoAction.class);
+    private static final Locale LOCALE_ES_AR = new Locale("es", "AR");
+
     private int pagoId;
     private int cuotas;
     private Carrito carrito;
-    private Pedido pedido;    
-    private GenericDao<Pago, Integer> pagoService;
-    private GenericDao<Pedido, Integer> pedidoService;
-    private GenericDao<PedidoProducto, Integer> pedidoProductoService;
-    
+    private Pedido pedido;
+
     private JavaMailSender mailSender;
     private VelocityEngine velocityEngine;
-    private CurrencyFormatter currencyFormatter;
-    private static final Logger logger = Logger.getLogger(CarritoAction.class);
     private HttpServletRequest request;
-    private Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    private static final Locale LOCALE_ES_AR = new Locale("es", "AR");
+
+    @Autowired
+    private GenericDao<Pago, Integer> pagoDao;
+
+    @Autowired
+    private GenericDao<Pedido, Integer> pedidoDao;
+
+    @Autowired
+    private GenericDao<PedidoProducto, Integer> pedidoProductoDao;
+
+    @Autowired
+    private CurrencyFormatter currencyFormatter;
 
     @Override
     public String execute() {
 
-        logger.info("Creando pedido para usuario "+usuario+" con IP ["+request.getRemoteAddr()+"] y navegador "+request.getHeader("User-Agent"));
-        pedido = new Pedido(usuario.getCliente(), pagoService.find(pagoId), cuotas, carrito.getTotal());
-        pedidoService.create(pedido);
+        logger.info("Creando pedido " + contextInfo());
+        pedido = new Pedido(getUsuario().getCliente(), pagoDao.find(pagoId), cuotas, carrito.getTotal());
+        pedidoDao.create(pedido);
         for (Stock stock : carrito.getContenido().keySet()) {
             try {
                 Item item = carrito.getContenido().get(stock);
                 PedidoProductoPK pk = new PedidoProductoPK(pedido, stock);
                 PedidoProducto pp = new PedidoProducto(pk, item.getCantidad());
                 pp.setSubtotal(item.getSubtotal());
-                pedidoProductoService.create(pp);
-                pedido.addPedidoProducto(pp);                
+                pedidoProductoDao.create(pp);
+                pedido.addPedidoProducto(pp);
             } catch (HibernateException ex) {
                 Logger.getLogger(EnviarPedido.class.getName()).log(Level.ERROR, null, ex);
                 return ERROR;
@@ -84,7 +92,7 @@ public class EnviarPedido extends ActionSupport implements ServletRequestAware {
             }
         }
         try {
-            pedidoService.edit(pedido);
+            pedidoDao.edit(pedido);
         } catch (HibernateException ex) {
             Logger.getLogger(EnviarPedido.class.getName()).log(Level.ERROR, null, ex);
             return ERROR;
@@ -93,9 +101,9 @@ public class EnviarPedido extends ActionSupport implements ServletRequestAware {
             return ERROR;
         }
 
-        logger.info(pedido+" creado para usuario "+usuario+" con IP ["+request.getRemoteAddr()+"] y navegador "+request.getHeader("User-Agent"));
-        enviarCopiaPedido(usuario);
-        informarPedido(pedido, usuario);
+        logger.info(pedido + " creado " + contextInfo());
+        enviarCopiaPedido(getUsuario());
+        informarPedido(pedido, getUsuario());
         carrito.vaciar();
 
         return SUCCESS;
@@ -104,6 +112,7 @@ public class EnviarPedido extends ActionSupport implements ServletRequestAware {
     private void enviarCopiaPedido(final Usuario usuario) {
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
 
+            @Override
             public void prepare(MimeMessage mimeMessage) throws Exception {
 
                 MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
@@ -113,17 +122,15 @@ public class EnviarPedido extends ActionSupport implements ServletRequestAware {
                 message.setFrom("PalermoTenis <noreply@palermotenis.com.ar>");
                 message.setReplyTo("PalermoTenis <consultas@palermotenis.com.ar>");
 
-                Map model = new HashMap();
-                model.put("usuario", usuario);
-                model.put("carrito", carrito);
-                model.put("formatter", currencyFormatter);
-                model.put("locale", LOCALE_ES_AR);
+                Map<String, Object> model = new ImmutableMap.Builder<String, Object>()
+                    .put("usuario", usuario)
+                    .put("carrito", carrito)
+                    .put("formatter", currencyFormatter)
+                    .put("locale", LOCALE_ES_AR)
+                    .build();
 
-                String text = VelocityEngineUtils.mergeTemplateIntoString(
-                        velocityEngine,
-                        "com/palermotenis/templates/mail/pedido.vm",
-                        "ISO-8859-1",
-                        model);
+                String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
+                    "com/palermotenis/templates/mail/pedido.vm", "ISO-8859-1", model);
 
                 message.setText(text, true);
             }
@@ -134,6 +141,7 @@ public class EnviarPedido extends ActionSupport implements ServletRequestAware {
     private void informarPedido(final Pedido pedido, final Usuario usuario) {
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
 
+            @Override
             public void prepare(MimeMessage mimeMessage) throws Exception {
 
                 Cliente cliente = usuario.getCliente();
@@ -151,60 +159,55 @@ public class EnviarPedido extends ActionSupport implements ServletRequestAware {
                 mimeMessage.setContent(new MimeMultipart("alternative"));
                 mimeMessage.setSubject("Se ha realizado un pedido desde PalermoTenis.com.ar", "ISO-8859-1");
                 mimeMessage.setText(
-                        "Nº de cliente : " + cliente.getId() + "\n"
-                        + "Nombre del cliente : " + cliente.getNombre() + "\n"
-                        + "Teléfono : " + cliente.getTelefono() + "\n"
-                        + "Nº de pedido : " + pedido.getId() + "\n"
-                        + "Detalle : " + s + "\n"
-                        + "Total : " + currencyFormatter.print(pedido.getTotal(), LOCALE_ES_AR),
-                        "ISO-8859-1");
+                    "Nº de cliente : " + cliente.getId() + "\n" + "Nombre del cliente : " + cliente.getNombre() + "\n"
+                            + "Teléfono : " + cliente.getTelefono() + "\n" + "Nº de pedido : " + pedido.getId() + "\n"
+                            + "Detalle : " + s + "\n" + "Total : "
+                            + currencyFormatter.print(pedido.getTotal(), LOCALE_ES_AR), "ISO-8859-1");
             }
         };
         try {
             this.mailSender.send(preparator);
-            logger.info("Copia enviada a "+usuario.getUsuario()+" por "+pedido);
+            logger.info("Copia enviada a " + usuario.getUsuario() + " por " + pedido);
         } catch (MailException ex) {
             Logger.getLogger(EnviarPedido.class.getName()).log(Level.ERROR, null, ex);
         }
     }
 
+    private String contextInfo() {
+        return " - User[" + getUsuario() + "] - IP[" + getRemoteAddress() + "] - Browser[" + getBrowser() + "]";
+    }
+
+    private Usuario getUsuario() {
+        return SecurityUtil.getLoggedInUser();
+    }
+
+    private String getBrowser() {
+        return request.getHeader("User-Agent");
+    }
+
+    private String getRemoteAddress() {
+        return request.getRemoteAddr();
+    }
+
     /**
-     * @param pagoId the pagoId to set
+     * @param pagoId
+     *            the pagoId to set
      */
     public void setPagoId(int pagoId) {
         this.pagoId = pagoId;
     }
 
     /**
-     * @param pagoService the pagosService to set
-     */
-    public void setPagoService(GenericDao<Pago, Integer> pagoService) {
-        this.pagoService = pagoService;
-    }
-
-    /**
-     * @param pedidoService the pedidoService to set
-     */
-    public void setPedidoService(GenericDao<Pedido, Integer> pedidoService) {
-        this.pedidoService = pedidoService;
-    }
-
-    /**
-     * @param pedidoProductoService the pedidoProductoService to set
-     */
-    public void setPedidoProductoService(GenericDao<PedidoProducto, Integer> pedidoProductoService) {
-        this.pedidoProductoService = pedidoProductoService;
-    }
-
-    /**
-     * @param carrito the carrito to set
+     * @param carrito
+     *            the carrito to set
      */
     public void setCarrito(Carrito carrito) {
         this.carrito = carrito;
     }
 
     /**
-     * @param cuotas the cuotas to set
+     * @param cuotas
+     *            the cuotas to set
      */
     public void setCuotas(int cuotas) {
         this.cuotas = cuotas;
@@ -218,10 +221,7 @@ public class EnviarPedido extends ActionSupport implements ServletRequestAware {
         this.velocityEngine = velocityEngine;
     }
 
-    public void setCurrencyFormatter(CurrencyFormatter currencyFormatter) {
-        this.currencyFormatter = currencyFormatter;
-    }
-
+    @Override
     public void setServletRequest(HttpServletRequest request) {
         this.request = request;
     }

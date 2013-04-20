@@ -36,7 +36,7 @@ public class PresentableState extends DefaultState {
         if (map.size() == 2) {
             Sucursal sucursal = (Sucursal) map.get("sucursal");
             Presentacion presentacion = (Presentacion) map.get("presentacion");
-            getStockService().create(new Stock(getProducto(), sucursal, presentacion));
+            getStockDao().create(new Stock(getProducto(), sucursal, presentacion));
             map.clear();
         }
     }

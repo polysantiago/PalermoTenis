@@ -1,17 +1,17 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions;
+
+import java.io.InputStream;
+import java.util.Collection;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONSerializer;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.atributos.tipos.clasif.TipoAtributoClasif;
 import com.palermotenis.util.StringUtility;
-import java.io.InputStream;
-import java.util.Collection;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONSerializer;
 
 /**
  *
@@ -19,14 +19,17 @@ import net.sf.json.JSONSerializer;
  */
 public class GetClasificaciones extends ActionSupport {
 
-    private GenericDao<TipoAtributoClasif, Character> tipoAtributoClasifService;
+	private static final long serialVersionUID = -879847503471376338L;
 
-    private InputStream inputStream;
+	private InputStream inputStream;
+    
+    @Autowired
+    private GenericDao<TipoAtributoClasif, Character> tipoAtributoClasifDao;
 
     @Override
     public String execute() {
 
-        Collection<TipoAtributoClasif> clasificaciones = tipoAtributoClasifService.findAll();
+        Collection<TipoAtributoClasif> clasificaciones = tipoAtributoClasifDao.findAll();
 
         JSONArray clasifArr = (JSONArray) JSONSerializer.toJSON(clasificaciones);
 
@@ -35,16 +38,6 @@ public class GetClasificaciones extends ActionSupport {
         return SUCCESS;
     }
 
-    /**
-     * @param tipoAtributoClasifService the clasifService to set
-     */
-    public void setTipoAtributoClasifService(GenericDao<TipoAtributoClasif, Character> tipoAtributoClasifService) {
-        this.tipoAtributoClasifService = tipoAtributoClasifService;
-    }
-
-    /**
-     * @return the inputStream
-     */
     public InputStream getInputStream() {
         return inputStream;
     }

@@ -1,20 +1,15 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions.newsletter;
 
-import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
-import com.palermotenis.model.beans.newsletter.Suscriptor;
-import java.util.HashMap;
 import java.util.Map;
+
 import javax.imageio.ImageIO;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.Resource;
@@ -25,41 +20,58 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
+import com.google.common.collect.ImmutableMap;
+import com.opensymphony.xwork2.ActionSupport;
+import com.palermotenis.controller.daos.GenericDao;
+import com.palermotenis.model.beans.newsletter.Suscriptor;
+
 /**
- *
+ * 
  * @author Poly
  */
 public class EnviarNewsletter extends ActionSupport implements ApplicationContextAware {
 
-    private JavaMailSender mailSender;
-    private VelocityEngine velocityEngine;
-    private GenericDao<Suscriptor, Integer> suscriptorService;
-    private ApplicationContext applicationContext;
-    private TaskExecutor taskExecutor;
-
-    private String subject;
+    private static final long serialVersionUID = 2209795006071659250L;
 
     private static final Logger logger = Logger.getLogger(EnviarNewsletter.class);
 
+    private ApplicationContext applicationContext;
+
+    private String subject;
+
+    @Autowired
+    private GenericDao<Suscriptor, Integer> suscriptorDao;
+
+    @Autowired
+    private JavaMailSender mailSender;
+
+    @Autowired
+    private VelocityEngine velocityEngine;
+
+    @Autowired
+    private TaskExecutor taskExecutor;
+
     @Override
     public String execute() {
-
-        for (Suscriptor s : suscriptorService.query("Active"))
-           taskExecutor.execute(new EnviarNewsletterTask(s.getEmail()));
+        for (Suscriptor s : suscriptorDao.query("Active")) {
+            taskExecutor.execute(new EnviarNewsletterTask(s.getEmail()));
+        }
         return SUCCESS;
     }
 
     private class EnviarNewsletterTask implements Runnable {
 
-        private String to;
+        private final String to;
 
         public EnviarNewsletterTask(String to) {
             this.to = to;
         }
 
+        @Override
         public void run() {
             MimeMessagePreparator preparator = new MimeMessagePreparator() {
 
+                @Override
                 public void prepare(MimeMessage mimeMessage) throws Exception {
 
                     MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
@@ -71,14 +83,11 @@ public class EnviarNewsletter extends ActionSupport implements ApplicationContex
 
                     Resource resource = applicationContext.getResource("newsletter/Newsletter.jpg");
 
-                    Map<String, Object> model = new HashMap<String, Object>();
-                    model.put("imagen", ImageIO.read(resource.getFile()));
+                    Map<String, Object> model = new ImmutableMap.Builder<String, Object>().put("imagen",
+                        ImageIO.read(resource.getFile())).build();
 
-                    String text = VelocityEngineUtils.mergeTemplateIntoString(
-                            velocityEngine,
-                            "com/palermotenis/templates/newsletter/newsletter.vm",
-                            "ISO-8859-1",
-                            model);
+                    String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
+                        "com/palermotenis/templates/newsletter/newsletter.vm", "ISO-8859-1", model);
 
                     message.setText(text, true);
                 }
@@ -91,33 +100,9 @@ public class EnviarNewsletter extends ActionSupport implements ApplicationContex
         }
     }
 
-    /**
-     * @param mailSender the mailSender to set
-     */
-    public void setMailSender(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
-    }
-
-    /**
-     * @param velocityEngine the velocityEngine to set
-     */
-    public void setVelocityEngine(VelocityEngine velocityEngine) {
-        this.velocityEngine = velocityEngine;
-    }
-
-    /**
-     * @param suscriptorService the suscriptoresService to set
-     */
-    public void setSuscriptorService(GenericDao<Suscriptor, Integer> suscriptorService) {
-        this.suscriptorService = suscriptorService;
-    }
-
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
-    }
-
-    public void setTaskExecutor(TaskExecutor taskExecutor) {
-        this.taskExecutor = taskExecutor;
     }
 
     public void setSubject(String subject) {

@@ -1,41 +1,47 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.palermotenis.controller.struts.actions;
+
+import java.util.Collection;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Moneda;
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.beans.productos.Producto;
-import java.util.Collection;
 
 /**
- *
+ * 
  * @author Poly
  */
 public class PrepararPrecios extends ActionSupport {
 
+    private static final long serialVersionUID = 1747802129269131653L;
+
     private Integer productoId;
 
-    private GenericDao<Producto, Integer> productoService;
-    private GenericDao<Pago, Integer> pagoService;
-    private GenericDao<Moneda, Integer> monedaService;
-
     private Producto producto;
+
     private Collection<Moneda> monedas;
     private Collection<Pago> pagos;
 
     private String redirectPage;
 
-    @Override
-    public String execute(){
+    @Autowired
+    private GenericDao<Producto, Integer> productoDao;
 
-        producto = productoService.find(productoId);
-        monedas = monedaService.findAll();
-        pagos = pagoService.findAll();
+    @Autowired
+    private GenericDao<Pago, Integer> pagoDao;
+
+    @Autowired
+    private GenericDao<Moneda, Integer> monedaDao;
+
+    @Override
+    public String execute() {
+
+        producto = productoDao.find(productoId);
+        monedas = monedaDao.findAll();
+        pagos = pagoDao.findAll();
 
         return SUCCESS;
     }
@@ -43,19 +49,6 @@ public class PrepararPrecios extends ActionSupport {
     public void setProductoId(Integer productoId) {
         this.productoId = productoId;
     }
-
-    public void setProductoService(GenericDao<Producto, Integer> productoService) {
-        this.productoService = productoService;
-    }
-
-    public void setPagoService(GenericDao<Pago, Integer> pagoService) {
-        this.pagoService = pagoService;
-    }
-
-    public void setMonedaService(GenericDao<Moneda, Integer> monedaService) {
-        this.monedaService = monedaService;
-    }
-
 
     public Producto getProducto() {
         return producto;

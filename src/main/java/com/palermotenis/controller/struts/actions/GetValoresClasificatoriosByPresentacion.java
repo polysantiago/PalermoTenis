@@ -1,8 +1,14 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
@@ -11,35 +17,36 @@ import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.valores.ValorClasificatorio;
 import com.palermotenis.util.StringUtility;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
- *
+ * 
  * @author Poly
  */
 public class GetValoresClasificatoriosByPresentacion extends ActionSupport {
 
-    private GenericDao<Stock, Integer> stockService;
-    private GenericDao<Producto, Integer> productoService;
-    private GenericDao<Presentacion, Integer> presentacionService;
+    private static final long serialVersionUID = -6113618729166238111L;
 
     private Integer productoId;
     private Integer presentacionId;
 
     private InputStream inputStream;
 
+    @Autowired
+    private GenericDao<Stock, Integer> stockDao;
+
+    @Autowired
+    private GenericDao<Producto, Integer> productoDao;
+
+    @Autowired
+    private GenericDao<Presentacion, Integer> presentacionDao;
+
     @Override
     public String execute() {
         Map<String, Object> args = new HashMap<String, Object>();
-        args.put("producto", productoService.find(productoId));
-        args.put("presentacion", presentacionService.find(presentacionId));
+        args.put("producto", productoDao.find(productoId));
+        args.put("presentacion", presentacionDao.find(presentacionId));
 
-        List<Stock> stocks = stockService.queryBy("Producto,Presentacion-Active", args);
+        List<Stock> stocks = stockDao.queryBy("Producto,Presentacion-Active", args);
         JSONArray arr = new JSONArray();
         for (Stock s : stocks) {
             JSONObject jo = new JSONObject();
@@ -64,17 +71,5 @@ public class GetValoresClasificatoriosByPresentacion extends ActionSupport {
 
     public void setProductoId(Integer productoId) {
         this.productoId = productoId;
-    }
-
-    public void setStockService(GenericDao<Stock, Integer> stockService) {
-        this.stockService = stockService;
-    }
-
-    public void setPresentacionService(GenericDao<Presentacion, Integer> presentacionService) {
-        this.presentacionService = presentacionService;
-    }
-
-    public void setProductoService(GenericDao<Producto, Integer> productoService) {
-        this.productoService = productoService;
     }
 }

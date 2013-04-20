@@ -1,8 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions;
+
+import java.util.Collection;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
@@ -11,54 +12,40 @@ import com.palermotenis.model.beans.precios.PrecioPresentacion;
 import com.palermotenis.model.beans.precios.pks.PrecioPresentacionPK;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
-import java.util.Collection;
-import java.util.Map;
-import org.apache.log4j.Logger;
-
-
 
 /**
- *
+ * 
  * @author Poly
  */
-public class GetPrecioValorPosible extends ActionSupport {
-
-    private GenericDao<PrecioPresentacion, PrecioPresentacionPK> precioPresentacionService;
-    private GenericDao<Producto, Integer> productoService;
-    private GenericDao<Presentacion, Integer> presentacionService;
-    private Integer presentacionId;
-    private Integer productoId;
-    private Collection<PrecioPresentacion> precios;
+public class GetPrecioValorPosible
+    extends ActionSupport {
 
     private static final Logger logger = Logger.getLogger(GetPrecioValorPosible.class);
 
+    private static final long serialVersionUID = 2108253535821338518L;
+    private GenericDao<PrecioPresentacion, PrecioPresentacionPK> precioPresentacionDao;
+
+    private Collection<PrecioPresentacion> precios;
+
+    private GenericDao<Presentacion, Integer> presentacionDao;
+    private Integer presentacionId;
+    private GenericDao<Producto, Integer> productoDao;
+
+    private Integer productoId;
+
     @Override
-    public String execute(){
+    public String execute() {
         try {
             Map<String, Object> args = new ImmutableMap.Builder<String, Object>()
-                    .put("producto", productoService.find(productoId))
-                    .put("presentacion", presentacionService.find(presentacionId))
-                    .build();
-            setPrecios(precioPresentacionService.queryBy("Producto,Presentacion", args));
-        } catch (Exception e){
-            logger.error("No se pudo obtener el precio por valor posible de Producto["+productoId+"], Presentacion["+presentacionId+"]", e);
+                .put("producto", productoDao.find(productoId))
+                .put("presentacion", presentacionDao.find(presentacionId))
+                .build();
+            setPrecios(precioPresentacionDao.queryBy("Producto,Presentacion", args));
+        } catch (Exception e) {
+            logger.error("No se pudo obtener el precio por valor posible de Producto[" + productoId
+                    + "], Presentacion[" + presentacionId + "]", e);
         }
         return SUCCESS;
-    }
-
-    /**
-     * @param presentacionId the presentacionId to set
-     */
-    public void setPresentacionId(Integer presentacionId) {
-        this.presentacionId = presentacionId;
-    }
-
-
-    /**
-     * @param productoId the productoId to set
-     */
-    public void setProductoId(Integer productoId) {
-        this.productoId = productoId;
     }
 
     /**
@@ -69,26 +56,27 @@ public class GetPrecioValorPosible extends ActionSupport {
     }
 
     /**
-     * @param precio the precio to set
+     * @param precio
+     *            the precio to set
      */
     public void setPrecios(Collection<PrecioPresentacion> precios) {
         this.precios = precios;
     }
 
     /**
-     * @param precioPresentacionService the precioPresentacionService to set
+     * @param presentacionId
+     *            the presentacionId to set
      */
-    public void setPrecioPresentacionService(GenericDao<PrecioPresentacion, PrecioPresentacionPK> precioPresentacionService) {
-        this.precioPresentacionService = precioPresentacionService;
+    public void setPresentacionId(Integer presentacionId) {
+        this.presentacionId = presentacionId;
     }
 
-    public void setPresentacionService(GenericDao<Presentacion, Integer> presentacionService) {
-        this.presentacionService = presentacionService;
+    /**
+     * @param productoId
+     *            the productoId to set
+     */
+    public void setProductoId(Integer productoId) {
+        this.productoId = productoId;
     }
-
-    public void setProductoService(GenericDao<Producto, Integer> productoService) {
-        this.productoService = productoService;
-    }
-
 
 }

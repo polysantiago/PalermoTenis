@@ -1,8 +1,19 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions.admin.analytics;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
@@ -15,28 +26,16 @@ import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.beans.valores.ValorClasificatorio;
 import com.palermotenis.util.StringUtility;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 /**
- *
+ * 
  * @author poly
  */
 public class VerStock2 extends ActionSupport {
 
+    private static final long serialVersionUID = 4782320935871175440L;
+
     private InputStream inputStream;
-    private GenericDao<Stock, Integer> stockService;
-    private GenericDao<Marca, Integer> marcaService;
-    private GenericDao<TipoProducto, Integer> tipoProductoService;
-    private GenericDao<Modelo, Integer> modeloService;
     private EntityManager entityManager;
     private Integer tipoProductoId;
     private Integer marcaId;
@@ -46,9 +45,21 @@ public class VerStock2 extends ActionSupport {
     private String sidx;
     private String sord;
 
+    @Autowired
+    private GenericDao<Stock, Integer> stockDao;
+
+    @Autowired
+    private GenericDao<Marca, Integer> marcaDao;
+
+    @Autowired
+    private GenericDao<TipoProducto, Integer> tipoProductoDao;
+
+    @Autowired
+    private GenericDao<Modelo, Integer> modeloDao;
+
     @Override
     public String execute() {
-        TipoProducto tp = tipoProductoId != null ? tipoProductoService.find(tipoProductoId) : null;
+        TipoProducto tp = tipoProductoId != null ? tipoProductoDao.find(tipoProductoId) : null;
         JSONObject rootObj = new JSONObject();
         JSONArray rowsArr = new JSONArray();
 
@@ -69,12 +80,12 @@ public class VerStock2 extends ActionSupport {
         if (modeloId != null) {
             namedQuery += "Modelo";
             countQuery = "Modelo-Count";
-            args.put("modelo", modeloService.find(modeloId));
+            args.put("modelo", modeloDao.find(modeloId));
             args.remove("tipoProducto");
         } else if (marcaId != null) {
             namedQuery += "TipoProducto,Marca";
             countQuery = "TipoProducto,Marca-Count";
-            args.put("marca", marcaService.find(marcaId));
+            args.put("marca", marcaDao.find(marcaId));
         } else if (tipoProductoId != null) {
             namedQuery += "TipoProducto";
             countQuery = "TipoProducto-Count";
@@ -82,18 +93,18 @@ public class VerStock2 extends ActionSupport {
             namedQuery = "Stock.findAll";
         }
 
-
-
         Session session = (Session) entityManager.getDelegate();
-        Query query = session.createQuery(
-                session.getNamedQuery(namedQuery).getQueryString() + " ORDER BY " + sidx + " " + sord).setMaxResults(rows).setFirstResult(rows * (page - 1));
+        Query query = session
+            .createQuery(session.getNamedQuery(namedQuery).getQueryString() + " ORDER BY " + sidx + " " + sord)
+            .setMaxResults(rows)
+            .setFirstResult(rows * (page - 1));
         for (Map.Entry<String, ?> entry : args.entrySet()) {
             query.setParameter(entry.getKey(), entry.getValue());
         }
 
-        List<Stock> stocks = (List<Stock>) query.list();
+        List<Stock> stocks = query.list();
 
-        int records = countQuery != null ? stockService.getIntResultBy(countQuery, args) : stockService.count();
+        int records = countQuery != null ? stockDao.getIntResultBy(countQuery, args) : stockDao.count();
 
         for (Stock stock : stocks) {
             Producto producto = stock.getProducto();
@@ -118,11 +129,13 @@ public class VerStock2 extends ActionSupport {
             nombreProducto.append(modelo.getNombre());
             cellArr.add(nombreProducto.toString());
 
-            cellArr.add(tipoProducto.isClasificable() && valorClasificatorio != null
-                    ? valorClasificatorio.getTipoAtributo().getNombre() + ": " + valorClasificatorio.getNombre() : "");
+            cellArr.add(tipoProducto.isClasificable() && valorClasificatorio != null ? valorClasificatorio
+                .getTipoAtributo()
+                .getNombre() + ": " + valorClasificatorio.getNombre() : "");
 
-            cellArr.add(tipoProducto.isPresentable() && presentacion != null
-                    ? presentacion.getTipoPresentacion().getNombre() + ": " + presentacion.getNombre() : "");
+            cellArr.add(tipoProducto.isPresentable() && presentacion != null ? presentacion
+                .getTipoPresentacion()
+                .getNombre() + ": " + presentacion.getNombre() : "");
 
             cellArr.add(sucursal.getNombre());
             cellArr.add(stock.getStock());
@@ -149,18 +162,6 @@ public class VerStock2 extends ActionSupport {
         this.marcaId = marcaId;
     }
 
-    public void setMarcaService(GenericDao<Marca, Integer> marcaService) {
-        this.marcaService = marcaService;
-    }
-
-    public void setModeloId(Integer modeloId) {
-        this.modeloId = modeloId;
-    }
-
-    public void setModeloService(GenericDao<Modelo, Integer> modeloService) {
-        this.modeloService = modeloService;
-    }
-
     public void setPage(int page) {
         this.page = page;
     }
@@ -177,16 +178,8 @@ public class VerStock2 extends ActionSupport {
         this.sord = sord;
     }
 
-    public void setStockService(GenericDao<Stock, Integer> stockService) {
-        this.stockService = stockService;
-    }
-
     public void setTipoProductoId(Integer tipoProductoId) {
         this.tipoProductoId = tipoProductoId;
-    }
-
-    public void setTipoProductoService(GenericDao<TipoProducto, Integer> tipoProductoService) {
-        this.tipoProductoService = tipoProductoService;
     }
 
     @PersistenceContext

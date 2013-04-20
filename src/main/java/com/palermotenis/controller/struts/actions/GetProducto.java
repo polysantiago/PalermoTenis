@@ -1,44 +1,32 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.productos.Producto;
 
 /**
- *
+ * 
  * @author Poly
  */
 public class GetProducto extends ActionSupport {
 
-    private GenericDao<Producto, Integer> productoService;
+    private static final long serialVersionUID = -5926960147665282516L;
+
+    private Producto producto;
 
     private Integer productoId;
-    private Producto producto;
 
     private String redirectPago;
 
+    @Autowired
+    private GenericDao<Producto, Integer> productoDao;
+
     @Override
     public String execute() {
-        producto = productoService.find(productoId);        
+        producto = productoDao.find(productoId);
         return SUCCESS;
-    }
-
-    /**
-     * @param productoService the productoService to set
-     */
-    public void setProductoService(GenericDao<Producto, Integer> productoService) {
-        this.productoService = productoService;
-    }
-
-    /**
-     * @param productoId the productoId to set
-     */
-    public void setProductoId(Integer productoId) {
-        this.productoId = productoId;
     }
 
     /**
@@ -56,7 +44,16 @@ public class GetProducto extends ActionSupport {
     }
 
     /**
-     * @param redirect the redirect to set
+     * @param productoId
+     *            the productoId to set
+     */
+    public void setProductoId(Integer productoId) {
+        this.productoId = productoId;
+    }
+
+    /**
+     * @param redirect
+     *            the redirect to set
      */
     public void setRedirectPage(String redirectPage) {
         this.redirectPago = redirectPage;

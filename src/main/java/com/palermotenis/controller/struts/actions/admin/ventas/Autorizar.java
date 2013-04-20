@@ -1,40 +1,46 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions.admin.ventas;
+
+import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.usuarios.Usuario;
 import com.palermotenis.model.beans.ventas.Listado;
 import com.palermotenis.util.SecurityUtil;
-import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
-import org.springframework.security.access.AccessDeniedException;
-
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 
 /**
- *
+ * 
  * @author Poly
  */
 public class Autorizar extends ActionSupport {
 
+    private static final long serialVersionUID = -8940207114274196062L;
+    private static final Logger logger = Logger.getLogger(Autorizar.class);
+
     private static final String BAD_CREDENTIALS = "badCredentials";
     private static final String ACCESS_DENIED = "accessDenied";
+
     private String usuario;
     private String clave;
-    private AuthenticationManager authenticationManager;
-    private SecurityUtil securityUtil;
-    private GenericDao<Listado, String> listadoService;
+
     private String listadoId;
     private Listado listado;
 
-    private static final Logger logger = Logger.getLogger(Autorizar.class);
+    @Autowired
+    private GenericDao<Listado, String> listadoDao;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private SecurityUtil securityUtil;
 
     @Override
     public String execute() {
@@ -54,23 +60,23 @@ public class Autorizar extends ActionSupport {
             return ACCESS_DENIED;
         }
 
-        listado = listadoService.find(listadoId);
+        listado = listadoDao.find(listadoId);
         listado.setAutorizado(true);
         try {
-            listadoService.edit(listado);
+            listadoDao.edit(listado);
         } catch (HibernateException ex) {
             logger.error("No existe el listado definido!", ex);
             return ERROR;
         } catch (Exception ex) {
-            logger.error("Ha ocurrido un error al editar "+listado, ex);
+            logger.error("Ha ocurrido un error al editar " + listado, ex);
             return ERROR;
         }
 
         return SUCCESS;
     }
 
-    public Listado getListado(){
-        return listadoService.find(listadoId);
+    public Listado getListado() {
+        return listadoDao.find(listadoId);
     }
 
     public String getListadoId() {
@@ -81,10 +87,6 @@ public class Autorizar extends ActionSupport {
         this.listadoId = listadoId;
     }
 
-    public void setListadoService(GenericDao<Listado, String> listadoService) {
-        this.listadoService = listadoService;
-    }
-
     public void setUsuario(String usuario) {
         this.usuario = usuario;
     }
@@ -93,13 +95,4 @@ public class Autorizar extends ActionSupport {
         this.clave = clave;
     }
 
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
-
-    public void setSecurityUtil(SecurityUtil securityUtil) {
-        this.securityUtil = securityUtil;
-    }
-
-    
 }

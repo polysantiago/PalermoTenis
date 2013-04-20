@@ -1,29 +1,31 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 package com.palermotenis.model.beans.productos.tipos;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.productos.Producto;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- *
+ * 
  * @author poly
  */
 public abstract class AbstractState implements State {
 
-    private Producto producto;
-    private List<List<?>> list = new ArrayList<List<?>>();
-    private GenericDao<Stock, Integer> stockService;
+    private final Producto producto;
+    private final List<List<?>> list = new ArrayList<List<?>>();
+
+    private GenericDao<Stock, Integer> stockDao;
 
     public AbstractState(Producto producto) {
         this.producto = producto;
     }
 
+    @Override
     public void createStock() {
         for (List<?> l : cartesianProduct(list)) {
             for (Object o : l) {
@@ -40,14 +42,6 @@ public abstract class AbstractState implements State {
 
     protected Producto getProducto() {
         return producto;
-    }
-
-    public GenericDao<Stock, Integer> getStockService() {
-        return stockService;
-    }
-
-    public void setStockService(GenericDao<Stock, Integer> stockService) {
-        this.stockService = stockService;
     }
 
     protected static List<List<Object>> cartesianProduct(List<List<?>> lists) {
@@ -73,4 +67,14 @@ public abstract class AbstractState implements State {
         }
         return ret;
     }
+
+    public GenericDao<Stock, Integer> getStockDao() {
+        return stockDao;
+    }
+
+    @Override
+    public void setStockDao(GenericDao<Stock, Integer> stockDao) {
+        this.stockDao = stockDao;
+    }
+
 }

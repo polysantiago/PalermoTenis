@@ -37,7 +37,7 @@ public class ClasificableState extends DefaultState {
         if (map.size() == 2) {
             Sucursal sucursal = (Sucursal) map.get("sucursal");
             ValorClasificatorio valorClasificatorio = (ValorClasificatorio) map.get("valorClasificatorio");
-            getStockService().create(new Stock(getProducto(), sucursal, valorClasificatorio));
+            getStockDao().create(new Stock(getProducto(), sucursal, valorClasificatorio));
             map.clear();
         }
     }

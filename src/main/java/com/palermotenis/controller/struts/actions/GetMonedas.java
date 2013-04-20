@@ -1,19 +1,18 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.palermotenis.controller.struts.actions;
+
+import java.io.InputStream;
+import java.util.Collection;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONSerializer;
+import net.sf.json.JsonConfig;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Moneda;
 import com.palermotenis.util.StringUtility;
-import java.io.InputStream;
-import java.util.Collection;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONSerializer;
-import net.sf.json.JsonConfig;
 
 /**
  *
@@ -21,19 +20,23 @@ import net.sf.json.JsonConfig;
  */
 public class GetMonedas extends ActionSupport {
 
-    private static final String JSON = "json";
+	private static final long serialVersionUID = 4337274661669247525L;
 
-    private GenericDao<Moneda, Integer> monedaService;
+	private static final String JSON = "json";
+
     private Collection<Moneda> monedas;
 
     private String resultType;
 
     private InputStream inputStream;
+    
+    @Autowired
+    private GenericDao<Moneda, Integer> monedaDao;
 
     @Override
     public String execute(){
 
-        monedas = monedaService.findAll();
+        monedas = monedaDao.findAll();
 
         if(resultType != null && resultType.equalsIgnoreCase("JSON")){
             JsonConfig config = new JsonConfig();
@@ -45,14 +48,7 @@ public class GetMonedas extends ActionSupport {
         return SUCCESS;
 
     }
-
-    /**
-     * @param monedaService the monedasService to set
-     */
-    public void setMonedaService(GenericDao<Moneda, Integer> monedaService) {
-        this.monedaService = monedaService;
-    }
-
+    
     /**
      * @return the monedas
      */

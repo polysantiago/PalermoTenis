@@ -1,35 +1,30 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.palermotenis.controller.struts.actions;
+
+import java.util.Collection;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Pago;
-import java.util.Collection;
 
 /**
  *
  * @author Poly
  */
 public class GetPagos extends ActionSupport {
+	
+	private static final long serialVersionUID = 8264803144351552901L;
 
-    private GenericDao<Pago, Integer> pagoService;
-    private Collection<Pago> pagos;
+	private Collection<Pago> pagos;
+    
+    @Autowired
+    private GenericDao<Pago, Integer> pagoDao;
 
     @Override
     public String execute(){
-        pagos = pagoService.findAll();
+        pagos = pagoDao.findAll();
         return SUCCESS;
-    }
-
-    /**
-     * @param pagoService the pagosService to set
-     */
-    public void setPagoService(GenericDao<Pago, Integer> pagoService) {
-        this.pagoService = pagoService;
     }
 
     /**

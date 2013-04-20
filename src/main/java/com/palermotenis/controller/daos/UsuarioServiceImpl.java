@@ -1,45 +1,43 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.daos;
 
-import com.palermotenis.controller.daos.exceptions.NonexistentEntityException;
-import com.palermotenis.controller.daos.exceptions.PreexistingEntityException;
-import com.palermotenis.model.beans.usuarios.Usuario;
 import java.util.List;
+
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-/**
- *
- * @author Poly
- */
+import com.palermotenis.controller.daos.exceptions.NonexistentEntityException;
+import com.palermotenis.controller.daos.exceptions.PreexistingEntityException;
+import com.palermotenis.model.beans.usuarios.Usuario;
+
 public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 
     private EntityManager emf = null;
 
+    @Override
     public EntityManager getEntityManager() {
         return emf;
     }
 
+    @Override
     @PersistenceContext(unitName = "PalermoTenis")
     public void setEntityManager(EntityManager emf) {
         this.emf = emf;
     }
 
+    @Override
     public void create(Usuario usuario) throws PreexistingEntityException, Exception {
         EntityManager em = null;
         try {
-            em = getEntityManager();            
-            em.persist(usuario);            
+            em = getEntityManager();
+            em.persist(usuario);
         } catch (Exception ex) {
             if (findUsuario(usuario.getUsuario()) != null) {
                 throw new PreexistingEntityException("Usuario " + usuario + " already exists.", ex);
@@ -52,13 +50,14 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
         }
     }
 
+    @Override
     public void edit(Usuario usuario) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
-            
+
             usuario = em.merge(usuario);
-            
+
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
@@ -75,11 +74,12 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
         }
     }
 
+    @Override
     public void destroy(String id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
-            
+
             Usuario usuario;
             try {
                 usuario = em.getReference(Usuario.class, id);
@@ -88,7 +88,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
                 throw new NonexistentEntityException("The usuario with id " + id + " no longer exists.", enfe);
             }
             em.remove(usuario);
-            
+
         } finally {
             if (em != null) {
                 em.close();
@@ -96,10 +96,12 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
         }
     }
 
+    @Override
     public List<Usuario> findUsuarioEntities() {
         return findUsuarioEntities(true, -1, -1);
     }
 
+    @Override
     public List<Usuario> findUsuarioEntities(int maxResults, int firstResult) {
         return findUsuarioEntities(false, maxResults, firstResult);
     }
@@ -118,15 +120,20 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
         }
     }
 
+    @Override
     public List<Usuario> findUsuariosByUsername(String username) {
         EntityManager em = getEntityManager();
         try {
-            return em.createQuery("select object(o) from Usuario as o where usuario = :usuario").setParameter("usuario", username).getResultList();
+            return em
+                .createQuery("select object(o) from Usuario as o where usuario = :usuario")
+                .setParameter("usuario", username)
+                .getResultList();
         } finally {
             em.close();
         }
     }
 
+    @Override
     public Usuario findUsuario(String usuario) {
         EntityManager em = getEntityManager();
         try {
@@ -136,6 +143,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
         }
     }
 
+    @Override
     public int getUsuarioCount() {
         EntityManager em = getEntityManager();
         try {
@@ -146,11 +154,15 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
         }
     }
 
+    @Override
     public UserDetails loadUserByUsername(String usuario) throws UsernameNotFoundException, DataAccessException {
         EntityManager em = getEntityManager();
         try {
-            return (Usuario) em.createNamedQuery("Usuario.findByUsuario").setParameter("usuario",usuario).getSingleResult();
-        }catch(NoResultException nre){
+            return (Usuario) em
+                .createNamedQuery("Usuario.findByUsuario")
+                .setParameter("usuario", usuario)
+                .getSingleResult();
+        } catch (NoResultException nre) {
             throw new UsernameNotFoundException(nre.getLocalizedMessage());
         } finally {
             em.close();

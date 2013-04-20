@@ -1,13 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Categoria;
-import java.util.List;
 
 /**
  *
@@ -15,20 +14,20 @@ import java.util.List;
  */
 public class GetCategorias extends ActionSupport {
     
-    private GenericDao<Categoria, Integer> categoriaService;
-    private List<Categoria> categorias;
+	private static final long serialVersionUID = -6301824235569113278L;
+
+	private List<Categoria> categorias;
+    
+    @Autowired
+    private GenericDao<Categoria, Integer> categoriaDao;
     
     @Override
     public String execute() {
-        categorias = categoriaService.findAll();
+        categorias = categoriaDao.findAll();
         return SUCCESS;   
     }
 
     public List<Categoria> getCategorias() {
         return categorias;
-    }
-
-    public void setCategoriaService(GenericDao<Categoria, Integer> categoriaService) {
-        this.categoriaService = categoriaService;
-    }    
+    }   
 }

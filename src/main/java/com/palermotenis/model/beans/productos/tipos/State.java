@@ -16,6 +16,6 @@ public interface State {
 
     void createStock();
 
-    void setStockService(GenericDao<Stock, Integer> stockService);
+    void setStockDao(GenericDao<Stock, Integer> stockService);
 
 }

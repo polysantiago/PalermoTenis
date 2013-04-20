@@ -1,26 +1,28 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions.clientes;
+
+import java.util.Collection;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.clientes.Cliente;
-import java.util.Collection;
 
 /**
- *
+ * 
  * @author Poly
  */
 public class BuscarCliente extends ActionSupport {
+
+    private static final long serialVersionUID = 4947994581192892643L;
 
     private char filter;
     private String searchVal;
     private Collection<Cliente> clientes;
 
-    private GenericDao<Cliente, Integer> clienteService;
+    @Autowired
+    private GenericDao<Cliente, Integer> clienteDao;
 
     @Override
     public String execute() {
@@ -28,31 +30,31 @@ public class BuscarCliente extends ActionSupport {
             buscarTodos();
         } else {
             switch (getFilter()) {
-                case 'E':
-                    buscarXEmail();
-                    break;
-                case 'N':
-                    buscarXNombre();
-                    break;
-                default:
-                    return ERROR;
+            case 'E':
+                buscarXEmail();
+                break;
+            case 'N':
+                buscarXNombre();
+                break;
+            default:
+                return ERROR;
             }
         }
         return SUCCESS;
     }
 
-    private void buscarTodos(){
-        clientes = clienteService.findAll();
+    private void buscarTodos() {
+        clientes = clienteDao.findAll();
     }
 
-    private void buscarXEmail(){
-        clientes = clienteService.queryBy("Email",
-                new ImmutableMap.Builder<String, Object>().put("email", "%" + getSearchVal() + "%").build());
+    private void buscarXEmail() {
+        clientes = clienteDao.queryBy("Email",
+            new ImmutableMap.Builder<String, Object>().put("email", "%" + getSearchVal() + "%").build());
     }
 
-    private void buscarXNombre(){
-        clientes = clienteService.queryBy("Nombre",
-                new ImmutableMap.Builder<String, Object>().put("nombre", "%" + getSearchVal() + "%").build());
+    private void buscarXNombre() {
+        clientes = clienteDao.queryBy("Nombre",
+            new ImmutableMap.Builder<String, Object>().put("nombre", "%" + getSearchVal() + "%").build());
     }
 
     /**
@@ -63,7 +65,8 @@ public class BuscarCliente extends ActionSupport {
     }
 
     /**
-     * @param filter the filter to set
+     * @param filter
+     *            the filter to set
      */
     public void setFilter(char filter) {
         this.filter = filter;
@@ -77,7 +80,8 @@ public class BuscarCliente extends ActionSupport {
     }
 
     /**
-     * @param searchVal the searchVal to set
+     * @param searchVal
+     *            the searchVal to set
      */
     public void setSearchVal(String searchVal) {
         this.searchVal = searchVal;
@@ -88,12 +92,5 @@ public class BuscarCliente extends ActionSupport {
      */
     public Collection<Cliente> getClientes() {
         return clientes;
-    }
-
-    /**
-     * @param clienteService the clientesService to set
-     */
-    public void setClienteService(GenericDao<Cliente, Integer> clienteService) {
-        this.clienteService = clienteService;
     }
 }

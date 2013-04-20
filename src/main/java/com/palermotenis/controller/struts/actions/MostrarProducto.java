@@ -1,50 +1,60 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
-import java.io.InputStream;
 import com.palermotenis.model.beans.Modelo;
-import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.atributos.AtributoMultipleValores;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributoClasificatorio;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributoMultipleValores;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import com.palermotenis.model.beans.productos.Producto;
 
 /**
- *
+ * 
  * @author Poly
  */
 public class MostrarProducto extends ActionSupport {
 
+    private static final long serialVersionUID = 6896818100286801184L;
+
     private Integer id;
-    private GenericDao<Modelo, Integer> modeloService;
-    private GenericDao<TipoAtributo, Integer> tipoAtributoService;
+
     private InputStream inputStream;
+
     private Producto producto;
+
     private Collection<TipoAtributo> atributosSimples = new ArrayList<TipoAtributo>();
     private Collection<TipoAtributoClasificatorio> atributosClasificatorios = new ArrayList<TipoAtributoClasificatorio>();
     private Collection<TipoAtributoMultipleValores> atributosMultiples = new ArrayList<TipoAtributoMultipleValores>();
     private Collection<TipoPresentacion> presentaciones = new ArrayList<TipoPresentacion>();
+
     private Map<TipoAtributoMultipleValores, StringBuilder> multiplesMap = new HashMap<TipoAtributoMultipleValores, StringBuilder>();
+
+    @Autowired
+    private GenericDao<Modelo, Integer> modeloDao;
+
+    @Autowired
+    private GenericDao<TipoAtributo, Integer> tipoAtributoDao;
 
     @Override
     public String execute() {
-        Modelo modelo = modeloService.find(id);
+        Modelo modelo = modeloDao.find(id);
         producto = modelo.getProducto();
 
-        createAtributosCollections(tipoAtributoService.queryBy("TipoProducto",
-                new ImmutableMap.Builder<String, Object>().put("tipoProducto", producto.getTipoProducto()).build()));
+        createAtributosCollections(tipoAtributoDao.queryBy("TipoProducto", new ImmutableMap.Builder<String, Object>()
+            .put("tipoProducto", producto.getTipoProducto())
+            .build()));
 
         if (producto.isPresentable()) {
             for (Presentacion p : getProducto().getPresentaciones()) {
@@ -64,7 +74,8 @@ public class MostrarProducto extends ActionSupport {
                     if (getMultiplesMap().containsKey(t)) {
                         getMultiplesMap().get(t).append(a.getValorPosible().getNombre()).append(", ");
                     } else {
-                        getMultiplesMap().put(t, new StringBuilder().append(a.getValorPosible().getNombre()).append(", "));
+                        getMultiplesMap().put(t,
+                            new StringBuilder().append(a.getValorPosible().getNombre()).append(", "));
                     }
                 }
             }
@@ -90,7 +101,8 @@ public class MostrarProducto extends ActionSupport {
     }
 
     /**
-     * @param prodId the prodId to set
+     * @param prodId
+     *            the prodId to set
      */
     public void setId(Integer id) {
         this.id = id;
@@ -111,20 +123,6 @@ public class MostrarProducto extends ActionSupport {
     }
 
     /**
-     * @param modeloService the modelosService to set
-     */
-    public void setModeloService(GenericDao<Modelo, Integer> modeloService) {
-        this.modeloService = modeloService;
-    }    
-
-    /**
-     * @param tipoAtributoService the tipoAtributoService to set
-     */
-    public void setTipoAtributoService(GenericDao<TipoAtributo, Integer> tipoAtributoService) {
-        this.tipoAtributoService = tipoAtributoService;
-    }
-
-    /**
      * @return the atributosSimples
      */
     public Collection<TipoAtributo> getAtributosSimples() {
@@ -132,7 +130,8 @@ public class MostrarProducto extends ActionSupport {
     }
 
     /**
-     * @param atributosSimples the atributosSimples to set
+     * @param atributosSimples
+     *            the atributosSimples to set
      */
     public void setAtributosSimples(Collection<TipoAtributo> atributosSimples) {
         this.atributosSimples = atributosSimples;
@@ -146,7 +145,8 @@ public class MostrarProducto extends ActionSupport {
     }
 
     /**
-     * @param atributosClasificatorios the atributosClasificatorios to set
+     * @param atributosClasificatorios
+     *            the atributosClasificatorios to set
      */
     public void setAtributosClasificatorios(Collection<TipoAtributoClasificatorio> atributosClasificatorios) {
         this.atributosClasificatorios = atributosClasificatorios;
@@ -160,7 +160,8 @@ public class MostrarProducto extends ActionSupport {
     }
 
     /**
-     * @param atributosMultiples the atributosMultiples to set
+     * @param atributosMultiples
+     *            the atributosMultiples to set
      */
     public void setAtributosMultiples(Collection<TipoAtributoMultipleValores> atributosMultiples) {
         this.atributosMultiples = atributosMultiples;
@@ -174,12 +175,13 @@ public class MostrarProducto extends ActionSupport {
     }
 
     /**
-     * @param presentaciones the presentaciones to set
+     * @param presentaciones
+     *            the presentaciones to set
      */
     public void setPresentaciones(Collection<TipoPresentacion> presentaciones) {
         this.presentaciones = presentaciones;
     }
-    
+
     /**
      * @return the multiplesMap
      */
@@ -188,7 +190,8 @@ public class MostrarProducto extends ActionSupport {
     }
 
     /**
-     * @param multiplesMap the multiplesMap to set
+     * @param multiplesMap
+     *            the multiplesMap to set
      */
     public void setMultiplesMap(Map<TipoAtributoMultipleValores, StringBuilder> multiplesMap) {
         this.multiplesMap = multiplesMap;

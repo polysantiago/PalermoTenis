@@ -1,32 +1,32 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions.admin.crud;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.controller.results.ImageCapable;
 import com.palermotenis.model.beans.Marca;
 import com.palermotenis.util.StringUtility;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.hibernate.HibernateException;
 
 /**
- *
+ * 
  * @author Poly
  */
 public class MarcaAction extends ActionSupport implements ImageCapable {
+
+    private static final long serialVersionUID = 5928001748528938792L;
 
     private final String SHOW = "show";
     private final String SHOW_IMAGE = "showImage";
     private final String JSON = "json";
 
-    private GenericDao<Marca, Integer> marcaService;
     private Collection<Marca> marcas;
     private Integer marcaId;
     private String nombre;
@@ -34,15 +34,18 @@ public class MarcaAction extends ActionSupport implements ImageCapable {
 
     private Marca tmpMarca;
 
+    @Autowired
+    private GenericDao<Marca, Integer> marcaDao;
+
     public String show() {
-        marcas = marcaService.findAll();
+        marcas = marcaDao.findAll();
         return SHOW;
     }
 
     public String create() {
         Marca marca = new Marca();
         marca.setNombre(nombre);
-        marcaService.create(marca);
+        marcaDao.create(marca);
 
         inputStream = StringUtility.getInputString("OK");
         return JSON;
@@ -50,9 +53,9 @@ public class MarcaAction extends ActionSupport implements ImageCapable {
 
     public String edit() {
         try {
-            Marca marca = marcaService.find(marcaId);
+            Marca marca = marcaDao.find(marcaId);
             marca.setNombre(nombre);
-            marcaService.edit(marca);
+            marcaDao.edit(marca);
             inputStream = StringUtility.getInputString("OK");
         } catch (HibernateException ex) {
             Logger.getLogger(TipoProductoAction.class.getName()).log(Level.SEVERE, null, ex);
@@ -66,7 +69,7 @@ public class MarcaAction extends ActionSupport implements ImageCapable {
 
     public String destroy() {
         try {
-            marcaService.destroy(marcaService.find(marcaId));
+            marcaDao.destroy(marcaDao.find(marcaId));
             inputStream = StringUtility.getInputString("OK");
         } catch (HibernateException ex) {
             Logger.getLogger(TipoProductoAction.class.getName()).log(Level.SEVERE, null, ex);
@@ -78,19 +81,22 @@ public class MarcaAction extends ActionSupport implements ImageCapable {
         return JSON;
     }
 
-    public String showImage(){
-        tmpMarca = marcaService.find(marcaId);
+    public String showImage() {
+        tmpMarca = marcaDao.find(marcaId);
         return SHOW_IMAGE;
     }
 
-    public byte[] getImageInBytes() {        
+    @Override
+    public byte[] getImageInBytes() {
         return tmpMarca.getImagen();
     }
 
+    @Override
     public String getContentType() {
         return (tmpMarca == null) ? "text/html;charset=ISO-8859-1" : tmpMarca.getContentType();
     }
 
+    @Override
     public int getContentLength() {
         try {
             return (tmpMarca == null) ? inputStream.available() : (int) tmpMarca.getImagen().length;
@@ -101,13 +107,6 @@ public class MarcaAction extends ActionSupport implements ImageCapable {
     }
 
     /**
-     * @param marcaService the marcasService to set
-     */
-    public void setMarcaService(GenericDao<Marca, Integer> marcaService) {
-        this.marcaService = marcaService;
-    }
-
-    /**
      * @return the marcas
      */
     public Collection<Marca> getMarcas() {
@@ -115,14 +114,16 @@ public class MarcaAction extends ActionSupport implements ImageCapable {
     }
 
     /**
-     * @param marcaId the marcaId to set
+     * @param marcaId
+     *            the marcaId to set
      */
     public void setMarcaId(Integer marcaId) {
         this.marcaId = marcaId;
     }
 
     /**
-     * @param nombre the nombre to set
+     * @param nombre
+     *            the nombre to set
      */
     public void setNombre(String nombre) {
         this.nombre = nombre;

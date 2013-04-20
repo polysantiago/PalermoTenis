@@ -1,21 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions.admin.analytics;
 
-import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
-import com.palermotenis.model.beans.Marca;
-import com.palermotenis.model.beans.Modelo;
-import com.palermotenis.model.beans.Stock;
-import com.palermotenis.model.beans.Sucursal;
-import com.palermotenis.model.beans.productos.tipos.TipoProducto;
-import com.palermotenis.model.beans.precios.Precio;
-import com.palermotenis.model.beans.presentaciones.Presentacion;
-import com.palermotenis.model.beans.productos.Producto;
-import com.palermotenis.model.beans.valores.ValorClasificatorio;
-import com.palermotenis.util.StringUtility;
 import java.io.InputStream;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -26,22 +10,36 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.number.CurrencyFormatter;
 
+import com.opensymphony.xwork2.ActionSupport;
+import com.palermotenis.controller.daos.GenericDao;
+import com.palermotenis.model.beans.Marca;
+import com.palermotenis.model.beans.Modelo;
+import com.palermotenis.model.beans.Stock;
+import com.palermotenis.model.beans.Sucursal;
+import com.palermotenis.model.beans.precios.Precio;
+import com.palermotenis.model.beans.presentaciones.Presentacion;
+import com.palermotenis.model.beans.productos.Producto;
+import com.palermotenis.model.beans.productos.tipos.TipoProducto;
+import com.palermotenis.model.beans.valores.ValorClasificatorio;
+import com.palermotenis.util.StringUtility;
+
 /**
- *
+ * 
  * @author Poly
  */
 public class VerStock extends ActionSupport {
 
-    private GenericDao<Stock, Integer> stockService;
-    private GenericDao<Marca, Integer> marcaService;
-    private GenericDao<TipoProducto, Integer> tipoProductoService;
-    private GenericDao<Modelo, Integer> modeloService;
-    private Map<Stock, Collection<? extends Precio>> stocksPrecio = new HashMap<Stock, Collection<? extends Precio>>();
-    private CurrencyFormatter currencyFormatter;
+    private static final long serialVersionUID = -6943870064331378208L;
+
+    private final Map<Stock, Collection<? extends Precio>> stocksPrecio = new HashMap<Stock, Collection<? extends Precio>>();
+
     private static final Locale LOCALE_ES_AR = new Locale("es", "AR");
     private Integer tipoProductoId;
     private Integer marcaId;
@@ -52,11 +50,26 @@ public class VerStock extends ActionSupport {
     private String sord;
     private InputStream inputStream;
 
+    @Autowired
+    private GenericDao<Stock, Integer> stockDao;
+
+    @Autowired
+    private GenericDao<Marca, Integer> marcaDao;
+
+    @Autowired
+    private GenericDao<TipoProducto, Integer> tipoProductoDao;
+
+    @Autowired
+    private GenericDao<Modelo, Integer> modeloDao;
+
+    @Autowired
+    private CurrencyFormatter currencyFormatter;
+
     @Override
     public String execute() {
         JSONObject rootObj = new JSONObject();
         JSONArray rowsArr = new JSONArray();
-        TipoProducto tp = tipoProductoService.find(tipoProductoId);
+        TipoProducto tp = tipoProductoDao.find(tipoProductoId);
         int records = 0;
         List<Stock> stocks = null;
 
@@ -94,20 +107,20 @@ public class VerStock extends ActionSupport {
         if (modeloId != null) {
             namedQuery = "Modelo-OrderBy";
             countQuery = "Modelo-CountPrecio";
-            args.put("modelo", modeloService.find(modeloId));
+            args.put("modelo", modeloDao.find(modeloId));
             args.remove("tipoProducto");
         } else if (marcaId != null) {
             namedQuery = "TipoProducto,Marca-OrderBy";
             countQuery = "TipoProducto,Marca-CountPrecio";
-            args.put("marca", marcaService.find(marcaId));
+            args.put("marca", marcaDao.find(marcaId));
         } else {
             namedQuery = "TipoProducto-OrderBy";
             countQuery = "TipoProducto-CountPrecio";
         }
 
-        stocks = stockService.queryBy(namedQuery, args);
+        stocks = stockDao.queryBy(namedQuery, args);
         args.remove("orderBy");
-        records = stockService.getIntResultBy(countQuery, args);
+        records = stockDao.getIntResultBy(countQuery, args);
 
         List<SimpleEntry<Stock, Precio>> objects = new ArrayList<SimpleEntry<Stock, Precio>>();
         boolean hasPrecios = false;
@@ -124,9 +137,8 @@ public class VerStock extends ActionSupport {
 
         objects = objects.subList(rows * (page - 1), ((rows * page) - 1 > records) ? records : (rows * page) - 1);
 
-        if (comparator != null && 
-                (hasPrecios || comparator instanceof ValorClasificatorioComparator
-                || comparator instanceof StockComparator)) {
+        if (comparator != null
+                && (hasPrecios || comparator instanceof ValorClasificatorioComparator || comparator instanceof StockComparator)) {
             Collections.sort(objects, comparator);
             if (sord.equalsIgnoreCase("desc")) {
                 Collections.reverse(objects);
@@ -227,26 +239,6 @@ public class VerStock extends ActionSupport {
         this.modeloId = modeloId;
     }
 
-    public void setMarcaService(GenericDao<Marca, Integer> marcaService) {
-        this.marcaService = marcaService;
-    }
-
-    public void setStockService(GenericDao<Stock, Integer> stockService) {
-        this.stockService = stockService;
-    }
-
-    public void setTipoProductoService(GenericDao<TipoProducto, Integer> tipoProductoService) {
-        this.tipoProductoService = tipoProductoService;
-    }
-
-    public void setModeloService(GenericDao<Modelo, Integer> modeloService) {
-        this.modeloService = modeloService;
-    }
-
-    public void setCurrencyFormatter(CurrencyFormatter currencyFormatter) {
-        this.currencyFormatter = currencyFormatter;
-    }
-
     public void setPage(int page) {
         this.page = page;
     }
@@ -265,6 +257,7 @@ public class VerStock extends ActionSupport {
 
     private class ValorComparator implements Comparator<SimpleEntry<Stock, Precio>> {
 
+        @Override
         public int compare(SimpleEntry<Stock, Precio> t, SimpleEntry<Stock, Precio> t1) {
             return t.getValue().getValor().compareTo(t1.getValue().getValor());
         }
@@ -272,6 +265,7 @@ public class VerStock extends ActionSupport {
 
     private class PagoComparator implements Comparator<SimpleEntry<Stock, Precio>> {
 
+        @Override
         public int compare(SimpleEntry<Stock, Precio> t, SimpleEntry<Stock, Precio> t1) {
             return t.getValue().getId().getPago().getNombre().compareTo(t1.getValue().getId().getPago().getNombre());
         }
@@ -279,13 +273,20 @@ public class VerStock extends ActionSupport {
 
     private class MonedaComparator implements Comparator<SimpleEntry<Stock, Precio>> {
 
+        @Override
         public int compare(SimpleEntry<Stock, Precio> t, SimpleEntry<Stock, Precio> t1) {
-            return t.getValue().getId().getMoneda().getSimbolo().compareTo(t1.getValue().getId().getMoneda().getSimbolo());
+            return t
+                .getValue()
+                .getId()
+                .getMoneda()
+                .getSimbolo()
+                .compareTo(t1.getValue().getId().getMoneda().getSimbolo());
         }
     }
 
     private class EnOfertaComparator implements Comparator<SimpleEntry<Stock, Precio>> {
 
+        @Override
         public int compare(SimpleEntry<Stock, Precio> t, SimpleEntry<Stock, Precio> t1) {
             return Boolean.valueOf(t.getValue().isEnOferta()).compareTo(t1.getValue().isEnOferta());
         }
@@ -293,6 +294,7 @@ public class VerStock extends ActionSupport {
 
     private class ValorOfertaComparator implements Comparator<SimpleEntry<Stock, Precio>> {
 
+        @Override
         public int compare(SimpleEntry<Stock, Precio> t, SimpleEntry<Stock, Precio> t1) {
             return t.getValue().getValorOferta().compareTo(t1.getValue().getValorOferta());
         }
@@ -300,15 +302,18 @@ public class VerStock extends ActionSupport {
 
     private class ValorClasificatorioComparator implements Comparator<SimpleEntry<Stock, Precio>> {
 
+        @Override
+        @SuppressWarnings("unchecked")
         public int compare(SimpleEntry<Stock, Precio> t, SimpleEntry<Stock, Precio> t1) {
-            Comparable c = (Comparable) t.getKey().getValorClasificatorio().getUnidad();
-            Comparable c1 = (Comparable) t1.getKey().getValorClasificatorio().getUnidad();
+            Comparable<Comparable<?>> c = (Comparable<Comparable<?>>) t.getKey().getValorClasificatorio().getUnidad();
+            Comparable<?> c1 = (Comparable<?>) t1.getKey().getValorClasificatorio().getUnidad();
             return c.compareTo(c1);
         }
     }
 
     private class StockComparator implements Comparator<SimpleEntry<Stock, Precio>> {
 
+        @Override
         public int compare(SimpleEntry<Stock, Precio> o1, SimpleEntry<Stock, Precio> o2) {
             return o1.getKey().getStock().compareTo(o2.getKey().getStock());
         }

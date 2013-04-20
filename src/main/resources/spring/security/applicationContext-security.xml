@@ -3,7 +3,7 @@
        xmlns:sec="http://www.springframework.org/schema/security"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
        http://www.springframework.org/schema/security
        http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
@@ -15,7 +15,7 @@
     <bean id="securityUtil" class="com.palermotenis.util.SecurityUtil" />
 
     <bean id="springSecurityFilterChain" class="org.springframework.security.web.FilterChainProxy">
-        <sec:filter-chain-map path-type="ant">
+        <sec:filter-chain-map request-matcher="ant">
         	<sec:filter-chain filters="none" pattern="/static/**" />
             <sec:filter-chain filters="none" pattern="/css/**" />
             <sec:filter-chain filters="none" pattern="/flash/**" />

@@ -1,42 +1,49 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions.admin.ventas;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Stock;
-import com.palermotenis.model.beans.usuarios.Usuario;
 import com.palermotenis.model.beans.ventas.Listado;
 import com.palermotenis.model.beans.ventas.StockListado;
 import com.palermotenis.model.beans.ventas.StockListadoPK;
 import com.palermotenis.util.SecurityUtil;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- *
+ * 
  * @author Poly
  */
 public class ListadoAction extends ActionSupport {
 
+    private static final long serialVersionUID = 7498016206955120742L;
+    private static final Logger logger = Logger.getLogger(ListadoAction.class);
     private static final String NEED_AUTHORIZATION = "needAuth";
+
     private Map<Integer, Double> precios = new HashMap<Integer, Double>();
     private Map<Integer, Integer> cantidades = new HashMap<Integer, Integer>();
-    private Listado listado;
-    private GenericDao<Listado, String> listadoService;
-    private GenericDao<StockListado, StockListadoPK> stockListadoService;
-    private GenericDao<Stock, Integer> stockService;
-    private String listadoId;
-    private String accion;    
-    private SecurityUtil securityUtil;
 
-    private Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    private static final Logger logger = Logger.getLogger(ListadoAction.class);
+    private Listado listado;
+
+    private String listadoId;
+    private String accion;
+
+    @Autowired
+    private GenericDao<Listado, String> listadoDao;
+
+    @Autowired
+    private GenericDao<StockListado, StockListadoPK> stockListadoDao;
+
+    @Autowired
+    private GenericDao<Stock, Integer> stockDao;
+
+    @Autowired
+    private SecurityUtil securityUtil;
 
     @Override
     public String execute() {
@@ -50,40 +57,40 @@ public class ListadoAction extends ActionSupport {
     }
 
     private String actualizarCantidades() {
-        listado = listadoService.find(listadoId);
+        listado = listadoDao.find(listadoId);
 
         for (Integer i : cantidades.keySet()) {
-            Stock stock = stockService.find(i);
-            StockListado sl = stockListadoService.find(new StockListadoPK(listado, stock));
+            Stock stock = stockDao.find(i);
+            StockListado sl = stockListadoDao.find(new StockListadoPK(listado, stock));
             sl.setCantidad(cantidades.get(i));
             sl.setSubtotal(sl.getPrecioUnitario() * cantidades.get(i));
         }
         updateTotal();
         try {
-            listadoService.edit(listado);
+            listadoDao.edit(listado);
         } catch (HibernateException ex) {
-            logger.error("No existe la entidad",ex);
+            logger.error("No existe la entidad", ex);
             return ERROR;
         } catch (Exception ex) {
-            logger.error("Error al editar la entidad",ex);
+            logger.error("Error al editar la entidad", ex);
             return ERROR;
         }
         return SUCCESS;
     }
 
     private String actualizarPrecios() {
-        listado = listadoService.find(listadoId);
+        listado = listadoDao.find(listadoId);
 
-        if (securityUtil.isSupervisor(usuario)) {
+        if (securityUtil.isSupervisor(SecurityUtil.getLoggedInUser())) {
             listado.setAutorizado(true);
         } else {
             listado.setAutorizado(false);
         }
 
         for (Integer i : precios.keySet()) {
-            Stock stock = stockService.find(i);
+            Stock stock = stockDao.find(i);
             StockListadoPK pk = new StockListadoPK(listado, stock);
-            StockListado sl = stockListadoService.find(pk);
+            StockListado sl = stockListadoDao.find(pk);
             sl.setPrecioUnitario(precios.get(i));
             sl.setSubtotal(sl.getCantidad() * precios.get(i));
         }
@@ -91,12 +98,12 @@ public class ListadoAction extends ActionSupport {
         updateTotal();
 
         try {
-            listadoService.edit(listado);
+            listadoDao.edit(listado);
         } catch (HibernateException ex) {
-            logger.error("No existe la entidad",ex);
+            logger.error("No existe la entidad", ex);
             return ERROR;
         } catch (Exception ex) {
-            logger.error("Error al editar la entidad",ex);
+            logger.error("Error al editar la entidad", ex);
             return ERROR;
         }
 
@@ -147,19 +154,4 @@ public class ListadoAction extends ActionSupport {
         this.listadoId = listadoId;
     }
 
-    public void setListadoService(GenericDao<Listado, String> listadoService) {
-        this.listadoService = listadoService;
-    }
-
-    public void setStockListadoService(GenericDao<StockListado, StockListadoPK> stockListadoService) {
-        this.stockListadoService = stockListadoService;
-    }
-
-    public void setStockService(GenericDao<Stock, Integer> stockService) {
-        this.stockService = stockService;
-    }
-
-    public void setSecurityUtil(SecurityUtil securityUtil) {
-        this.securityUtil = securityUtil;
-    }
 }

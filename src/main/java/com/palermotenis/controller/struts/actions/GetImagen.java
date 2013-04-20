@@ -1,8 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+
+import javax.servlet.ServletContext;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
@@ -12,10 +16,6 @@ import com.palermotenis.model.beans.imagenes.Imagen;
 import com.palermotenis.model.beans.imagenes.ImagenEscalada;
 import com.palermotenis.model.beans.imagenes.tipos.TipoImagen;
 import com.palermotenis.util.imagen.ImagenUtil;
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import javax.servlet.ServletContext;
 
 /**
  *
@@ -23,22 +23,30 @@ import javax.servlet.ServletContext;
  */
 public class GetImagen extends ActionSupport implements ImageCapable{
 
-    private String hash;
-    private GenericDao<Imagen, Integer> imagenService;
-    private GenericDao<TipoImagen, Character> tipoImagenService;
-    private GenericDao<Modelo, Integer> modeloService;
+	private static final long serialVersionUID = 368332131271534228L;
+	
+	private String hash;
     private Character tipoImagenId;
     private ImagenEscalada imagenEscalada;
     private Integer modeloId;
     private Collection<Imagen> imagenes;
     private ServletContext servletContext;
+    
+    @Autowired
+    private GenericDao<Imagen, Integer> imagenDao;
+    
+    @Autowired
+    private GenericDao<TipoImagen, Character> tipoImagenDao;
+    
+    @Autowired
+    private GenericDao<Modelo, Integer> modeloDao;
 
     @Override
     public String execute() throws IOException {
 
-        Imagen imagen = imagenService.findBy("HashKey", "hashKey", hash);
+        Imagen imagen = imagenDao.findBy("HashKey", "hashKey", hash);
 
-        TipoImagen tipoImagen = tipoImagenService.find(tipoImagenId);
+        TipoImagen tipoImagen = tipoImagenDao.find(tipoImagenId);
         File file = new File(servletContext.getRealPath(ImagenUtil.MODELOS_FOLDER), hash + ".jpg");
         imagenEscalada = ImagenUtil.getImagenEscalada(file, imagen, tipoImagen);
 
@@ -46,7 +54,7 @@ public class GetImagen extends ActionSupport implements ImageCapable{
     }
 
     public String doList(){
-        Modelo modelo = modeloService.find(modeloId);
+        Modelo modelo = modeloDao.find(modeloId);
         imagenes = modelo.getImagenes();
         return "imagenesList";
     }
@@ -68,24 +76,10 @@ public class GetImagen extends ActionSupport implements ImageCapable{
     }
 
     /**
-     * @param imagenService the imagenService to set
-     */
-    public void setImagenService(GenericDao<Imagen, Integer> imagenService) {
-        this.imagenService = imagenService;
-    }
-
-    /**
      * @param tipoImagen the tipoImagen to set
      */
     public void setTipoImagenId(Character tipoImagenId) {
         this.tipoImagenId = tipoImagenId;
-    }
-
-    /**
-     * @param tipoImagenService the tipoImagenService to set
-     */
-    public void setTipoImagenService(GenericDao<TipoImagen, Character> tipoImagenService) {
-        this.tipoImagenService = tipoImagenService;
     }
     
     /**
@@ -100,13 +94,6 @@ public class GetImagen extends ActionSupport implements ImageCapable{
      */
     public ImagenEscalada getImagenEscalada() {
         return imagenEscalada;
-    }
-
-    /**
-     * @param modelosService the modelosService to set
-     */
-    public void setModeloService(GenericDao<Modelo, Integer> modeloService) {
-        this.modeloService = modeloService;
     }
 
     /**

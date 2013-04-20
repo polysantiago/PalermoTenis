@@ -1,18 +1,18 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions;
+
+import java.io.InputStream;
+import java.util.Collection;
+
+import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Moneda;
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.util.StringUtility;
-import java.io.InputStream;
-import java.util.Collection;
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
 
 /**
  *
@@ -20,16 +20,21 @@ import net.sf.json.JsonConfig;
  */
 public class GetPrecioUnidadOptions extends ActionSupport {
 
-    private GenericDao<Pago, Integer> pagoService;
-    private GenericDao<Moneda, Integer> monedaService;
+	private static final long serialVersionUID = -5154325699304286629L;
 
-    private InputStream inputStream;
+	private InputStream inputStream;
+    
+    @Autowired
+    private GenericDao<Pago, Integer> pagoDao;
+    
+    @Autowired
+    private GenericDao<Moneda, Integer> monedaDao;
 
     @Override
     public String execute() {
 
-        Collection<Pago> pagos = pagoService.findAll();
-        Collection<Moneda> monedas = monedaService.findAll();
+        Collection<Pago> pagos = pagoDao.findAll();
+        Collection<Moneda> monedas = monedaDao.findAll();
 
         JSONObject jsonObject = new JSONObject();
 
@@ -44,23 +49,6 @@ public class GetPrecioUnidadOptions extends ActionSupport {
         return SUCCESS;
     }
 
-    /**
-     * @param pagoService the pagosService to set
-     */
-    public void setPagoService(GenericDao<Pago, Integer> pagoService) {
-        this.pagoService = pagoService;
-    }
-
-    /**
-     * @param monedaService the monedasService to set
-     */
-    public void setMonedaService(GenericDao<Moneda, Integer> monedaService) {
-        this.monedaService = monedaService;
-    }
-
-    /**
-     * @return the inputStream
-     */
     public InputStream getInputStream() {
         return inputStream;
     }

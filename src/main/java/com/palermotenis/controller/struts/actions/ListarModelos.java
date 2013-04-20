@@ -4,29 +4,32 @@
  */
 package com.palermotenis.controller.struts.actions;
 
-import com.google.common.collect.ImmutableMap;
-import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import java.io.InputStream;
-import java.util.List;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONSerializer;
-import net.sf.json.JsonConfig;
-
-import com.palermotenis.model.beans.Modelo;
-import com.palermotenis.controller.results.GZIPCapable;
-import com.palermotenis.model.beans.Marca;
-import com.palermotenis.model.beans.productos.Producto;
-import com.palermotenis.model.beans.productos.tipos.TipoProducto;
-import com.palermotenis.util.StringUtility;
-import com.palermotenis.xstream.XStreamMarshaller;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+import net.sf.json.JsonConfig;
 import net.sf.json.processors.JsonBeanProcessor;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.ImmutableMap;
+import com.opensymphony.xwork2.ActionSupport;
+import com.palermotenis.controller.daos.GenericDao;
+import com.palermotenis.controller.results.GZIPCapable;
+import com.palermotenis.model.beans.Marca;
+import com.palermotenis.model.beans.Modelo;
+import com.palermotenis.model.beans.productos.Producto;
+import com.palermotenis.model.beans.productos.tipos.TipoProducto;
+import com.palermotenis.util.StringUtility;
+import com.palermotenis.xstream.XStreamMarshaller;
 
 /**
  *
@@ -34,25 +37,33 @@ import net.sf.json.processors.JsonBeanProcessor;
  */
 public class ListarModelos extends ActionSupport implements GZIPCapable {
 
-    private GenericDao<Modelo, Integer> modeloService;
-    private GenericDao<Marca, Integer> marcaService;
-    private GenericDao<TipoProducto, Integer> tipoProductoService;
-    private InputStream inputStream;
+	private static final long serialVersionUID = -3479740110175074239L;
+	
+	private InputStream inputStream;
     private Integer idMarca;
     private Integer idTipoProducto;
     private Boolean root;
     private XStreamMarshaller xstreamMarshaller;
+    
+    @Autowired
+    private GenericDao<Modelo, Integer> modeloDao;
+    
+    @Autowired
+    private GenericDao<Marca, Integer> marcaDao;
+    
+    @Autowired
+    private GenericDao<TipoProducto, Integer> tipoProductoDao;
 
     public String listAll() {
         List<Modelo> modelos = null;
         Map<String, Object> args = new HashMap<String, Object>();
-        args.put("tipoProducto", tipoProductoService.find(idTipoProducto));
+        args.put("tipoProducto", tipoProductoDao.find(idTipoProducto));
         
         if(idMarca != null){
-            args.put("marca", marcaService.find(idMarca));
-            modelos = modeloService.queryBy("Marca,TipoProducto", args);
+            args.put("marca", marcaDao.find(idMarca));
+            modelos = modeloDao.queryBy("Marca,TipoProducto", args);
         } else {
-            modelos = modeloService.queryBy("TipoProducto", args);
+            modelos = modeloDao.queryBy("TipoProducto", args);
         }
 
         Collections.sort(modelos);
@@ -85,14 +96,14 @@ public class ListarModelos extends ActionSupport implements GZIPCapable {
     }
 
     public String listAllXML() {
-        List<TipoProducto> tiposProducto = tipoProductoService.findAll();
+        List<TipoProducto> tiposProducto = tipoProductoDao.findAll();
         inputStream = StringUtility.getInputString(xstreamMarshaller.toXML(tiposProducto));
         return "xml";
     }
 
     public String listActive() {
-        Map<String, Object> args = new ImmutableMap.Builder<String, Object>().put("marca", marcaService.find(idMarca)).put("tipoProducto", tipoProductoService.find(idTipoProducto)).build();
-        List<Modelo> modelos = modeloService.queryBy("Marca,TipoProducto-Active", args);
+        Map<String, Object> args = new ImmutableMap.Builder<String, Object>().put("marca", marcaDao.find(idMarca)).put("tipoProducto", tipoProductoDao.find(idTipoProducto)).build();
+        List<Modelo> modelos = modeloDao.queryBy("Marca,TipoProducto-Active", args);
 
         JsonConfig jsonConfig = new JsonConfig();
         jsonConfig.registerJsonBeanProcessor(Modelo.class, new JsonBeanProcessor() {
@@ -107,7 +118,7 @@ public class ListarModelos extends ActionSupport implements GZIPCapable {
                     o.element("leaf", m.isLeaf());
                     o.element("producible", m.isProducible());
                 } else if (!m.isLeaf()) {
-                    List<Modelo> rawHijos = modeloService.queryBy("Padre-Active",
+                    List<Modelo> rawHijos = modeloDao.queryBy("Padre-Active",
                             new ImmutableMap.Builder<String, Object>().put("padre", m).build());
                     List<Modelo> hijos = new ArrayList<Modelo>();
                     if (isValid(rawHijos)) {
@@ -115,7 +126,7 @@ public class ListarModelos extends ActionSupport implements GZIPCapable {
                             if (isValid(h)) {
                                 hijos.add(h);
                             } else if (!h.isLeaf()) {
-                                List<Modelo> rawHijos2 = modeloService.queryBy("Padre-Active",
+                                List<Modelo> rawHijos2 = modeloDao.queryBy("Padre-Active",
                                         new ImmutableMap.Builder<String, Object>().put("padre", m).build());
                                 add(o, rawHijos2, m, jsonConfig);
                             }
@@ -135,7 +146,8 @@ public class ListarModelos extends ActionSupport implements GZIPCapable {
     }
 
     private JSONArray doCleanUp(JSONArray fArray, JSONArray jArray) {
-        Iterator li = jArray.iterator();
+        @SuppressWarnings("unchecked")
+		Iterator<Object> li = jArray.iterator();
         while (li.hasNext()) {
             JSONObject o = (JSONObject) li.next();
             if (!o.isEmpty()) {
@@ -160,21 +172,6 @@ public class ListarModelos extends ActionSupport implements GZIPCapable {
 
     private boolean isValid(List<Modelo> l) {
         return l != null && !l.isEmpty();
-    }
-
-    /**
-     * @param modelosConcretosService the modelosConcretosService to set
-     */
-    public void setModeloService(GenericDao<Modelo, Integer> modeloService) {
-        this.modeloService = modeloService;
-    }
-
-    public void setMarcaService(GenericDao<Marca, Integer> marcaService) {
-        this.marcaService = marcaService;
-    }
-
-    public void setTipoProductoService(GenericDao<TipoProducto, Integer> tipoProductoService) {
-        this.tipoProductoService = tipoProductoService;
     }
 
     /**

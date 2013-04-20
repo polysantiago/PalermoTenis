@@ -1,90 +1,70 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions.admin.crud;
 
-import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
-import com.palermotenis.model.beans.productos.tipos.TipoProducto;
-import com.palermotenis.util.StringUtility;
-import java.io.InputStream;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.hibernate.HibernateException;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.palermotenis.controller.daos.GenericDao;
+import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 
 /**
- *
+ * 
  * @author Poly
  */
-public class TipoProductoAction extends ActionSupport {
+public class TipoProductoAction extends JsonActionSupport {
 
-    private final String CREATE = "create";
-    private final String EDIT = "edit";
-    private final String DESTROY = "destroy";
+    private static final long serialVersionUID = 5098335306548843831L;
+
     private final String SHOW = "show";
-    private final String JSON = "json";
 
-    private GenericDao<TipoProducto, Integer> tipoProductoService;
     private Collection<TipoProducto> tiposProducto;
 
     private Integer tipoProductoId;
     private String nombre;
     private Boolean presentable;
 
-    private InputStream inputStream;
+    @Autowired
+    private GenericDao<TipoProducto, Integer> tipoProductoDao;
 
-    public String show(){
-        tiposProducto = tipoProductoService.findAll();
+    public String show() {
+        tiposProducto = tipoProductoDao.findAll();
         return SHOW;
     }
 
-    public String create(){
-        TipoProducto tipoProducto = new TipoProducto(nombre,presentable);
-        tipoProductoService.create(tipoProducto);
-
-        inputStream = StringUtility.getInputString("OK");
+    public String create() {
+        tipoProductoDao.create(new TipoProducto(nombre, presentable));
+        success();
         return JSON;
     }
 
-    public String edit(){
+    public String edit() {
         try {
-            TipoProducto tipoProducto = tipoProductoService.find(tipoProductoId);
+            TipoProducto tipoProducto = tipoProductoDao.find(tipoProductoId);
             tipoProducto.setNombre(nombre);
             tipoProducto.setPresentable(presentable);
 
-            tipoProductoService.edit(tipoProducto);
-            inputStream = StringUtility.getInputString("OK");
+            tipoProductoDao.edit(tipoProducto);
+            success();
         } catch (HibernateException ex) {
-            Logger.getLogger(MarcaAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+            failure(ex);
         } catch (Exception ex) {
-            Logger.getLogger(MarcaAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+            failure(ex);
         }
         return JSON;
     }
 
-    public String destroy(){
+    public String destroy() {
         try {
-            tipoProductoService.destroy(tipoProductoService.find(tipoProductoId));
-            inputStream = StringUtility.getInputString("OK");
+            tipoProductoDao.destroy(tipoProductoDao.find(tipoProductoId));
+            success();
         } catch (HibernateException ex) {
-            Logger.getLogger(MarcaAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+            failure(ex);
         } catch (Exception ex) {
-            Logger.getLogger(MarcaAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+            failure(ex);
         }
         return JSON;
-    }
-
-    /**
-     * @param tipoProductoService the tiposProductoService to set
-     */
-    public void setTipoProductoService(GenericDao<TipoProducto, Integer> tipoProductoService) {
-        this.tipoProductoService = tipoProductoService;
     }
 
     /**
@@ -95,32 +75,27 @@ public class TipoProductoAction extends ActionSupport {
     }
 
     /**
-     * @param tipoProductoId the tipoProductoId to set
+     * @param tipoProductoId
+     *            the tipoProductoId to set
      */
     public void setTipoProductoId(Integer tipoProductoId) {
         this.tipoProductoId = tipoProductoId;
     }
 
     /**
-     * @param nombre the nombre to set
+     * @param nombre
+     *            the nombre to set
      */
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
     /**
-     * @return the inputStream
-     */
-    public InputStream getInputStream() {
-        return inputStream;
-    }
-
-    /**
-     * @param presentable the presentable to set
+     * @param presentable
+     *            the presentable to set
      */
     public void setPresentable(Boolean presentable) {
         this.presentable = presentable;
     }
-
 
 }

@@ -1,8 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.number.CurrencyFormatter;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.daos.GenericDao;
@@ -16,42 +21,50 @@ import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.proveedores.Proveedor;
 import com.palermotenis.util.Convertor;
 import com.palermotenis.util.StringUtility;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import org.springframework.format.number.CurrencyFormatter;
 
 /**
- *
+ * 
  * @author Poly
  */
 public class GetProductosAutoCompleteList extends ActionSupport {
 
-    private CurrencyFormatter currencyFormatter;
+    private static final long serialVersionUID = -7155980564935536463L;
     private static final Locale LOCALE_ES_AR = new Locale("es", "AR");
-    private GenericDao<Pago, Integer> pagoService;
-    private GenericDao<Stock, Integer> stockService;
-    private GenericDao<Costo, Integer> costoService;
-    private GenericDao<Proveedor, Integer> proveedorService;
-    private Convertor convertor;
+
     private InputStream inputStream;
     private String q;
     private int proveedorId;
     private int limit;
 
+    @Autowired
+    private GenericDao<Pago, Integer> pagoDao;
+
+    @Autowired
+    private GenericDao<Stock, Integer> stockDao;
+
+    @Autowired
+    private GenericDao<Costo, Integer> costoDao;
+
+    @Autowired
+    private GenericDao<Proveedor, Integer> proveedorDao;
+
+    @Autowired
+    private CurrencyFormatter currencyFormatter;
+
+    @Autowired
+    private Convertor convertor;
+
     public String active() {
         Map<String, Object> args = new HashMap<String, Object>();
         args.put("nombre", "%" + q + "%");
 
-        List<Stock> stocks = stockService.queryBy("Nombre-Active", args, limit, 0);
+        List<Stock> stocks = stockDao.queryBy("Nombre-Active", args, limit, 0);
         StringBuilder sb = new StringBuilder();
         for (Stock s : stocks) {
             Producto producto = s.getProducto();
             Modelo modelo = producto.getModelo();
             Presentacion presentacion = s.getPresentacion();
-            Precio precio = convertor.estimarPrecio(s, pagoService.find(1), 1);
+            Precio precio = convertor.estimarPrecio(s, pagoDao.find(1), 1);
 
             sb.append(s.getId()).append('|');
             sb.append(producto.getTipoProducto().getNombre()).append('|');
@@ -85,13 +98,13 @@ public class GetProductosAutoCompleteList extends ActionSupport {
         Map<String, Object> args = new HashMap<String, Object>();
         args.put("nombre", "%" + q + "%");
 
-        List<Stock> stocks = stockService.queryBy("Nombre", args, limit, 0);
+        List<Stock> stocks = stockDao.queryBy("Nombre", args, limit, 0);
         StringBuilder sb = new StringBuilder();
         for (Stock s : stocks) {
             Producto producto = s.getProducto();
             Modelo modelo = producto.getModelo();
             Presentacion presentacion = s.getPresentacion();
-            Precio precio = convertor.estimarPrecio(s, pagoService.find(1), 1);
+            Precio precio = convertor.estimarPrecio(s, pagoDao.find(1), 1);
 
             sb.append(s.getId()).append('|');
             sb.append(producto.getTipoProducto().getNombre()).append('|');
@@ -124,8 +137,8 @@ public class GetProductosAutoCompleteList extends ActionSupport {
         Map<String, Object> args = new HashMap<String, Object>();
         args.put("nombre", "%" + q + "%");
 
-        List<Stock> stocks = stockService.queryBy("Nombre", args, limit, 0);
-        Proveedor proveedor = proveedorService.find(proveedorId);
+        List<Stock> stocks = stockDao.queryBy("Nombre", args, limit, 0);
+        Proveedor proveedor = proveedorDao.find(proveedorId);
         StringBuilder sb = new StringBuilder();
         for (Stock s : stocks) {
             Map<String, Object> costoArgs = new HashMap<String, Object>();
@@ -138,9 +151,9 @@ public class GetProductosAutoCompleteList extends ActionSupport {
             List<Costo> costos = null;
             if (presentacion != null) {
                 costoArgs.put("presentacion", presentacion);
-                costos = costoService.queryBy("Producto,Proveedor,Presentacion", costoArgs);
+                costos = costoDao.queryBy("Producto,Proveedor,Presentacion", costoArgs);
             } else {
-                costos = costoService.queryBy("Producto,Proveedor", costoArgs);
+                costos = costoDao.queryBy("Producto,Proveedor", costoArgs);
             }
 
             sb.append(s.getId()).append('|');
@@ -169,14 +182,8 @@ public class GetProductosAutoCompleteList extends ActionSupport {
     }
 
     /**
-     * @param stockService the stockService to set
-     */
-    public void setStockService(GenericDao<Stock, Integer> stockService) {
-        this.stockService = stockService;
-    }
-
-    /**
-     * @param q the q to set
+     * @param q
+     *            the q to set
      */
     public void setQ(String q) {
         this.q = q;
@@ -190,33 +197,15 @@ public class GetProductosAutoCompleteList extends ActionSupport {
     }
 
     /**
-     * @param limit the limit to set
+     * @param limit
+     *            the limit to set
      */
     public void setLimit(int limit) {
         this.limit = limit;
-    }
-
-    public void setConvertor(Convertor convertor) {
-        this.convertor = convertor;
-    }
-
-    public void setCurrencyFormatter(CurrencyFormatter currencyFormatter) {
-        this.currencyFormatter = currencyFormatter;
-    }
-
-    public void setPagoService(GenericDao<Pago, Integer> pagoService) {
-        this.pagoService = pagoService;
-    }
-
-    public void setCostoService(GenericDao<Costo, Integer> costoService) {
-        this.costoService = costoService;
     }
 
     public void setProveedorId(int proveedorId) {
         this.proveedorId = proveedorId;
     }
 
-    public void setProveedorService(GenericDao<Proveedor, Integer> proveedorService) {
-        this.proveedorService = proveedorService;
-    }
 }

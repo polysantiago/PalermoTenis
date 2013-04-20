@@ -21,6 +21,6 @@ public class DefaultState extends AbstractState implements State {
     }
 
     protected void create(Object obj) {
-        getStockService().create(new Stock(getProducto(), (Sucursal) obj));
+        getStockDao().create(new Stock(getProducto(), (Sucursal) obj));
     }
 }

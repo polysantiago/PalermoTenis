@@ -36,7 +36,7 @@ public class PresentableAndClasificableState extends PresentableState {
         addToMap(obj, ValorClasificatorio.class, "valorClasificatorio");
 
         if (map.size() == 3) {
-            getStockService().create(
+            getStockDao().create(
                     new Stock(getProducto(),
                     (Sucursal) map.get("sucursal"),
                     (ValorClasificatorio) map.get("valorClasificatorio"),

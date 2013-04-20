@@ -4,13 +4,16 @@
  */
 package com.palermotenis.controller.carrito;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.precios.Precio;
 import com.palermotenis.util.Convertor;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
@@ -20,10 +23,12 @@ public class CarritoImpl implements Carrito {
 
     private static final long serialVersionUID = 1L;
     private Map<Stock, Item> contenido = new HashMap<Stock, Item>();
-    private transient GenericDao<Pago, Integer> pagoService;
     private transient Convertor convertor;
     private Pago pago;
     private int cuotas;
+    
+    @Autowired
+    private transient GenericDao<Pago, Integer> pagoDao;
 
     public void agregar(int cantidad, Stock stock) {
         if (!contenido.containsKey(stock)) {
@@ -71,7 +76,7 @@ public class CarritoImpl implements Carrito {
             return;
         } else {
             if (pago == null) {
-                pago = getPagoService().find(1);
+                pago = pagoDao.find(1);
             }
             Item i = contenido.get(stock);
             Precio p = c.estimarPrecio(stock, pago, cuotas);
@@ -111,15 +116,6 @@ public class CarritoImpl implements Carrito {
             convertor = new Convertor();
         }
         return convertor;
-    }
-
-    public GenericDao<Pago, Integer> getPagoService() {
-        //return (GenericDao<Pago, Integer>)applicationContext.getBean("pagoService");
-        return pagoService;
-    }
-
-    public void setPagoService(GenericDao<Pago, Integer> pagoService) {
-        this.pagoService = pagoService;
     }
 
     /**
