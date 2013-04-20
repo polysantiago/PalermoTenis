@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+"http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <package name="admin" namespace="/admin" extends="struts-default">
+        <default-action-ref name="admin" />
+        <action name="admin">
+            <result type="redirect">
+                <param name="location">index.jsp</param>
+                <param name="parse">false</param>
+            </result>
+        </action>
+
+        <action name="j_spring_security_check">
+            <result type="redirect">
+                <param name="location">j_spring_security_check</param>
+                <param name="parse">false</param>
+            </result>
+        </action>
+        <action name="j_spring_security_logout">
+            <result type="redirect">
+                <param name="location">j_spring_security_logout</param>
+                <param name="parse">false</param>
+            </result>
+        </action>
+    </package>
+
+    <!-- Admin CRUD Operations -->
+    <include file="com/palermotenis/controller/struts/actions/admin/crud/crud.xml" />
+
+    <!-- Admin Sales Operations -->
+    <include file="com/palermotenis/controller/struts/actions/admin/ventas/ventas.xml" />
+
+    <!-- Admin Purchases Operations -->
+    <include file="com/palermotenis/controller/struts/actions/admin/compras/compras.xml" />
+
+    <!-- Admin Usuarios Operations -->
+    <include file="com/palermotenis/controller/struts/actions/admin/usuarios/usuarios.xml" />
+
+    <!-- Admin Analytics Operations -->
+    <include file="com/palermotenis/controller/struts/actions/admin/analytics/analytics.xml" />
+    
+</struts>

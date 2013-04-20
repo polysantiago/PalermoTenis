@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<groups xmlns="http://www.isdc.ro/wro">
+
+  <group name="main">
+  	<js>/js/main/src/main.js</js>
+  	<js>/js/main/src/AC_RunActiveContent.js</js>
+  	<css>/css/main/src/main.styles.css</css>
+  </group>
+
+  <group name='jquery-main'>
+    <js>/js/jquery/src/jquery-1.4.2.js</js>
+	<js>/js/jquery/src/jquery.treeview.js</js>
+	<js>/js/jquery/src/jquery.treeview.async.js</js>
+	<js>/js/jquery/src/jquery.autocomplete.js</js>
+	<js>/js/jquery/src/jquery.checkbox.js</js>
+	<js>/js/jquery/src/jquery.carousel.js</js>
+	<js>/js/jquery/src/jquery.color.js</js>
+	<js>/js/jquery/src/jquery.cycle.lite.js</js>
+	<js>/js/jquery/src/jquery.doubleSelect.js</js>
+	<js>/js/jquery/src/jquery.history.js</js>
+	<js>/js/jquery/src/jquery.lightbox-0.5.js</js>
+	<js>/js/jquery/src/jquery.rightClick.js</js>
+	<js>/js/jquery/src/jquery.tablesorter.js</js>
+	<js>/js/jquery/src/jquery.tablesorter.pager.js</js>
+	<js>/js/jquery/src/jquery.tooltip.js</js>
+	<css>/css/jquery/jquery.lightbox-0.5.css</css>
+	<css>/css/jquery/jquery.treeview.css</css>
+	<css>/css/jquery/jquery.autocomplete.css</css>
+  </group>
+  
+  <group name="jquery-admin-css">
+	<css>/css/jquery/jquery.doubleSelect.css</css>
+	<css>/css/jquery/jquery.tooltip.css</css>
+	<css>/css/jquery/jquery.checkbox.css</css>
+	<css>/css/jquery/jquery.tablesorter.css</css>
+	<css>/css/jquery/jquery.safari-checkbox.css</css>
+	<css>/css/jquery/jquery.selectbox.css</css>
+  </group>
+  
+  <group name="jquery-ui-admin">
+  	<js>/js/jquery/ui/src/jquery.ui.core.js</js>
+	<js>/js/jquery/ui/src/jquery.ui.widget.js</js>
+	<js>/js/jquery/ui/src/jquery.ui.mouse.js</js>
+	<js>/js/jquery/ui/src/jquery.ui.position.js</js>
+	<js>/js/jquery/ui/src/jquery.ui.button.js</js>
+	<js>/js/jquery/ui/src/jquery.ui.buttonset.js</js>
+	<js>/js/jquery/ui/src/jquery.ui.draggable.js</js>
+	<js>/js/jquery/ui/src/jquery.ui.droppable.js</js>
+	<js>/js/jquery/ui/src/jquery.ui.nestedSortable.js</js>
+	<js>/js/jquery/ui/src/jquery.ui.sortable.js</js>
+	<js>/js/jquery/ui/src/jquery.ui.classnameoptions.js</js>
+	<js>/js/jquery/ui/src/jquery.ui.effects.core.js</js>
+	<js>/js/jquery/ui/src/jquery.ui.effects.scale.js</js>
+	<js>/js/jquery/ui/src/jquery.ui.inlineEdit.js</js>
+	<js>/js/jquery/ui/src/jquery.ui.selectmenu.js</js>
+	<js>/js/jquery/ui/src/jquery.ui.dialog.js</js>
+	<css>/css/jquery/ui-lightness/jquery-ui-1.7.2.custom.css</css>
+	<css>/css/jquery/ui-lightness/jquery.ui.selectmenu.css</css>
+	<css>/css/jquery/ui-lightness/jquery.ui.button.css</css>
+	<css>/css/jquery/ui-lightness/jquery.ui.inlineedit.css</css>
+	<css>/css/jquery/ui-lightness/jquery.ui.jqgrid.css</css>
+  </group>
+  
+</groups>

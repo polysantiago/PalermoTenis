@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:sec="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       http://www.springframework.org/schema/security
+       http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+    <bean id="adminLogoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
+        <constructor-arg value="/admin/login.jsp" />
+        <constructor-arg>
+            <list>
+                <bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler" />
+            </list>
+        </constructor-arg>
+        <property name="filterProcessesUrl" value="/admin/j_spring_security_logout.action" />
+    </bean>
+
+    <bean id="adminExceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">
+        <property name="authenticationEntryPoint" ref="adminAuthenticationEntryPoint"/>
+        <property name="accessDeniedHandler" ref="adminAccessDeniedHandler"/>
+    </bean>
+
+    <bean id="adminAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+        <property name="loginFormUrl" value="/admin/login.jsp"/>
+    </bean>
+
+    <bean id="adminAccessDeniedHandler" class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
+        <property name="errorPage" value="/admin/accessDenied.jsp"/>
+    </bean>
+
+    <bean id="adminFilterSecurityInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <property name="accessDecisionManager" ref="accessDecisionManager"/>
+        <property name="securityMetadataSource">
+            <sec:filter-security-metadata-source path-type="ant">
+                <sec:intercept-url pattern="/admin/**" access="ROLE_EMPLEADO"/>
+            </sec:filter-security-metadata-source>
+        </property>
+    </bean>
+
+    <!-- Authentication Handlers -->
+    <bean id="adminAuthenticationSuccessHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
+        <property name="defaultTargetUrl" value="/admin/index.jsp" />
+    </bean>
+    <bean id="adminAuthenticationFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+        <property name="defaultFailureUrl" value="/admin/login.jsp?loginError" />
+    </bean>
+
+    <bean id="adminAuthenticationFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <property name="filterProcessesUrl" value="/admin/j_spring_security_check.action"/>
+        <property name="authenticationSuccessHandler" ref="adminAuthenticationSuccessHandler" />
+        <property name="authenticationFailureHandler" ref="adminAuthenticationFailureHandler" />
+        <property name="messageSource" ref="messageSource" />
+        <property name="rememberMeServices" ref="rememberMeServices" />
+    </bean>
+
+
+
+</beans>

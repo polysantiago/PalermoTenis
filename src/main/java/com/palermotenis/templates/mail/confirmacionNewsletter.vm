@@ -1,0 +1,30 @@
+<html>
+    <body>
+        <div>
+            <table align="center" width="625" border="0" cellspacing="7" cellpadding="0">
+                <tr>
+                    <td width="600"><img alt="PalermoTenis.com.ar" src="http://www.palermotenis.com.ar/images/encabezado-mails.jpg" width="616" height="96" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3>&iexcl;Gracias por su suscripci&oacute;n!</h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <table align="center" width="616">
+                            <tr>
+                                <td>
+                                    #set( $href = "http://${domain}/newsletter/ConfirmarSuscriptor?spk=${suscriptor.id}&rstr=${suscriptor.randomStr}" )
+                                    <font size="3" face="Arial, helvetica">
+                                        Gracias por suscribirse a nuestro newsletter, para confirmar su suscripci&oacute;n, por favor, haga click <a href=$href>aqu&iacute;</a>.
+                                    </font>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>

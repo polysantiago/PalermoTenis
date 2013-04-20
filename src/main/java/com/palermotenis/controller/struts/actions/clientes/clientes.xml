@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+"http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <package name="clientes_operations" namespace="/clientes_web" extends="struts-default">
+        <action name="Registracion">
+            <result>/clientes_web/Registracion.jsp</result>
+        </action>
+        <action name="Registrar" class="com.palermotenis.controller.struts.actions.clientes.Registrar">
+            <result type="redirectAction">
+                <param name="actionName">RedireccionarRegistracion</param>
+                <param name="namespace">/clientes_web</param>
+                <param name="email">${email}</param>
+                <param name="contrasenia">${contrasenia}</param>
+            </result>
+            <result name="input">/clientes_web/Registracion.jsp</result>
+            <result name="error"></result>
+        </action>
+
+        <action name="RedireccionarRegistracion" class="com.palermotenis.controller.struts.actions.clientes.RedireccionarRegistracion">
+            <result type="redirect">${redirectUrl}</result>
+        </action>
+
+        <action name="Consulta">
+            <result>Consulta.jsp</result>
+        </action>
+
+        <action name="EnviarConsulta" class="com.palermotenis.controller.struts.actions.clientes.EnviarConsulta">
+            <result>EnviarConsultaOk.jsp</result>
+            <result name="input">Consulta.jsp</result>
+        </action>
+
+        <action name="BuscarCliente" class="com.palermotenis.controller.struts.actions.clientes.BuscarCliente">
+            <result>/admin/ventas/BuscarCliente.jsp</result>
+        </action>
+
+    </package>
+</struts>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+"http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <package name="newsletter_operations" namespace="/newsletter" extends="struts-default">
+        <action name="AgregarSuscriptor" class="com.palermotenis.controller.struts.actions.newsletter.AgregarSuscriptor">
+            <result name="json" type="stream">
+                <param name="contentType">application/json;charset=ISO-8859-1</param>
+                <param name="inputName">inputStream</param>
+            </result>
+        </action>
+        <action name="ConfirmarSuscriptor" class="com.palermotenis.controller.struts.actions.newsletter.ConfirmarSuscriptor">
+            <result>ConfirmarSuscriptorOk.jsp</result>
+            <result name="error">ConfirmarSuscriptorError.jsp</result>
+        </action>
+        <action name="Desuscripcion">
+            <result>Desuscripcion.jsp</result>
+        </action>
+
+        <action name="QuitarSuscriptor" class="com.palermotenis.controller.struts.actions.newsletter.QuitarSuscriptor">
+            <result>QuitarSuscriptorOk.jsp</result>
+            <result name="error">QuitarSuscriptorError.jsp</result>
+            <result name="input">Desuscripcion.jsp</result>
+        </action>
+    </package>
+
+    <package name="newsletter_admin_operations" namespace="/admin/newsletter" extends="struts-default">
+        <action name="EnviarNewsletter" class="com.palermotenis.controller.struts.actions.newsletter.EnviarNewsletter">
+            <result>NewsletterOK.jsp</result>
+            <result name="error">NewsletterError.jsp</result>
+        </action>
+    </package>
+
+</struts>
