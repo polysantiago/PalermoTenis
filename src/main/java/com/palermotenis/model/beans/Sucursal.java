@@ -1,12 +1,12 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 
 package com.palermotenis.model.beans;
 
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,17 +21,20 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
- *
+ * 
  * @author poly
  */
 @Entity
 @Table(name = "sucursales")
-@NamedQueries({
-    @NamedQuery(name = "Sucursal.findAll", query = "SELECT s FROM Sucursal s"),
-    @NamedQuery(name = "Sucursal.findById", query = "SELECT s FROM Sucursal s WHERE s.id = :id"),
-    @NamedQuery(name = "Sucursal.findByNombre", query = "SELECT s FROM Sucursal s WHERE s.nombre = :nombre"),
-    @NamedQuery(name = "Sucursal.findByTelefono", query = "SELECT s FROM Sucursal s WHERE s.telefono = :telefono"),
-    @NamedQuery(name = "Sucursal.findByDireccion", query = "SELECT s FROM Sucursal s WHERE s.direccion = :direccion")})
+@NamedQueries(
+    {
+            @NamedQuery(name = "Sucursal.findAll", query = "SELECT s FROM Sucursal s"),
+            @NamedQuery(name = "Sucursal.findById", query = "SELECT s FROM Sucursal s WHERE s.id = :id"),
+            @NamedQuery(name = "Sucursal.findByNombre", query = "SELECT s FROM Sucursal s WHERE s.nombre = :nombre"),
+            @NamedQuery(name = "Sucursal.findByTelefono",
+                    query = "SELECT s FROM Sucursal s WHERE s.telefono = :telefono"),
+            @NamedQuery(name = "Sucursal.findByDireccion",
+                    query = "SELECT s FROM Sucursal s WHERE s.direccion = :direccion") })
 public class Sucursal implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -68,6 +71,12 @@ public class Sucursal implements Serializable {
     public Sucursal(Integer id, String nombre) {
         this.id = id;
         this.nombre = nombre;
+    }
+
+    public Sucursal(String nombre, String telefono, String direccion) {
+        this.nombre = nombre;
+        this.telefono = telefono;
+        this.direccion = direccion;
     }
 
     public Integer getId() {

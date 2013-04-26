@@ -2,16 +2,16 @@ package com.palermotenis.util;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.authorities.Rol;
 import com.palermotenis.model.beans.usuarios.Usuario;
+import com.palermotenis.model.dao.Dao;
 
 public class SecurityUtil {
 
     private static Rol ROLE_ADMIN;
     private static Rol ROLE_SUPERVISOR;
 
-    private GenericDao<Rol, Integer> rolDao;
+    private Dao<Rol, Integer> rolDao;
 
     public static boolean userIsInRole(Usuario usuario, Rol rol) {
         return usuario.getRoles().contains(rol);
@@ -27,7 +27,7 @@ public class SecurityUtil {
         return (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
-    public void setRolDao(GenericDao<Rol, Integer> rolDao) {
+    public void setRolDao(Dao<Rol, Integer> rolDao) {
         this.rolDao = rolDao;
     }
 }

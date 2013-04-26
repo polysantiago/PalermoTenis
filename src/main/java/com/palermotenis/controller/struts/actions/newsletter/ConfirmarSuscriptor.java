@@ -7,8 +7,8 @@ package com.palermotenis.controller.struts.actions.newsletter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.newsletter.Suscriptor;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -23,7 +23,7 @@ public class ConfirmarSuscriptor extends ActionSupport {
     private String rstr;
 
     @Autowired
-    private GenericDao<Suscriptor, Integer> suscriptorDao;
+    private Dao<Suscriptor, Integer> suscriptorDao;
 
     @Override
     public String execute() {

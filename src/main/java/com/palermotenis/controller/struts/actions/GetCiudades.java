@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.geograficos.Ciudad;
 import com.palermotenis.model.beans.geograficos.Provincia;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 
 /**
@@ -23,7 +23,7 @@ public class GetCiudades extends ActionSupport {
     private String q;
     
     @Autowired
-    private GenericDao<Ciudad, Integer> ciudadDao;
+    private Dao<Ciudad, Integer> ciudadDao;
 
     @Override
     public String execute() {

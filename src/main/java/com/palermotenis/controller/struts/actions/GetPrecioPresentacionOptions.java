@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Moneda;
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 
 /**
@@ -30,16 +30,16 @@ public class GetPrecioPresentacionOptions extends ActionSupport {
     private InputStream inputStream;
     
     @Autowired
-    private GenericDao<Pago, Integer> pagoDao;
+    private Dao<Pago, Integer> pagoDao;
     
     @Autowired
-    private GenericDao<Moneda, Integer> monedaDao;
+    private Dao<Moneda, Integer> monedaDao;
     
     @Autowired
-    private GenericDao<TipoPresentacion, Integer> tipoPresentacionDao;
+    private Dao<TipoPresentacion, Integer> tipoPresentacionDao;
     
     @Autowired
-    private GenericDao<TipoProducto, Integer> tipoProductoDao;
+    private Dao<TipoProducto, Integer> tipoProductoDao;
 
     @Override
     public String execute() {

@@ -10,9 +10,9 @@ import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.controller.results.ImageCapable;
 import com.palermotenis.model.beans.Marca;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 
 /**
@@ -35,7 +35,7 @@ public class MarcaAction extends ActionSupport implements ImageCapable {
     private Marca tmpMarca;
 
     @Autowired
-    private GenericDao<Marca, Integer> marcaDao;
+    private Dao<Marca, Integer> marcaDao;
 
     public String show() {
         marcas = marcaDao.findAll();

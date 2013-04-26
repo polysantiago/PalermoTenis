@@ -4,7 +4,6 @@
  */
 package com.palermotenis.export;
 
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Modelo;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
@@ -12,6 +11,8 @@ import com.palermotenis.model.beans.precios.Precio;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.valores.ValorClasificatorio;
+import com.palermotenis.model.dao.Dao;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -123,12 +124,12 @@ public class ExcelExporter extends AbstractExporter implements ApplicationContex
         return p == null ? "" : p.getTipoPresentacion().getNombre() + " " + p.getNombre();
     }
     
-    private GenericDao<Stock, Integer> getStockService(){
-        return (GenericDao<Stock, Integer>)applicationContext.getBean("stockService");
+    private Dao<Stock, Integer> getStockService(){
+        return (Dao<Stock, Integer>)applicationContext.getBean("stockService");
     }
 
-    private GenericDao<TipoProducto, Integer> getTipoProductoService(){
-        return (GenericDao<TipoProducto, Integer>)applicationContext.getBean("tipoProductoService");
+    private Dao<TipoProducto, Integer> getTipoProductoService(){
+        return (Dao<TipoProducto, Integer>)applicationContext.getBean("tipoProductoService");
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

@@ -13,8 +13,8 @@ import net.sf.json.processors.JsonBeanProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.productos.Producto;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 
 /**
@@ -30,7 +30,7 @@ public class Latest extends ActionSupport {
     private InputStream inputStream;
 
     @Autowired
-    private GenericDao<Producto, Integer> productoDao;
+    private Dao<Producto, Integer> productoDao;
 
     @Override
     public String execute() {

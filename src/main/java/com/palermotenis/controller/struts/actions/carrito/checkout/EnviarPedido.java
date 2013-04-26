@@ -26,7 +26,6 @@ import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.carrito.Carrito;
 import com.palermotenis.controller.carrito.Item;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.controller.struts.actions.carrito.CarritoAction;
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.beans.Stock;
@@ -35,6 +34,7 @@ import com.palermotenis.model.beans.pedidos.Pedido;
 import com.palermotenis.model.beans.pedidos.PedidoProducto;
 import com.palermotenis.model.beans.pedidos.PedidoProductoPK;
 import com.palermotenis.model.beans.usuarios.Usuario;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.SecurityUtil;
 import com.palermotenis.util.StringUtility;
 
@@ -58,13 +58,13 @@ public class EnviarPedido extends ActionSupport implements ServletRequestAware {
     private HttpServletRequest request;
 
     @Autowired
-    private GenericDao<Pago, Integer> pagoDao;
+    private Dao<Pago, Integer> pagoDao;
 
     @Autowired
-    private GenericDao<Pedido, Integer> pedidoDao;
+    private Dao<Pedido, Integer> pedidoDao;
 
     @Autowired
-    private GenericDao<PedidoProducto, Integer> pedidoProductoDao;
+    private Dao<PedidoProducto, Integer> pedidoProductoDao;
 
     @Autowired
     private CurrencyFormatter currencyFormatter;

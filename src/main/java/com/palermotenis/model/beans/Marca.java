@@ -1,11 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.model.beans;
 
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,23 +20,21 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-/**
- *
- * @author Poly
- */
 @Entity
 @Table(name = "marcas", catalog = "palermotenis", schema = "")
-@NamedQueries({
-    @NamedQuery(name = "Marca.findAll", query = "SELECT m FROM Marca m"),
-    @NamedQuery(name = "Marca.findById", query = "SELECT m FROM Marca m WHERE m.id = :id"),
-    @NamedQuery(name = "Marca.findByNombre", query = "SELECT m FROM Marca m WHERE m.nombre = :nombre"),
-    @NamedQuery(name = "Marca.findByTipoProductoAndActiveProducto",
-    query = "SELECT DISTINCT p.modelo.marca FROM TipoProducto tp "
-            + "JOIN tp.productos p JOIN p.stocks s "
-            + "WHERE tp = :tipoProducto AND p.activo = 1 AND s.stock > 0 "
-            + "ORDER BY p.modelo.marca.nombre")
-})
-public class Marca implements Serializable, Comparable {
+@NamedQueries(
+    {
+            @NamedQuery(name = "Marca.findAll", query = "SELECT m FROM Marca m"),
+            @NamedQuery(name = "Marca.findById", query = "SELECT m FROM Marca m WHERE m.id = :id"),
+            @NamedQuery(name = "Marca.findByNombre", query = "SELECT m FROM Marca m WHERE m.nombre = :nombre"),
+            @NamedQuery(name = "Marca.findByTipoProductoAndActiveProducto",
+                    query = "SELECT DISTINCT p.modelo.marca FROM TipoProducto tp "
+                            + "JOIN tp.productos p JOIN p.stocks s "
+                            + "WHERE tp = :tipoProducto AND p.activo = 1 AND s.stock > 0 "
+                            + "ORDER BY p.modelo.marca.nombre") })
+public class Marca implements Serializable, Comparable<Marca> {
+
+    private static final long serialVersionUID = -4459106816415528277L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,9 +58,8 @@ public class Marca implements Serializable, Comparable {
     private String contentType;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "modelos",
-        joinColumns = @JoinColumn(name = "marca"),
-        inverseJoinColumns = @JoinColumn(name = "categoria"))
+    @JoinTable(name = "modelos", joinColumns = @JoinColumn(name = "marca"), inverseJoinColumns = @JoinColumn(
+            name = "categoria"))
     private Collection<Categoria> categorias;
 
     @OneToMany(mappedBy = "marca", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
@@ -93,14 +87,16 @@ public class Marca implements Serializable, Comparable {
     }
 
     /**
-     * @param id the id to set
+     * @param id
+     *            the id to set
      */
     public void setId(Integer id) {
         this.id = id;
     }
 
     /**
-     * @param nombre the nombre to set
+     * @param nombre
+     *            the nombre to set
      */
     public void setNombre(String nombre) {
         this.nombre = nombre;
@@ -114,7 +110,8 @@ public class Marca implements Serializable, Comparable {
     }
 
     /**
-     * @param imagen the imagen to set
+     * @param imagen
+     *            the imagen to set
      */
     public void setImagen(byte[] imagen) {
         this.imagen = imagen;
@@ -128,7 +125,8 @@ public class Marca implements Serializable, Comparable {
     }
 
     /**
-     * @param tamanio the tamanio to set
+     * @param tamanio
+     *            the tamanio to set
      */
     public void setTamanio(long tamanio) {
         this.tamanio = tamanio;
@@ -142,15 +140,16 @@ public class Marca implements Serializable, Comparable {
     }
 
     /**
-     * @param contentType the contentType to set
+     * @param contentType
+     *            the contentType to set
      */
     public void setContentType(String contentType) {
         this.contentType = contentType;
     }
 
-
     /**
-     * @param categorias the categorias to set
+     * @param categorias
+     *            the categorias to set
      */
     public void setCategorias(Collection<Categoria> categorias) {
         this.categorias = categorias;
@@ -164,23 +163,23 @@ public class Marca implements Serializable, Comparable {
     }
 
     /**
-     * @param modelos the modelos to set
+     * @param modelos
+     *            the modelos to set
      */
     public void setModelos(Collection<Modelo> modelos) {
         this.modelos = modelos;
     }
 
-
     public void addCategoria(Categoria categoria) {
         if (hasCategoria(categoria)) {
-            //TODO handle exception
+            // TODO handle exception
         }
         categorias.add(categoria);
     }
 
     public void removeCategoria(Categoria categoria) {
         if (!hasCategoria(categoria)) {
-            //TODO handle exception
+            // TODO handle exception
         }
         categorias.remove(categoria);
     }
@@ -191,14 +190,14 @@ public class Marca implements Serializable, Comparable {
 
     public void addModelo(Modelo modelo) {
         if (hasModelo(modelo)) {
-            //TODO handle exception
+            // TODO handle exception
         }
         modelos.add(modelo);
     }
 
     public void removeModelo(Modelo modelo) {
         if (!hasModelo(modelo)) {
-            //TODO handle exception
+            // TODO handle exception
         }
         modelos.remove(modelo);
     }
@@ -206,7 +205,7 @@ public class Marca implements Serializable, Comparable {
     public boolean hasModelo(Modelo modelo) {
         return modelos.contains(modelo);
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -215,7 +214,6 @@ public class Marca implements Serializable, Comparable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Marca other = (Marca) obj;
         return true;
     }
 
@@ -228,14 +226,13 @@ public class Marca implements Serializable, Comparable {
         return hash;
     }
 
-
-
-    public int compareTo(Object o) {
-        return nombre.compareToIgnoreCase(((Marca)o).getNombre());
+    @Override
+    public int compareTo(Marca anotherMarca) {
+        return nombre.compareToIgnoreCase((anotherMarca).getNombre());
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return nombre;
     }
 }

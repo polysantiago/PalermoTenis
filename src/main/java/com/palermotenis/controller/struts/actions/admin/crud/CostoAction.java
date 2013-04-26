@@ -9,12 +9,12 @@ import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Moneda;
 import com.palermotenis.model.beans.compras.Costo;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.proveedores.Proveedor;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 
 /**
@@ -40,19 +40,19 @@ public class CostoAction extends ActionSupport {
     private Producto producto;
 
     @Autowired
-    private GenericDao<Presentacion, Integer> presentacionDao;
+    private Dao<Presentacion, Integer> presentacionDao;
 
     @Autowired
-    private GenericDao<Costo, Integer> costoDao;
+    private Dao<Costo, Integer> costoDao;
 
     @Autowired
-    private GenericDao<Proveedor, Integer> proveedorDao;
+    private Dao<Proveedor, Integer> proveedorDao;
 
     @Autowired
-    private GenericDao<Producto, Integer> productoDao;
+    private Dao<Producto, Integer> productoDao;
 
     @Autowired
-    private GenericDao<Moneda, Integer> monedaDao;
+    private Dao<Moneda, Integer> monedaDao;
 
     public String show() {
         producto = productoDao.find(productoId);

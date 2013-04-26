@@ -11,14 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
-import com.palermotenis.controller.daos.UsuarioService;
-import com.palermotenis.controller.daos.exceptions.NonexistentEntityException;
 import com.palermotenis.model.beans.authorities.Rol;
 import com.palermotenis.model.beans.clientes.Cliente;
 import com.palermotenis.model.beans.clientes.Direccion;
 import com.palermotenis.model.beans.newsletter.Suscriptor;
 import com.palermotenis.model.beans.usuarios.Usuario;
+import com.palermotenis.model.dao.Dao;
+import com.palermotenis.model.dao.usuario.UsuarioDao;
 import com.palermotenis.util.StringUtility;
 
 /**
@@ -43,16 +42,16 @@ public class Registrar extends ActionSupport {
     private Usuario usuario;
 
     @Autowired
-    private GenericDao<Cliente, Integer> clienteDao;
+    private Dao<Cliente, Integer> clienteDao;
 
     @Autowired
-    private GenericDao<Rol, Integer> rolDao;
+    private Dao<Rol, Integer> rolDao;
 
     @Autowired
-    private GenericDao<Suscriptor, Integer> suscriptorDao;
+    private Dao<Suscriptor, Integer> suscriptorDao;
 
     @Autowired
-    private UsuarioService usuariosService;
+    private UsuarioDao usuarioDao;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -78,8 +77,8 @@ public class Registrar extends ActionSupport {
         } catch (HibernateException ex) {
             logger.error("Error al crear cliente", ex);
             try {
-                usuariosService.destroy(usuario.getUsuario());
-            } catch (NonexistentEntityException ex1) {
+                usuarioDao.destroy(usuario);
+            } catch (Exception ex1) {
                 logger.error("No se pudo eliminar el usuario " + usuario + " luego del error", ex1);
             }
         }
@@ -89,7 +88,7 @@ public class Registrar extends ActionSupport {
 
     @Override
     public void validate() {
-        List<Usuario> usuarios = usuariosService.findUsuariosByUsername(getEmail());
+        List<Usuario> usuarios = usuarioDao.getUsuariosByUsername(getEmail());
         if (!usuarios.isEmpty()) {
             addFieldError("email", "Esta casilla de mail ya está registrada");
         }

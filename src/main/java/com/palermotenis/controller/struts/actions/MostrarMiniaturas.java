@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Marca;
 import com.palermotenis.model.beans.Modelo;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -30,13 +30,13 @@ public class MostrarMiniaturas extends ActionSupport {
     private Collection<Modelo> modelos;
 
     @Autowired
-    private GenericDao<Modelo, Integer> modeloDao;
+    private Dao<Modelo, Integer> modeloDao;
 
     @Autowired
-    private GenericDao<Marca, Integer> marcaDao;
+    private Dao<Marca, Integer> marcaDao;
 
     @Autowired
-    private GenericDao<TipoProducto, Integer> tipoProductoDao;
+    private Dao<TipoProducto, Integer> tipoProductoDao;
 
     public String showByPadre() {
         Modelo m = modeloDao.find(modeloId);

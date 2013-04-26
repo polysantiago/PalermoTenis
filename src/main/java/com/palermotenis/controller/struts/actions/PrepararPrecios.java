@@ -5,10 +5,10 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Moneda;
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.beans.productos.Producto;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -28,13 +28,13 @@ public class PrepararPrecios extends ActionSupport {
     private String redirectPage;
 
     @Autowired
-    private GenericDao<Producto, Integer> productoDao;
+    private Dao<Producto, Integer> productoDao;
 
     @Autowired
-    private GenericDao<Pago, Integer> pagoDao;
+    private Dao<Pago, Integer> pagoDao;
 
     @Autowired
-    private GenericDao<Moneda, Integer> monedaDao;
+    private Dao<Moneda, Integer> monedaDao;
 
     @Override
     public String execute() {

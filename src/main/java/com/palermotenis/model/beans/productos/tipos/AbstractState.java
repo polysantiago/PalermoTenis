@@ -6,9 +6,8 @@ package com.palermotenis.model.beans.productos.tipos;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.palermotenis.controller.daos.GenericDao;
-import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.productos.Producto;
+import com.palermotenis.model.service.stock.StockService;
 
 /**
  * 
@@ -19,7 +18,7 @@ public abstract class AbstractState implements State {
     private final Producto producto;
     private final List<List<?>> list = new ArrayList<List<?>>();
 
-    private GenericDao<Stock, Integer> stockDao;
+    private StockService stockService;
 
     public AbstractState(Producto producto) {
         this.producto = producto;
@@ -68,13 +67,13 @@ public abstract class AbstractState implements State {
         return ret;
     }
 
-    public GenericDao<Stock, Integer> getStockDao() {
-        return stockDao;
+    public StockService getStockService() {
+        return stockService;
     }
 
     @Override
-    public void setStockDao(GenericDao<Stock, Integer> stockDao) {
-        this.stockDao = stockDao;
+    public void setStockService(StockService stockService) {
+        this.stockService = stockService;
     }
 
 }

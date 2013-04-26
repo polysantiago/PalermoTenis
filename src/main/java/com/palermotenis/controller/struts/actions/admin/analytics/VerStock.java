@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.number.CurrencyFormatter;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Marca;
 import com.palermotenis.model.beans.Modelo;
 import com.palermotenis.model.beans.Stock;
@@ -28,6 +27,7 @@ import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.beans.valores.ValorClasificatorio;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 
 /**
@@ -51,16 +51,16 @@ public class VerStock extends ActionSupport {
     private InputStream inputStream;
 
     @Autowired
-    private GenericDao<Stock, Integer> stockDao;
+    private Dao<Stock, Integer> stockDao;
 
     @Autowired
-    private GenericDao<Marca, Integer> marcaDao;
+    private Dao<Marca, Integer> marcaDao;
 
     @Autowired
-    private GenericDao<TipoProducto, Integer> tipoProductoDao;
+    private Dao<TipoProducto, Integer> tipoProductoDao;
 
     @Autowired
-    private GenericDao<Modelo, Integer> modeloDao;
+    private Dao<Modelo, Integer> modeloDao;
 
     @Autowired
     private CurrencyFormatter currencyFormatter;

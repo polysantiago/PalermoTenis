@@ -1,30 +1,38 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.model.beans.productos.tipos;
 
+import java.util.List;
+import java.util.Map;
+
 import com.google.common.collect.HashBiMap;
-import com.palermotenis.model.beans.Stock;
+import com.google.common.collect.ImmutableList;
 import com.palermotenis.model.beans.Sucursal;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.valores.ValorClasificatorio;
-import java.util.List;
-import java.util.Map;
 
 /**
- *
+ * 
  * @author poly
  */
 public class PresentableAndClasificableState extends PresentableState {
 
-    private Map<String, Object> map = HashBiMap.create();
+    private final Map<String, Object> map = HashBiMap.create();
 
-    public PresentableAndClasificableState(Producto producto,
-            List<Sucursal> sucursales,
-            List<ValorClasificatorio> valoresClasificatorios,
-            List<Presentacion> presentaciones) {
+    public PresentableAndClasificableState(Producto producto, List<Sucursal> sucursales,
+            List<ValorClasificatorio> valoresClasificatorios, Presentacion presentacion) {
+        this(producto, sucursales, valoresClasificatorios, new ImmutableList.Builder<Presentacion>()
+            .add(presentacion)
+            .build());
+    }
+
+    public PresentableAndClasificableState(Producto producto, List<Sucursal> sucursales,
+            ValorClasificatorio valorClasificatorio, List<Presentacion> presentaciones) {
+        this(producto, sucursales, new ImmutableList.Builder<ValorClasificatorio>().add(valorClasificatorio).build(),
+            presentaciones);
+    }
+
+    public PresentableAndClasificableState(Producto producto, List<Sucursal> sucursales,
+            List<ValorClasificatorio> valoresClasificatorios, List<Presentacion> presentaciones) {
         super(producto, sucursales, presentaciones);
         addToList(valoresClasificatorios);
     }
@@ -36,16 +44,15 @@ public class PresentableAndClasificableState extends PresentableState {
         addToMap(obj, ValorClasificatorio.class, "valorClasificatorio");
 
         if (map.size() == 3) {
-            getStockDao().create(
-                    new Stock(getProducto(),
-                    (Sucursal) map.get("sucursal"),
-                    (ValorClasificatorio) map.get("valorClasificatorio"),
-                    (Presentacion) map.get("presentacion")));
+            Sucursal sucursal = (Sucursal) map.get("sucursal");
+            Presentacion presentacion = (Presentacion) map.get("presentacion");
+            ValorClasificatorio valorClasificatorio = (ValorClasificatorio) map.get("valorClasificatorio");
+            getStockService().createStock(getProducto(), sucursal, presentacion, valorClasificatorio);
             map.clear();
         }
     }
 
-    private void addToMap(Object obj, Class clazz, String name) {
+    private void addToMap(Object obj, Class<?> clazz, String name) {
         if (clazz.isInstance(obj)) {
             map.put(name, obj);
         }

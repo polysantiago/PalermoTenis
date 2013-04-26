@@ -13,8 +13,8 @@ import org.apache.commons.beanutils.DynaBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 
 /**
@@ -30,7 +30,7 @@ public class ValidarCampos extends ActionSupport {
     private InputStream inputStream;
 
     @Autowired
-    private GenericDao<TipoAtributo, Integer> tipoAtributoDao;
+    private Dao<TipoAtributo, Integer> tipoAtributoDao;
 
     @Override
     public String execute() {

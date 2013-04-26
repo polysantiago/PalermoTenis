@@ -9,9 +9,9 @@ import net.sf.json.JsonConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Moneda;
 import com.palermotenis.model.beans.Pago;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 
 /**
@@ -25,10 +25,10 @@ public class GetPrecioUnidadOptions extends ActionSupport {
 	private InputStream inputStream;
     
     @Autowired
-    private GenericDao<Pago, Integer> pagoDao;
+    private Dao<Pago, Integer> pagoDao;
     
     @Autowired
-    private GenericDao<Moneda, Integer> monedaDao;
+    private Dao<Moneda, Integer> monedaDao;
 
     @Override
     public String execute() {

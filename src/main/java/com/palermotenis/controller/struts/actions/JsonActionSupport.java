@@ -7,9 +7,10 @@ import net.sf.json.JSON;
 import org.apache.log4j.Logger;
 
 import com.opensymphony.xwork2.ActionSupport;
+import com.palermotenis.controller.results.GZIPCapable;
 import com.palermotenis.util.StringUtility;
 
-public class JsonActionSupport extends ActionSupport {
+public class JsonActionSupport extends ActionSupport implements GZIPCapable {
 
     private static final long serialVersionUID = -8022723052520248208L;
 
@@ -38,6 +39,7 @@ public class JsonActionSupport extends ActionSupport {
         inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
     }
 
+    @Override
     public InputStream getInputStream() {
         return inputStream;
     }

@@ -22,8 +22,8 @@ import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.newsletter.Suscriptor;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -40,7 +40,7 @@ public class EnviarNewsletter extends ActionSupport implements ApplicationContex
     private String subject;
 
     @Autowired
-    private GenericDao<Suscriptor, Integer> suscriptorDao;
+    private Dao<Suscriptor, Integer> suscriptorDao;
 
     @Autowired
     private JavaMailSender mailSender;

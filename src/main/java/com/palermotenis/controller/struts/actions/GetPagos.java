@@ -5,8 +5,8 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Pago;
+import com.palermotenis.model.dao.Dao;
 
 /**
  *
@@ -19,7 +19,7 @@ public class GetPagos extends ActionSupport {
 	private Collection<Pago> pagos;
     
     @Autowired
-    private GenericDao<Pago, Integer> pagoDao;
+    private Dao<Pago, Integer> pagoDao;
 
     @Override
     public String execute(){

@@ -12,7 +12,6 @@ import org.springframework.format.number.CurrencyFormatter;
 
 import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.precios.Precio;
 import com.palermotenis.model.beans.precios.PrecioPresentacion;
@@ -20,6 +19,7 @@ import com.palermotenis.model.beans.precios.PrecioUnidad;
 import com.palermotenis.model.beans.precios.pks.PrecioPresentacionPK;
 import com.palermotenis.model.beans.precios.pks.PrecioProductoPK;
 import com.palermotenis.model.beans.productos.Producto;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 
 /**
@@ -35,13 +35,13 @@ public class VerPrecioStock extends ActionSupport {
     private InputStream inputStream;
 
     @Autowired
-    private GenericDao<Stock, Integer> stockDao;
+    private Dao<Stock, Integer> stockDao;
 
     @Autowired
-    private GenericDao<PrecioUnidad, PrecioProductoPK> precioUnidadDao;
+    private Dao<PrecioUnidad, PrecioProductoPK> precioUnidadDao;
 
     @Autowired
-    private GenericDao<PrecioPresentacion, PrecioPresentacionPK> precioPresentacionDao;
+    private Dao<PrecioPresentacion, PrecioPresentacionPK> precioPresentacionDao;
 
     @Autowired
     private CurrencyFormatter currencyFormatter;

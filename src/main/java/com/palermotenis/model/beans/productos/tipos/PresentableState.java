@@ -1,24 +1,28 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 package com.palermotenis.model.beans.productos.tipos;
 
-import com.google.common.collect.HashBiMap;
-import com.palermotenis.model.beans.Stock;
-import com.palermotenis.model.beans.Sucursal;
-import com.palermotenis.model.beans.presentaciones.Presentacion;
-import com.palermotenis.model.beans.productos.Producto;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableList;
+import com.palermotenis.model.beans.Sucursal;
+import com.palermotenis.model.beans.presentaciones.Presentacion;
+import com.palermotenis.model.beans.productos.Producto;
+
 /**
- *
+ * 
  * @author poly
  */
 public class PresentableState extends DefaultState {
 
-    private Map<String, Object> map = HashBiMap.create();
+    private final Map<String, Object> map = HashBiMap.create();
+
+    public PresentableState(Producto producto, List<Sucursal> sucursales, Presentacion presentacion) {
+        this(producto, sucursales, new ImmutableList.Builder<Presentacion>().add(presentacion).build());
+    }
 
     public PresentableState(Producto producto, List<Sucursal> sucursales, List<Presentacion> presentaciones) {
         super(producto, sucursales);
@@ -36,7 +40,7 @@ public class PresentableState extends DefaultState {
         if (map.size() == 2) {
             Sucursal sucursal = (Sucursal) map.get("sucursal");
             Presentacion presentacion = (Presentacion) map.get("presentacion");
-            getStockDao().create(new Stock(getProducto(), sucursal, presentacion));
+            getStockService().createStock(getProducto(), sucursal, presentacion);
             map.clear();
         }
     }

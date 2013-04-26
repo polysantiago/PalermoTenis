@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 package com.palermotenis.controller.carrito;
 
@@ -9,27 +8,27 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.precios.Precio;
-import com.palermotenis.util.Convertor;
+import com.palermotenis.model.dao.Dao;
+import com.palermotenis.model.service.precios.impl.PrecioService;
 
-/**
- *
- * @author Poly
- */
 public class CarritoImpl implements Carrito {
 
-    private static final long serialVersionUID = 1L;
-    private Map<Stock, Item> contenido = new HashMap<Stock, Item>();
-    private transient Convertor convertor;
+    private static final long serialVersionUID = -5810633890011863550L;
+
+    private final Map<Stock, Item> contenido = new HashMap<Stock, Item>();
     private Pago pago;
     private int cuotas;
-    
-    @Autowired
-    private transient GenericDao<Pago, Integer> pagoDao;
 
+    @Autowired
+    private transient Dao<Pago, Integer> pagoDao;
+
+    @Autowired
+    private transient PrecioService precioService;
+
+    @Override
     public void agregar(int cantidad, Stock stock) {
         if (!contenido.containsKey(stock)) {
             Item item = new Item(cantidad);
@@ -41,6 +40,7 @@ public class CarritoImpl implements Carrito {
         setPrecio(stock);
     }
 
+    @Override
     public void setCantidad(int cantidad, Stock stock) {
         if (cantidad <= 0) {
             contenido.remove(stock);
@@ -55,14 +55,17 @@ public class CarritoImpl implements Carrito {
         }
     }
 
+    @Override
     public void quitar(Stock stock) {
         contenido.remove(stock);
     }
 
+    @Override
     public Map<Stock, Item> getContenido() {
         return contenido;
     }
 
+    @Override
     public int getCantidad(Stock stock) {
         if (!contenido.containsKey(stock)) {
             return 0;
@@ -71,7 +74,6 @@ public class CarritoImpl implements Carrito {
     }
 
     private void setPrecio(Stock stock) {
-        Convertor c = getConvertor();        
         if (!contenido.containsKey(stock)) {
             return;
         } else {
@@ -79,12 +81,13 @@ public class CarritoImpl implements Carrito {
                 pago = pagoDao.find(1);
             }
             Item i = contenido.get(stock);
-            Precio p = c.estimarPrecio(stock, pago, cuotas);
-            i.setPrecioUnitario(c.calculatePrecioUnitarioPesos(p));
-            i.setSubtotal(c.calculateSubtotalPesos(p, i.getCantidad()));
+            Precio p = precioService.estimarPrecio(stock, pago, cuotas);
+            i.setPrecioUnitario(precioService.calculatePrecioUnitarioPesos(p));
+            i.setSubtotal(precioService.calculateSubtotalPesos(p, i.getCantidad()));
         }
     }
 
+    @Override
     public double getTotal() {
         double total = 0.0;
         for (Item i : contenido.values()) {
@@ -93,6 +96,7 @@ public class CarritoImpl implements Carrito {
         return total;
     }
 
+    @Override
     public int getCantidadItems() {
         int qty = 0;
         for (Item i : contenido.values()) {
@@ -101,6 +105,7 @@ public class CarritoImpl implements Carrito {
         return qty;
     }
 
+    @Override
     public void vaciar() {
         contenido.clear();
     }
@@ -111,32 +116,21 @@ public class CarritoImpl implements Carrito {
         }
     }
 
-    public Convertor getConvertor() {
-        if(convertor == null){
-            convertor = new Convertor();
-        }
-        return convertor;
-    }
-
-    /**
-     * @param convertor the convertor to set
-     */
-    public void setConvertor(Convertor convertor) {
-        this.convertor = convertor;
-    }
-
     /**
      * @return the pago
      */
+    @Override
     public Pago getPago() {
         return pago;
     }
 
     /**
-     * @param pago the pago to set
+     * @param pago
+     *            the pago to set
      */
+    @Override
     public void setPago(Pago pago) {
-        if(this.pago == null){
+        if (this.pago == null) {
             this.pago = pago;
         } else if (!this.pago.equals(pago)) {
             this.pago = pago;
@@ -147,13 +141,16 @@ public class CarritoImpl implements Carrito {
     /**
      * @return the cuotas
      */
+    @Override
     public int getCuotas() {
         return cuotas;
     }
 
     /**
-     * @param cuotas the cuotas to set
+     * @param cuotas
+     *            the cuotas to set
      */
+    @Override
     public void setCuotas(int cuotas) {
         if (this.cuotas != cuotas) {
             this.cuotas = cuotas;

@@ -11,11 +11,11 @@ import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.valores.ValorClasificatorio;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 
 /**
@@ -32,13 +32,13 @@ public class GetValoresClasificatoriosByPresentacion extends ActionSupport {
     private InputStream inputStream;
 
     @Autowired
-    private GenericDao<Stock, Integer> stockDao;
+    private Dao<Stock, Integer> stockDao;
 
     @Autowired
-    private GenericDao<Producto, Integer> productoDao;
+    private Dao<Producto, Integer> productoDao;
 
     @Autowired
-    private GenericDao<Presentacion, Integer> presentacionDao;
+    private Dao<Presentacion, Integer> presentacionDao;
 
     @Override
     public String execute() {

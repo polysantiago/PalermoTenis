@@ -4,7 +4,7 @@
  */
 package com.palermotenis.model.beans.atributos.tipos;
 
-import com.palermotenis.model.beans.atributos.Atributo;
+import com.palermotenis.model.beans.atributos.AtributoSimple;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
@@ -27,7 +27,7 @@ public class TipoAtributoMultipleValores extends TipoAtributoTipado {
 
     public String getValores() {
         StringBuilder valor = new StringBuilder();
-        for (Atributo a : getAtributos()) {
+        for (AtributoSimple a : getAtributos()) {
             valor.append(a.getValor().getNombre()).append(", ");
         }
         valor.delete(valor.lastIndexOf(", "), valor.length() - 1);

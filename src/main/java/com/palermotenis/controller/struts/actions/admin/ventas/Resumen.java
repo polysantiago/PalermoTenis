@@ -1,6 +1,3 @@
-/*
- * To change this template, choose Tools | Templates and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions.admin.ventas;
 
 import java.util.ArrayList;
@@ -12,7 +9,6 @@ import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.clientes.Cliente;
@@ -20,13 +16,10 @@ import com.palermotenis.model.beans.precios.Precio;
 import com.palermotenis.model.beans.ventas.Listado;
 import com.palermotenis.model.beans.ventas.StockListado;
 import com.palermotenis.model.beans.ventas.StockListadoPK;
-import com.palermotenis.util.Convertor;
+import com.palermotenis.model.dao.Dao;
+import com.palermotenis.model.service.precios.impl.PrecioService;
 import com.palermotenis.util.StringUtility;
 
-/**
- * 
- * @author Poly
- */
 public class Resumen extends ActionSupport {
 
     private static final long serialVersionUID = -205691888898397486L;
@@ -40,19 +33,19 @@ public class Resumen extends ActionSupport {
     private List<String> stocks = new ArrayList<String>();
 
     @Autowired
-    private GenericDao<Pago, Integer> pagoDao;
+    private Dao<Pago, Integer> pagoDao;
 
     @Autowired
-    private GenericDao<Stock, Integer> stockDao;
+    private Dao<Stock, Integer> stockDao;
 
     @Autowired
-    private GenericDao<Listado, String> listadoDao;
+    private Dao<Listado, String> listadoDao;
 
     @Autowired
-    private GenericDao<Cliente, Integer> clienteDao;
+    private Dao<Cliente, Integer> clienteDao;
 
     @Autowired
-    private Convertor convertor;
+    private PrecioService precioService;
 
     @Override
     public String execute() {
@@ -69,12 +62,12 @@ public class Resumen extends ActionSupport {
 
             StockListado stockListado = new StockListado();
             Stock stock = stockDao.find(stockId);
-            Precio precio = convertor.estimarPrecio(stock, pago, cuotas);
+            Precio precio = precioService.estimarPrecio(stock, pago, cuotas);
 
             stockListado.setStockListadoPK(new StockListadoPK(listado, stock));
             stockListado.setCantidad(cantidad);
-            stockListado.setPrecioUnitario(convertor.calculatePrecioUnitarioPesos(precio));
-            stockListado.setSubtotal(convertor.calculateSubtotalPesos(precio, cantidad));
+            stockListado.setPrecioUnitario(precioService.calculatePrecioUnitarioPesos(precio));
+            stockListado.setSubtotal(precioService.calculateSubtotalPesos(precio, cantidad));
 
             stocksListado.add(stockListado);
             total += stockListado.getSubtotal();

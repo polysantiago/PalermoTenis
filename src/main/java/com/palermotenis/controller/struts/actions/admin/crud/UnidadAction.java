@@ -9,9 +9,9 @@ import net.sf.json.JsonConfig;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.Unidad;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -31,7 +31,7 @@ public class UnidadAction extends JsonActionSupport {
     private String descripcion;
 
     @Autowired
-    private GenericDao<Unidad, Integer> unidadDao;
+    private Dao<Unidad, Integer> unidadDao;
 
     public String show() {
         unidades = unidadDao.findAll();

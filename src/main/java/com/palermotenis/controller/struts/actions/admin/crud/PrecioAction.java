@@ -13,7 +13,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.Moneda;
 import com.palermotenis.model.beans.Pago;
@@ -23,6 +22,7 @@ import com.palermotenis.model.beans.precios.pks.PrecioPresentacionPK;
 import com.palermotenis.model.beans.precios.pks.PrecioProductoPK;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -54,22 +54,22 @@ public class PrecioAction extends JsonActionSupport {
     private PlatformTransactionManager transactionManager;
 
     @Autowired
-    private GenericDao<PrecioPresentacion, PrecioPresentacionPK> precioPresentacionDao;
+    private Dao<PrecioPresentacion, PrecioPresentacionPK> precioPresentacionDao;
 
     @Autowired
-    private GenericDao<PrecioUnidad, PrecioProductoPK> precioUnidadDao;
+    private Dao<PrecioUnidad, PrecioProductoPK> precioUnidadDao;
 
     @Autowired
-    private GenericDao<Producto, Integer> productoDao;
+    private Dao<Producto, Integer> productoDao;
 
     @Autowired
-    private GenericDao<Pago, Integer> pagoDao;
+    private Dao<Pago, Integer> pagoDao;
 
     @Autowired
-    private GenericDao<Moneda, Integer> monedaDao;
+    private Dao<Moneda, Integer> monedaDao;
 
     @Autowired
-    private GenericDao<Presentacion, Integer> presentacionDao;
+    private Dao<Presentacion, Integer> presentacionDao;
 
     public String create() {
         if (isPresentable(productoId)) {

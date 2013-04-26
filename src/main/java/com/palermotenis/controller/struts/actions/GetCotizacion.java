@@ -1,61 +1,36 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions;
 
-import com.opensymphony.xwork2.ActionSupport;
-import java.io.InputStream;
-import com.palermotenis.util.Convertor;
-import com.palermotenis.util.StringUtility;
+import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- *
- * @author Poly
- */
-public class GetCotizacion extends ActionSupport {
+import com.palermotenis.model.service.precios.impl.PrecioService;
 
-    private Convertor convertor;
-    private InputStream inputStream;
+public class GetCotizacion extends JsonActionSupport {
+
+    private static final long serialVersionUID = -3131323335420585748L;
+
     private String to;
     private String from;
+
+    @Autowired
+    private PrecioService precioService;
 
     @Override
     public String execute() {
         try {
-            Double result = convertor.calculateCotizacion(from, to);
-            inputStream = StringUtility.getInputString(result.toString());
-        } catch (Exception e){            
-            inputStream = StringUtility.getInputString("Error!");
-        }       
+            Double result = precioService.calculateCotizacion(from, to);
+            writeResponse(result.toString());
+        } catch (Exception ex) {
+            failure(ex);
+        }
         return SUCCESS;
     }
 
-    /**
-     * @param to the to to set
-     */
     public void setTo(String to) {
         this.to = to;
     }
 
-    /**
-     * @param from the from to set
-     */
     public void setFrom(String from) {
         this.from = from;
     }
 
-    /**
-     * @return the inputStream
-     */
-    public InputStream getInputStream() {
-        return inputStream;
-    }
-
-    /**
-     * @param currencyConvertor the currencyConvertor to set
-     */
-    public void setConvertor(Convertor convertor) {
-        this.convertor = convertor;
-    }
 }

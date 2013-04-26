@@ -16,9 +16,9 @@ import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import com.google.common.collect.ImmutableMap;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.newsletter.Suscriptor;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 
 /**
@@ -37,7 +37,7 @@ public class AgregarSuscriptor extends JsonActionSupport implements ApplicationA
     private final String NEED_CONFIRMATION = "Hemos enviado un email a la casilla indicada para que confirme su suscripción";
 
     @Autowired
-    private GenericDao<Suscriptor, Integer> suscriptorDao;
+    private Dao<Suscriptor, Integer> suscriptorDao;
 
     @Autowired
     private JavaMailSender mailSender;

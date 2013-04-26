@@ -1,18 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.model.beans.precios.pks;
+
+import java.io.Serializable;
 
 import com.palermotenis.model.beans.Moneda;
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.beans.productos.Producto;
 
-/**
- *
- * @author Poly
- */
-public interface PrecioPK {
+public interface PrecioPK extends Serializable {
 
     public Producto getProducto();
 

@@ -1,47 +1,24 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 package com.palermotenis.model.beans;
 
-import com.palermotenis.controller.carrito.Carrito;
-import com.palermotenis.controller.daos.GenericDao;
-import com.palermotenis.controller.daos.UsuarioService;
-import com.palermotenis.jobs.EnviarListadoStockJob;
-import com.palermotenis.model.beans.geograficos.Ciudad;
-import com.palermotenis.model.beans.precios.PrecioPresentacion;
-import com.palermotenis.model.beans.precios.PrecioUnidad;
-import com.palermotenis.model.beans.precios.pks.PrecioPresentacionPK;
-import com.palermotenis.model.beans.precios.pks.PrecioProductoPK;
-import com.palermotenis.model.beans.productos.Producto;
-import com.palermotenis.model.beans.productos.tipos.TipoProducto;
-import com.palermotenis.model.beans.valores.ValorPosible;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.persistence.EntityManager;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-
-
-import com.palermotenis.util.Convertor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 
@@ -50,7 +27,13 @@ import org.hibernate.CacheMode;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.format.number.CurrencyFormatter;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -61,8 +44,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
+import com.palermotenis.controller.carrito.Carrito;
+import com.palermotenis.jobs.EnviarListadoStockJob;
+import com.palermotenis.model.beans.precios.PrecioPresentacion;
+import com.palermotenis.model.beans.precios.PrecioUnidad;
+import com.palermotenis.model.beans.precios.pks.PrecioPresentacionPK;
+import com.palermotenis.model.beans.precios.pks.PrecioProductoPK;
+import com.palermotenis.model.beans.productos.Producto;
+import com.palermotenis.model.beans.valores.ValorPosible;
+import com.palermotenis.model.dao.Dao;
+
 /**
- *
+ * 
  * @author Poly
  */
 @Transactional
@@ -73,32 +66,28 @@ public class TesteoTest {
     private VelocityEngine velocityEngine;
     private ApplicationContext applicationContext;
     private JavaMailSender mailSender;
-    private UsuarioService usuariosService;
-    private GenericDao<Stock, Integer> stockService;
-    private GenericDao<Producto, Integer> productoService;
-    private GenericDao<Modelo, Integer> modeloService;
-    private GenericDao<TipoProducto, Integer> tipoProductoService;
-    private GenericDao<ValorPosible, Integer> valorPosibleService;
-    private GenericDao<PrecioUnidad, PrecioProductoPK> precioUnidadService;
-    private GenericDao<PrecioPresentacion, PrecioPresentacionPK> precioPresentacionService;
-    private Convertor convertor;
+    private Dao<Stock, Integer> stockService;
+    private Dao<Producto, Integer> productoService;
+    private Dao<Modelo, Integer> modeloService;
+    private Dao<ValorPosible, Integer> valorPosibleService;
+    private Dao<PrecioUnidad, PrecioProductoPK> precioUnidadService;
+    private Dao<PrecioPresentacion, PrecioPresentacionPK> precioPresentacionService;
     private CurrencyFormatter currencyFormatter;
     private Carrito carrito;
     private EnviarListadoStockJob enviarListadoStockJob;
-    private GenericDao<Ciudad, Integer> testDao;
 
-    //@Test
+    // @Test
     public void asASas() {
         List<String> list1 = new ArrayList<String>();
         List<Integer> list2 = new ArrayList<Integer>();
         List<Double> list3 = new ArrayList<Double>();
 
-        list1.add("hola"); //4
-        list1.add("pepe"); //4
-        list2.add(1); //4
-        list2.add(2); //4
-        list2.add(3); //4
-        list3.add(4.0); //4
+        list1.add("hola"); // 4
+        list1.add("pepe"); // 4
+        list2.add(1); // 4
+        list2.add(2); // 4
+        list2.add(3); // 4
+        list3.add(4.0); // 4
         list3.add(5.0);
 
         int cont = 0;
@@ -127,9 +116,9 @@ public class TesteoTest {
             if (o instanceof String) {
                 System.out.print((String) o + "\t");
             } else if (o instanceof Integer) {
-                System.out.print((Integer) o + "\t");
+                System.out.print(o + "\t");
             } else if (o instanceof Double) {
-                System.out.print((Double) o + "\t");
+                System.out.print(o + "\t");
             }
             if (++cont % 3 == 0) {
                 System.out.println("Cont: " + ++cont2);
@@ -149,11 +138,12 @@ public class TesteoTest {
         return list;
     }
 
-    //@Test
+    // @Test
     public void sendMail() {
 
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
 
+            @Override
             public void prepare(MimeMessage mimeMessage) throws Exception {
 
                 MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
@@ -165,11 +155,8 @@ public class TesteoTest {
 
                 Map<String, Object> model = new HashMap<String, Object>();
 
-                String text = VelocityEngineUtils.mergeTemplateIntoString(
-                        velocityEngine,
-                        "com/palermotenis/templates/newsletter/newsletter.vm",
-                        "ISO-8859-1",
-                        model);
+                String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
+                    "com/palermotenis/templates/newsletter/newsletter.vm", "ISO-8859-1", model);
 
                 message.setText(text, true);
             }
@@ -182,15 +169,19 @@ public class TesteoTest {
         Session session = (Session) em.getDelegate();
         EntityTransaction tx = em.getTransaction();
         tx.begin();
-        ScrollableResults stocks = session.getNamedQuery("Stock.findAll").setCacheMode(CacheMode.IGNORE).scroll(ScrollMode.FORWARD_ONLY);
+        ScrollableResults stocks = session
+            .getNamedQuery("Stock.findAll")
+            .setCacheMode(CacheMode.IGNORE)
+            .scroll(ScrollMode.FORWARD_ONLY);
         int count = 0;
         while (stocks.next()) {
             Stock stock = (Stock) stocks.get(0);
             Producto producto = stock.getProducto();
-            //String modeloZF = ("0000" + producto.getModelo().getId()).substring(String.valueOf(producto.getModelo().getId()).length());
+            // String modeloZF = ("0000" +
+            // producto.getModelo().getId()).substring(String.valueOf(producto.getModelo().getId()).length());
             String productoZF = ("0000" + producto.getId()).substring(String.valueOf(producto.getId()).length());
-            String presentacionZF = (stock.getPresentacion() != null)
-                    ? ("0000" + stock.getPresentacion().getId()).substring(String.valueOf(stock.getPresentacion().getId()).length()) : "0000";
+            String presentacionZF = (stock.getPresentacion() != null) ? ("0000" + stock.getPresentacion().getId())
+                .substring(String.valueOf(stock.getPresentacion().getId()).length()) : "0000";
             stock.setCodigoDeBarra(producto.getModelo().getId() + productoZF + presentacionZF);
             em.merge(stock);
             if (++count % 100 == 0) {
@@ -204,7 +195,7 @@ public class TesteoTest {
 
     public void getCotiz() {
 
-        //double start = System.currentTimeMillis();
+        // double start = System.currentTimeMillis();
 
         try {
             String yahooURL = "http://quote.yahoo.com/d/quotes.txt?s=USDARS=X&f=l1&e=.csv";
@@ -224,9 +215,9 @@ public class TesteoTest {
             Logger.getLogger(TesteoTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(TesteoTest.class.getName()).log(Level.SEVERE, null, ex);
-        } /*finally {
-        System.out.println("Yahoo!: " + ((System.currentTimeMillis() - start) / 1000));
-        }*/
+        } /*
+           * finally { System.out.println("Yahoo!: " + ((System.currentTimeMillis() - start) / 1000)); }
+           */
 
     }
 
@@ -240,17 +231,19 @@ public class TesteoTest {
 
     @Before
     public void setUp() {
-        applicationContext = new FileSystemXmlApplicationContext("src/main/resources/spring/applicationContext-business.xml");
+        applicationContext = new FileSystemXmlApplicationContext(
+            "src/main/resources/spring/applicationContext-business.xml");
         mailSender = (JavaMailSender) applicationContext.getBean("mailSender");
         velocityEngine = (VelocityEngine) applicationContext.getBean("velocityEngine");
-        stockService = (GenericDao<Stock, Integer>) applicationContext.getBean("stockService");
-        productoService = (GenericDao<Producto, Integer>) applicationContext.getBean("productoService");
-        modeloService = (GenericDao<Modelo, Integer>) applicationContext.getBean("modeloService");
-        valorPosibleService = (GenericDao<ValorPosible, Integer>) applicationContext.getBean("valorPosibleService");
-        precioUnidadService = (GenericDao<PrecioUnidad, PrecioProductoPK>) applicationContext.getBean("precioUnidadService");
-        precioPresentacionService = (GenericDao<PrecioPresentacion, PrecioPresentacionPK>) applicationContext.getBean("precioPresentacionService");
+        stockService = (Dao<Stock, Integer>) applicationContext.getBean("stockService");
+        productoService = (Dao<Producto, Integer>) applicationContext.getBean("productoService");
+        modeloService = (Dao<Modelo, Integer>) applicationContext.getBean("modeloService");
+        valorPosibleService = (Dao<ValorPosible, Integer>) applicationContext.getBean("valorPosibleService");
+        precioUnidadService = (Dao<PrecioUnidad, PrecioProductoPK>) applicationContext.getBean("precioUnidadService");
+        precioPresentacionService = (Dao<PrecioPresentacion, PrecioPresentacionPK>) applicationContext
+            .getBean("precioPresentacionService");
 
-        //sucursalService = (GenericDao<Sucursal, Integer>) applicationContext.getBean("sucursalService");
+        // sucursalService = (GenericDao<Sucursal, Integer>) applicationContext.getBean("sucursalService");
 
         currencyFormatter = (CurrencyFormatter) applicationContext.getBean("currencyFormatter");
         carrito = (Carrito) applicationContext.getBean("carrito");
@@ -263,8 +256,8 @@ public class TesteoTest {
 
     @After
     public void tearDown() {
-        //EntityManagerHolder holder = (EntityManagerHolder) TransactionSynchronizationManager.getResource(emf);
-        //holder.getEntityManager().
+        // EntityManagerHolder holder = (EntityManagerHolder) TransactionSynchronizationManager.getResource(emf);
+        // holder.getEntityManager().
         TransactionSynchronizationManager.unbindResource(emf);
         EntityManagerFactoryUtils.closeEntityManager(em);
     }

@@ -15,9 +15,9 @@ import net.sf.json.util.CycleDetectionStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ImmutableMap;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.pedidos.Pedido;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -33,7 +33,7 @@ public class BuscarPedido extends JsonActionSupport {
     private String searchVal;
 
     @Autowired
-    private GenericDao<Pedido, Integer> pedidoDao;
+    private Dao<Pedido, Integer> pedidoDao;
 
     static {
         CONFIG.registerJsonBeanProcessor(Pedido.class, new JsonBeanProcessor() {
@@ -119,7 +119,7 @@ public class BuscarPedido extends JsonActionSupport {
      * @param pedidoService
      *            the pedidosService to set
      */
-    public void setPedidoService(GenericDao<Pedido, Integer> pedidoService) {
+    public void setPedidoService(Dao<Pedido, Integer> pedidoService) {
         this.pedidoDao = pedidoService;
     }
 }

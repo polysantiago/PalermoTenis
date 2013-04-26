@@ -3,8 +3,8 @@ package com.palermotenis.controller.struts.actions.admin.ventas;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.ventas.Listado;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -19,7 +19,7 @@ public class ListarListado extends ActionSupport {
     private String listadoId;
 
     @Autowired
-    private GenericDao<Listado, String> listadoDao;
+    private Dao<Listado, String> listadoDao;
 
     @Override
     public String execute() {

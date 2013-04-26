@@ -17,7 +17,7 @@ import javax.persistence.ManyToOne;
  */
 @Entity
 @DiscriminatorValue("T")
-public class AtributoTipado extends Atributo {
+public class AtributoTipado extends AtributoSimple {
     
     @JoinColumn(name = "ValorPosible", referencedColumnName = "ID")
     @ManyToOne(optional = true, fetch = FetchType.LAZY)

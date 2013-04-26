@@ -6,7 +6,7 @@ package com.palermotenis.model.beans.atributos.tipos;
 
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.beans.*;
-import com.palermotenis.model.beans.atributos.Atributo;
+import com.palermotenis.model.beans.atributos.AtributoSimple;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
@@ -71,7 +71,7 @@ public class TipoAtributo implements Serializable {
     private TipoProducto tipoProducto;
 
     @OneToMany(mappedBy = "tipoAtributo", fetch = FetchType.LAZY)
-    private Collection<Atributo> atributos;
+    private Collection<AtributoSimple> atributos;
 
     @Transient
     private transient final char tipo = 'S';
@@ -157,14 +157,14 @@ public class TipoAtributo implements Serializable {
     /**
      * @return the atributos
      */
-    public Collection<Atributo> getAtributos() {
+    public Collection<AtributoSimple> getAtributos() {
         return atributos;
     }
 
     /**
      * @param atributos the atributos to set
      */
-    public void setAtributos(Collection<Atributo> atributos) {
+    public void setAtributos(Collection<AtributoSimple> atributos) {
         this.atributos = atributos;
     }
 

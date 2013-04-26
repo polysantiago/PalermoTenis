@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 
 /**
@@ -27,10 +27,10 @@ public class GetPresentacionesByTipo extends ActionSupport {
     private InputStream inputStream;
 
     @Autowired
-    private GenericDao<Presentacion, Integer> presentacionDao;
+    private Dao<Presentacion, Integer> presentacionDao;
 
     @Autowired
-    private GenericDao<TipoPresentacion, Integer> tipoPresentacionDao;
+    private Dao<TipoPresentacion, Integer> tipoPresentacionDao;
 
     private Integer tipoPresentacionId;
 

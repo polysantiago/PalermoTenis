@@ -10,8 +10,8 @@ import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.newsletter.Suscriptor;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -24,7 +24,7 @@ public class QuitarSuscriptor extends ActionSupport {
     private String email;
 
     @Autowired
-    private GenericDao<Suscriptor, Integer> suscriptorDao;
+    private Dao<Suscriptor, Integer> suscriptorDao;
 
     @Override
     public String execute() {

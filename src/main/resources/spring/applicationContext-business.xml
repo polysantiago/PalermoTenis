@@ -16,8 +16,8 @@
     http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
     http://www.springframework.org/schema/util
     http://www.springframework.org/schema/util/spring-util-3.2.xsd">
-
-	<context:annotation-config />
+	
+	<context:component-scan base-package="com.palermotenis.model.service,com.palermotenis.model.dao,com.palermotenis.controller.struts.actions" />
 
     <!-- Web Services -->
     <bean class="com.palermotenis.model.ws.MyJaxRpcPortProxyFactoryBean" id="currencyConvertor">

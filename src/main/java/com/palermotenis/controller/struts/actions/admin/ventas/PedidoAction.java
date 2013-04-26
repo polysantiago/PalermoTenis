@@ -3,9 +3,9 @@ package com.palermotenis.controller.struts.actions.admin.ventas;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.pedidos.Pedido;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -18,7 +18,7 @@ public class PedidoAction extends JsonActionSupport {
     private Integer pedidoId;
 
     @Autowired
-    private GenericDao<Pedido, Integer> pedidoDao;
+    private Dao<Pedido, Integer> pedidoDao;
 
     public String destroy() {
         try {

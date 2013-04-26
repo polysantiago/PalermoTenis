@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.productos.Producto;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -20,7 +20,7 @@ public class GetProductosRelacionados extends ActionSupport {
     private List<Producto> productos;
 
     @Autowired
-    private GenericDao<Producto, Integer> productoDao;
+    private Dao<Producto, Integer> productoDao;
 
     @Override
     public String execute() {

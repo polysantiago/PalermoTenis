@@ -12,10 +12,10 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -29,10 +29,10 @@ public class PrepararPresentaciones extends ActionSupport {
     private InputStream inputStream;
 
     @Autowired
-    private GenericDao<TipoProducto, Integer> tipoProductoDao;
+    private Dao<TipoProducto, Integer> tipoProductoDao;
 
     @Autowired
-    private GenericDao<Producto, Integer> productoDao;
+    private Dao<Producto, Integer> productoDao;
 
     @Override
     public String execute() {

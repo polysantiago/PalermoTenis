@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Categoria;
+import com.palermotenis.model.dao.Dao;
 
 /**
  *
@@ -19,7 +19,7 @@ public class GetCategorias extends ActionSupport {
 	private List<Categoria> categorias;
     
     @Autowired
-    private GenericDao<Categoria, Integer> categoriaDao;
+    private Dao<Categoria, Integer> categoriaDao;
     
     @Override
     public String execute() {

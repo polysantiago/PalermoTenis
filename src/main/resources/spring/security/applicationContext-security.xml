@@ -16,7 +16,6 @@
 
     <bean id="springSecurityFilterChain" class="org.springframework.security.web.FilterChainProxy">
         <sec:filter-chain-map request-matcher="ant">
-        	<sec:filter-chain filters="none" pattern="/static/**" />
             <sec:filter-chain filters="none" pattern="/css/**" />
             <sec:filter-chain filters="none" pattern="/flash/**" />
             <sec:filter-chain filters="none" pattern="/images/**" />
@@ -69,7 +68,7 @@
     </bean>
 
     <bean id="rememberMeServices" class="org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices">
-        <property name="userDetailsService" ref="usuariosService"/>
+        <property name="userDetailsService" ref="usuarioService"/>
         <property name="tokenRepository" ref="persistentTokenRepository" />
         <property name="key" value="PalermoTenisKey"/>
     </bean>
@@ -80,7 +79,7 @@
 
     <!-- Authentication Providers -->
     <bean id="daoAuthenticationProvider" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
-        <property name="userDetailsService" ref="usuariosService"/>
+        <property name="userDetailsService" ref="usuarioService"/>
         <property name="passwordEncoder" ref="passwordEncoder"/>
     </bean>
 

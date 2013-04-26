@@ -9,9 +9,9 @@ import net.sf.json.JsonConfig;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.Moneda;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -30,7 +30,7 @@ public class MonedaAction extends JsonActionSupport {
     private Collection<Moneda> monedas;
 
     @Autowired
-    private GenericDao<Moneda, Integer> monedaDao;
+    private Dao<Moneda, Integer> monedaDao;
 
     public String show() {
         monedas = monedaDao.findAll();

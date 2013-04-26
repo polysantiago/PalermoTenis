@@ -10,18 +10,14 @@ import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ImmutableMap;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.pedidos.Pedido;
 import com.palermotenis.model.beans.pedidos.PedidoProducto;
 import com.palermotenis.model.beans.pedidos.PedidoProductoPK;
-import com.palermotenis.util.Convertor;
+import com.palermotenis.model.dao.Dao;
+import com.palermotenis.model.service.precios.impl.PrecioService;
 
-/**
- * 
- * @author Poly
- */
 public class PedidoProductoAction extends JsonActionSupport {
 
     private static final long serialVersionUID = -2042943340293648023L;
@@ -34,16 +30,16 @@ public class PedidoProductoAction extends JsonActionSupport {
     private Integer newStockId;
 
     @Autowired
-    private GenericDao<PedidoProducto, PedidoProductoPK> pedidoProductoDao;
+    private Dao<PedidoProducto, PedidoProductoPK> pedidoProductoDao;
 
     @Autowired
-    private GenericDao<Pedido, Integer> pedidoDao;
+    private Dao<Pedido, Integer> pedidoDao;
 
     @Autowired
-    private GenericDao<Stock, Integer> stockDao;
+    private Dao<Stock, Integer> stockDao;
 
     @Autowired
-    private Convertor convertor;
+    private PrecioService precioService;
 
     public String list() {
         pedido = pedidoDao.find(getPedidoId());
@@ -57,10 +53,10 @@ public class PedidoProductoAction extends JsonActionSupport {
             Stock stock = stockDao.find(stockId);
             Pedido pedido = pedidoDao.find(pedidoId);
             PedidoProducto pp = new PedidoProducto(new PedidoProductoPK(pedido, stock), 1);
-            pp.setSubtotal(convertor.calculateSubtotalPesos(convertor.estimarPrecio(pp), 1));
+            pp.setSubtotal(precioService.calculateSubtotalPesos(precioService.estimarPrecio(pp), 1));
             pedidoProductoDao.create(pp);
 
-            double total = convertor.calculateTotalPesos(pedido.getPedidosProductos());
+            double total = precioService.calculateTotalPesos(pedido.getPedidosProductos());
             pedido.setTotal(total);
             pedidoDao.edit(pedido);
 
@@ -79,8 +75,8 @@ public class PedidoProductoAction extends JsonActionSupport {
         PedidoProducto pedidoProducto = pedidoProductoDao.find(new PedidoProductoPK(pedido, stock));
         pedidoProducto.setCantidad(cantidad);
 
-        double subtotal = convertor.calculateSubtotalPesos(convertor.estimarPrecio(pedidoProducto), cantidad);
-        double total = convertor.calculateTotalPesos(pedido.getPedidosProductos());
+        double subtotal = precioService.calculateSubtotalPesos(precioService.estimarPrecio(pedidoProducto), cantidad);
+        double total = precioService.calculateTotalPesos(pedido.getPedidosProductos());
         pedidoProducto.setSubtotal(subtotal);
         pedido.setTotal(total);
 
@@ -104,11 +100,11 @@ public class PedidoProductoAction extends JsonActionSupport {
 
             Stock newStock = stockDao.find(newStockId);
             PedidoProducto pp = new PedidoProducto(new PedidoProductoPK(p, newStock), 1);
-            double subtotal = convertor.calculateSubtotalPesos(convertor.estimarPrecio(pp), 1);
+            double subtotal = precioService.calculateSubtotalPesos(precioService.estimarPrecio(pp), 1);
             pp.setSubtotal(subtotal);
             pedidoProductoDao.create(pp);
 
-            double total = convertor.calculateTotalPesos(p.getPedidosProductos());
+            double total = precioService.calculateTotalPesos(p.getPedidosProductos());
             p.setTotal(total);
             pedidoDao.edit(p);
 
@@ -127,7 +123,7 @@ public class PedidoProductoAction extends JsonActionSupport {
             Pedido p = pedidoDao.find(pedidoId);
             PedidoProducto pedidoProducto = pedidoProductoDao.find(new PedidoProductoPK(p, stockDao.find(stockId)));
             pedidoProductoDao.destroy(pedidoProducto);
-            p.setTotal(convertor.calculateTotalPesos(p.getPedidosProductos()));
+            p.setTotal(precioService.calculateTotalPesos(p.getPedidosProductos()));
             createJSON(SUCCESS, "OK", p.getTotal());
         } catch (HibernateException ex) {
             createErrorJSON(ex);

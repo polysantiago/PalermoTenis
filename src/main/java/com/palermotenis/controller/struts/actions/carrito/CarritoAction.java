@@ -20,13 +20,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.palermotenis.controller.carrito.Carrito;
 import com.palermotenis.controller.carrito.Item;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.valores.ValorClasificatorio;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.SecurityUtil;
 
 /**
@@ -59,19 +59,19 @@ public class CarritoAction extends JsonActionSupport {
     private int itemQty = 0;
 
     @Autowired
-    private GenericDao<Producto, Integer> productoDao;
+    private Dao<Producto, Integer> productoDao;
 
     @Autowired
-    private GenericDao<Presentacion, Integer> presentacionDao;
+    private Dao<Presentacion, Integer> presentacionDao;
 
     @Autowired
-    private GenericDao<ValorClasificatorio, Integer> valorClasificatorioDao;
+    private Dao<ValorClasificatorio, Integer> valorClasificatorioDao;
 
     @Autowired
-    private GenericDao<Pago, Integer> pagoDao;
+    private Dao<Pago, Integer> pagoDao;
 
     @Autowired
-    private GenericDao<Stock, Integer> stockDao;
+    private Dao<Stock, Integer> stockDao;
 
     public String add() {
         Producto producto = productoDao.find(productoId);

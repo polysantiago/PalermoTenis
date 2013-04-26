@@ -25,10 +25,10 @@ import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.web.context.ServletContextAware;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Modelo;
 import com.palermotenis.model.beans.imagenes.Imagen;
 import com.palermotenis.model.beans.imagenes.tipos.TipoImagen;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 import com.palermotenis.util.imagen.ImagenUtil;
 
@@ -52,13 +52,13 @@ public class ImagenAction extends ActionSupport implements ServletContextAware {
     private ServletContext servletContext;
 
     @Autowired
-    private GenericDao<Modelo, Integer> modeloDao;
+    private Dao<Modelo, Integer> modeloDao;
 
     @Autowired
-    private GenericDao<Imagen, Integer> imagenDao;
+    private Dao<Imagen, Integer> imagenDao;
 
     @Autowired
-    private GenericDao<TipoImagen, Character> tipoImagenDao;
+    private Dao<TipoImagen, Character> tipoImagenDao;
 
     @Autowired
     private PasswordEncoder passwordEncoder;

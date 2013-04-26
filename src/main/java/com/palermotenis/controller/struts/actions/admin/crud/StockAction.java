@@ -1,33 +1,14 @@
 package com.palermotenis.controller.struts.actions.admin.crud;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.Stock;
-import com.palermotenis.model.beans.Sucursal;
-import com.palermotenis.model.beans.atributos.tipos.TipoAtributoClasificatorio;
-import com.palermotenis.model.beans.presentaciones.Presentacion;
-import com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion;
-import com.palermotenis.model.beans.productos.Producto;
-import com.palermotenis.model.beans.productos.tipos.ClasificableState;
-import com.palermotenis.model.beans.productos.tipos.DefaultState;
-import com.palermotenis.model.beans.productos.tipos.PresentableAndClasificableState;
-import com.palermotenis.model.beans.productos.tipos.PresentableState;
-import com.palermotenis.model.beans.productos.tipos.State;
-import com.palermotenis.model.beans.productos.tipos.TipoProducto;
-import com.palermotenis.model.beans.valores.ValorClasificatorio;
+import com.palermotenis.model.service.stock.StockService;
 
-/**
- * 
- * @author Poly
- */
 public class StockAction extends JsonActionSupport {
 
     private static final long serialVersionUID = 5299928945994232297L;
@@ -37,7 +18,6 @@ public class StockAction extends JsonActionSupport {
 
     private Collection<Stock> stocks;
     private Stock stock;
-    private Producto producto;
     private Integer stockId;
     private Integer cantidad;
     private Integer productoId;
@@ -46,69 +26,15 @@ public class StockAction extends JsonActionSupport {
     private boolean clasificable;
 
     @Autowired
-    private GenericDao<Stock, Integer> stockDao;
-
-    @Autowired
-    private GenericDao<ValorClasificatorio, Integer> valorClasificatorioDao;
-
-    @Autowired
-    private GenericDao<Producto, Integer> productoDao;
-
-    @Autowired
-    private GenericDao<Presentacion, Integer> presentacionDao;
-
-    @Autowired
-    private GenericDao<Sucursal, Integer> sucursalDao;
+    private StockService stockService;
 
     public String show() {
-        producto = productoDao.find(productoId);
-        Map<String, Object> args = new HashMap<String, Object>();
-        args.put("producto", producto);
-        if (clasificable) {
-            stocks = stockDao.queryBy("ProductoClasificable", args);
-            total = stockDao.getIntResultBy("Producto,SumOfStock", "producto", producto);
-            return SHOW_CLASF;
-        } else {
-            stock = stockDao.findBy("ProductoClasificable", "producto", producto);
-            return SHOW_ONE;
-        }
+        return clasificable ? SHOW_CLASF : SHOW_ONE;
     }
 
     public String fixStock() {
-        Producto p = productoDao.find(productoId);
-
         try {
-            for (Stock s : p.getStocks()) {
-                stockDao.destroy(s);
-            }
-
-            TipoProducto tp = p.getTipoProducto();
-            List<ValorClasificatorio> vc = null;
-            List<Presentacion> prs = null;
-
-            Collection<TipoAtributoClasificatorio> tac = tp.getTiposAtributoClasificatorios();
-            if (tp.isClasificable() && tac != null && !tac.isEmpty()) {
-                vc = valorClasificatorioDao.queryBy("TipoAtributoList", "tipoAtributoList", tac);
-            }
-
-            Collection<TipoPresentacion> tpr = tp.getTiposPresentacion();
-            if (tp.isPresentable() && tpr != null && !tpr.isEmpty()) {
-                prs = presentacionDao.queryBy("TipoList", "tipoList", tpr);
-            }
-
-            List<Sucursal> ss = sucursalDao.findAll();
-
-            State state = new DefaultState(p, ss);
-            if (isClasificable(tp, tac) && isPresentable(tp, tpr)) {
-                state = new PresentableAndClasificableState(p, ss, vc, prs);
-            } else if (isClasificable(tp, tac)) {
-                state = new ClasificableState(p, ss, vc);
-            } else if (isPresentable(tp, tpr)) {
-                state = new PresentableState(p, ss, prs);
-            }
-            state.setStockDao(stockDao);
-            state.createStock();
-
+            stockService.fixStock(productoId);
             success();
         } catch (HibernateException ex) {
             failure(ex);
@@ -117,22 +43,19 @@ public class StockAction extends JsonActionSupport {
     }
 
     public String create() {
-        Stock s = new Stock();
         if (clasificable) {
-            s.setValorClasificatorio(valorClasificatorioDao.find(valorClasificatorioId));
+            stockService.createNewStock(productoId, valorClasificatorioId, cantidad);
+        } else {
+            stockService.createNewStock(productoId, cantidad);
         }
-        s.setProducto(productoDao.find(productoId));
-        s.setStock(cantidad);
-        stockDao.create(s);
+
         success();
         return JSON;
     }
 
     public String edit() {
         try {
-            Stock s = stockDao.find(stockId);
-            s.setStock(cantidad);
-            stockDao.edit(s);
+            stockService.updateQuantity(stockId, cantidad);
             success();
         } catch (HibernateException ex) {
             failure(ex);
@@ -144,7 +67,7 @@ public class StockAction extends JsonActionSupport {
 
     public String destroy() {
         try {
-            stockDao.destroy(stockDao.find(stockId));
+            stockService.delete(stockId);
             success();
         } catch (HibernateException ex) {
             failure(ex);
@@ -152,18 +75,13 @@ public class StockAction extends JsonActionSupport {
         return JSON;
     }
 
-    private boolean isClasificable(TipoProducto tipoProducto, Collection<TipoAtributoClasificatorio> collection) {
-        return tipoProducto.isClasificable() && collection != null && !collection.isEmpty();
-    }
-
-    private boolean isPresentable(TipoProducto tipoProducto, Collection<TipoPresentacion> collection) {
-        return tipoProducto.isPresentable() && collection != null && !collection.isEmpty();
-    }
-
     /**
      * @return the stocks
      */
     public Collection<Stock> getStocks() {
+        if (stocks == null) {
+            stocks = stockService.getStocksByProductoClasificable(productoId);
+        }
         return stocks;
     }
 
@@ -171,6 +89,9 @@ public class StockAction extends JsonActionSupport {
      * @return the stock
      */
     public Stock getStock() {
+        if (stock == null) {
+            stock = stockService.getStockByProductoClasificable(productoId);
+        }
         return stock;
     }
 
@@ -215,16 +136,12 @@ public class StockAction extends JsonActionSupport {
     }
 
     /**
-     * @return the producto
-     */
-    public Producto getProducto() {
-        return producto;
-    }
-
-    /**
      * @return the total
      */
     public Integer getTotal() {
+        if (total == null) {
+            total = stockService.getSumOfStockByProducto(productoId);
+        }
         return total;
     }
 }

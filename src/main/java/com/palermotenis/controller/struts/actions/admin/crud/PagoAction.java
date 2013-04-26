@@ -8,9 +8,9 @@ import net.sf.json.JSONSerializer;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.Pago;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -27,7 +27,7 @@ public class PagoAction extends JsonActionSupport {
     private Collection<Pago> pagos;
 
     @Autowired
-    private GenericDao<Pago, Integer> pagoDao;
+    private Dao<Pago, Integer> pagoDao;
 
     public String show() {
         pagos = pagoDao.findAll();

@@ -12,9 +12,9 @@ import net.sf.json.JsonConfig;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.proveedores.Proveedor;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -29,7 +29,7 @@ public class ProveedorAction extends JsonActionSupport {
     private Collection<Proveedor> proveedores;
 
     @Autowired
-    private GenericDao<Proveedor, Integer> proveedorDao;
+    private Dao<Proveedor, Integer> proveedorDao;
 
     public String show() {
         proveedores = proveedorDao.findAll();

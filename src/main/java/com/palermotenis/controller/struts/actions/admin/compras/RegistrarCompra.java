@@ -12,13 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.controller.struts.actions.admin.ventas.ConfirmarVenta;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.compras.Compra;
 import com.palermotenis.model.beans.compras.ProductoCompra;
 import com.palermotenis.model.beans.proveedores.Proveedor;
 import com.palermotenis.model.beans.usuarios.Usuario;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 
 /**
@@ -36,13 +36,13 @@ public class RegistrarCompra extends ActionSupport {
     private final Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     @Autowired
-    private GenericDao<Stock, Integer> stockDao;
+    private Dao<Stock, Integer> stockDao;
 
     @Autowired
-    private GenericDao<Proveedor, Integer> proveedorDao;
+    private Dao<Proveedor, Integer> proveedorDao;
 
     @Autowired
-    private GenericDao<Compra, Integer> compraDao;
+    private Dao<Compra, Integer> compraDao;
 
     @Override
     public String execute() {

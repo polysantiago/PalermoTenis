@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.number.CurrencyFormatter;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Modelo;
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.beans.Stock;
@@ -19,13 +18,10 @@ import com.palermotenis.model.beans.precios.Precio;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.proveedores.Proveedor;
-import com.palermotenis.util.Convertor;
+import com.palermotenis.model.dao.Dao;
+import com.palermotenis.model.service.precios.impl.PrecioService;
 import com.palermotenis.util.StringUtility;
 
-/**
- * 
- * @author Poly
- */
 public class GetProductosAutoCompleteList extends ActionSupport {
 
     private static final long serialVersionUID = -7155980564935536463L;
@@ -37,22 +33,22 @@ public class GetProductosAutoCompleteList extends ActionSupport {
     private int limit;
 
     @Autowired
-    private GenericDao<Pago, Integer> pagoDao;
+    private Dao<Pago, Integer> pagoDao;
 
     @Autowired
-    private GenericDao<Stock, Integer> stockDao;
+    private Dao<Stock, Integer> stockDao;
 
     @Autowired
-    private GenericDao<Costo, Integer> costoDao;
+    private Dao<Costo, Integer> costoDao;
 
     @Autowired
-    private GenericDao<Proveedor, Integer> proveedorDao;
+    private Dao<Proveedor, Integer> proveedorDao;
 
     @Autowired
     private CurrencyFormatter currencyFormatter;
 
     @Autowired
-    private Convertor convertor;
+    private PrecioService precioService;
 
     public String active() {
         Map<String, Object> args = new HashMap<String, Object>();
@@ -64,7 +60,7 @@ public class GetProductosAutoCompleteList extends ActionSupport {
             Producto producto = s.getProducto();
             Modelo modelo = producto.getModelo();
             Presentacion presentacion = s.getPresentacion();
-            Precio precio = convertor.estimarPrecio(s, pagoDao.find(1), 1);
+            Precio precio = precioService.estimarPrecio(s, pagoDao.find(1), 1);
 
             sb.append(s.getId()).append('|');
             sb.append(producto.getTipoProducto().getNombre()).append('|');
@@ -83,7 +79,7 @@ public class GetProductosAutoCompleteList extends ActionSupport {
                 sb.append(s.getValorClasificatorio().getNombre()).append('|');
             }
             if (precio != null && (precio.getValor() != null || precio.getValorOferta() != null)) {
-                Double valor = convertor.calculatePrecioUnitarioPesos(precio);
+                Double valor = precioService.calculatePrecioUnitarioPesos(precio);
                 sb.append(currencyFormatter.print(valor, LOCALE_ES_AR)).append('|');
             }
             sb.deleteCharAt(sb.length() - 1);
@@ -104,7 +100,7 @@ public class GetProductosAutoCompleteList extends ActionSupport {
             Producto producto = s.getProducto();
             Modelo modelo = producto.getModelo();
             Presentacion presentacion = s.getPresentacion();
-            Precio precio = convertor.estimarPrecio(s, pagoDao.find(1), 1);
+            Precio precio = precioService.estimarPrecio(s, pagoDao.find(1), 1);
 
             sb.append(s.getId()).append('|');
             sb.append(producto.getTipoProducto().getNombre()).append('|');
@@ -123,7 +119,7 @@ public class GetProductosAutoCompleteList extends ActionSupport {
                 sb.append(s.getValorClasificatorio().getNombre()).append('|');
             }
             if (precio != null && (precio.getValor() != null || precio.getValorOferta() != null)) {
-                sb.append(convertor.calculatePrecioUnitarioPesos(precio)).append('|');
+                sb.append(precioService.calculatePrecioUnitarioPesos(precio)).append('|');
             }
             sb.deleteCharAt(sb.length() - 1);
             sb.append("\n");

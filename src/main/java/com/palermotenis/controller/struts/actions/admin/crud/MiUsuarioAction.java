@@ -6,9 +6,8 @@ import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.UsuarioService;
-import com.palermotenis.controller.daos.exceptions.NonexistentEntityException;
 import com.palermotenis.model.beans.usuarios.Usuario;
+import com.palermotenis.model.dao.usuario.UsuarioDao;
 
 public class MiUsuarioAction extends ActionSupport {
 
@@ -21,7 +20,7 @@ public class MiUsuarioAction extends ActionSupport {
     private String rptContrasenia;
 
     @Autowired
-    private UsuarioService usuariosService;
+    private UsuarioDao usuarioDao;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -30,10 +29,10 @@ public class MiUsuarioAction extends ActionSupport {
         try {
             getUsuario().setUsuario(username);
             getUsuario().setPassword(passwordEncoder.encodePassword(contrasenia, null));
-            usuariosService.edit(getUsuario());
-        } catch (NonexistentEntityException ex) {
-            logger.error("No existe el usuario", ex);
-            return ERROR;
+            usuarioDao.edit(getUsuario());
+            // } catch (NonexistentEntityException ex) {
+            // logger.error("No existe el usuario", ex);
+            // return ERROR;
         } catch (Exception ex) {
             logger.error("Error - ", ex);
             return ERROR;
@@ -43,7 +42,7 @@ public class MiUsuarioAction extends ActionSupport {
 
     @Override
     public void validate() {
-        if (!getUsuario().getUsername().equals(username) && !usuariosService.findUsuariosByUsername(username).isEmpty()) {
+        if (!getUsuario().getUsername().equals(username) && !usuarioDao.getUsuariosByUsername(username).isEmpty()) {
             addFieldError("username", "Este nombre de usuario ya está registrado");
         }
     }

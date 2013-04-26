@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.pedidos.Pedido;
 import com.palermotenis.model.beans.pedidos.PedidoProducto;
@@ -23,6 +22,7 @@ import com.palermotenis.model.beans.ventas.Listado;
 import com.palermotenis.model.beans.ventas.ProductoVenta;
 import com.palermotenis.model.beans.ventas.StockListado;
 import com.palermotenis.model.beans.ventas.Venta;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 
 /**
@@ -43,16 +43,16 @@ public class ConfirmarVenta extends ActionSupport {
     private Map<Integer, Integer> cantidades = new HashMap<Integer, Integer>();
 
     @Autowired
-    private GenericDao<Pedido, Integer> pedidoDao;
+    private Dao<Pedido, Integer> pedidoDao;
 
     @Autowired
-    private GenericDao<Listado, String> listadoDao;
+    private Dao<Listado, String> listadoDao;
 
     @Autowired
-    private GenericDao<Venta, Integer> ventaDao;
+    private Dao<Venta, Integer> ventaDao;
 
     @Autowired
-    private GenericDao<Stock, Integer> stockDao;
+    private Dao<Stock, Integer> stockDao;
 
     public String confirmarPedido() {
 

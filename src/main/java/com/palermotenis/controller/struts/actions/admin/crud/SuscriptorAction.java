@@ -5,8 +5,8 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.newsletter.Suscriptor;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -24,7 +24,7 @@ public class SuscriptorAction extends ActionSupport {
     private int firstResult;
 
     @Autowired
-    private GenericDao<Suscriptor, Integer> suscriptorDao;
+    private Dao<Suscriptor, Integer> suscriptorDao;
 
     public String list() {
         suscriptores = suscriptorDao.findAll(getMaxResults(), getFirstResult());

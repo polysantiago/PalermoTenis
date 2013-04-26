@@ -1,15 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.palermotenis.model.beans.usuarios;
 
-import com.palermotenis.model.beans.authorities.Rol;
-import com.palermotenis.model.beans.clientes.Cliente;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,22 +17,23 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
 import org.hibernate.annotations.Proxy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-/**
- *
- * @author Poly
- */
+import com.palermotenis.model.beans.authorities.Rol;
+import com.palermotenis.model.beans.clientes.Cliente;
+
 @Entity
 @Table(name = "usuarios")
-@NamedQueries({
-    @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u"),
-    @NamedQuery(name = "Usuario.findByUsuario", query = "SELECT u FROM Usuario u WHERE u.usuario = :usuario"),
-    @NamedQuery(name = "Usuario.findByPassword", query = "SELECT u FROM Usuario u WHERE u.password = :password"),
-    @NamedQuery(name = "Usuario.findByActivo", query = "SELECT u FROM Usuario u WHERE u.activo = :activo")})
-@Proxy(lazy=false)
+@NamedQueries(
+    {
+            @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u"),
+            @NamedQuery(name = "Usuario.findByUsuario", query = "SELECT u FROM Usuario u WHERE u.usuario = :usuario"),
+            @NamedQuery(name = "Usuario.findByPassword", query = "SELECT u FROM Usuario u WHERE u.password = :password"),
+            @NamedQuery(name = "Usuario.findByActivo", query = "SELECT u FROM Usuario u WHERE u.activo = :activo") })
+@Proxy(lazy = false)
 public class Usuario implements Serializable, UserDetails {
     private static final long serialVersionUID = 1L;
     @Id
@@ -54,18 +49,18 @@ public class Usuario implements Serializable, UserDetails {
     @Column(name = "activo")
     private boolean activo;
 
-
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "authorities",
-        joinColumns = @JoinColumn(name = "usuario"),
-        inverseJoinColumns = @JoinColumn(name = "rol"))
+    @JoinTable(name = "authorities", joinColumns = @JoinColumn(name = "usuario"), inverseJoinColumns = @JoinColumn(
+            name = "rol"))
     private Collection<Rol> roles;
 
-    @OneToOne(optional = true, cascade = {CascadeType.MERGE,CascadeType.REMOVE})
+    @OneToOne(optional = true, cascade =
+        { CascadeType.MERGE, CascadeType.REMOVE })
     @JoinColumn(name = "cliente")
     private Cliente cliente;
 
-    public Usuario() {}
+    public Usuario() {
+    }
 
     public Usuario(String usuario) {
         this.usuario = usuario;
@@ -85,6 +80,7 @@ public class Usuario implements Serializable, UserDetails {
         this.usuario = usuario;
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
@@ -103,13 +99,14 @@ public class Usuario implements Serializable, UserDetails {
 
     /**
      * @return the cliente
-     */    
+     */
     public Cliente getCliente() {
         return cliente;
     }
 
     /**
-     * @param cliente the cliente to set
+     * @param cliente
+     *            the cliente to set
      */
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
@@ -123,25 +120,26 @@ public class Usuario implements Serializable, UserDetails {
     }
 
     /**
-     * @param roles the roles to set
+     * @param roles
+     *            the roles to set
      */
     public void setRoles(Collection<Rol> roles) {
         this.roles = roles;
     }
 
     public void addRol(Rol rol) {
-        if(roles == null){
+        if (roles == null) {
             roles = new ArrayList<Rol>();
         }
         if (hasRol(rol)) {
-            //TODO handle exception
+            // TODO handle exception
         }
         getRoles().add(rol);
     }
 
     public void removeRol(Rol rol) {
         if (!hasRol(rol)) {
-            //TODO handle exception
+            // TODO handle exception
         }
         getRoles().remove(rol);
     }
@@ -164,7 +162,8 @@ public class Usuario implements Serializable, UserDetails {
             return false;
         }
         Usuario other = (Usuario) object;
-        if ((this.usuario == null && other.usuario != null) || (this.usuario != null && !this.usuario.equals(other.usuario))) {
+        if ((this.usuario == null && other.usuario != null)
+                || (this.usuario != null && !this.usuario.equals(other.usuario))) {
             return false;
         }
         return true;
@@ -175,26 +174,33 @@ public class Usuario implements Serializable, UserDetails {
         return "Usuario[usuario=" + usuario + "]";
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     public Collection<GrantedAuthority> getAuthorities() {
-        return (Collection<GrantedAuthority>)(Object)getRoles();
+        return (Collection<GrantedAuthority>) (Object) getRoles();
     }
 
+    @Override
     public String getUsername() {
         return usuario;
     }
 
+    @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    @Override
     public boolean isEnabled() {
         return activo;
     }

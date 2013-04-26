@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.clientes.Cliente;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -22,7 +22,7 @@ public class BuscarCliente extends ActionSupport {
     private Collection<Cliente> clientes;
 
     @Autowired
-    private GenericDao<Cliente, Integer> clienteDao;
+    private Dao<Cliente, Integer> clienteDao;
 
     @Override
     public String execute() {

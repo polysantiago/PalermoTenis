@@ -5,9 +5,9 @@ import java.util.Collection;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -26,7 +26,7 @@ public class TipoProductoAction extends JsonActionSupport {
     private Boolean presentable;
 
     @Autowired
-    private GenericDao<TipoProducto, Integer> tipoProductoDao;
+    private Dao<TipoProducto, Integer> tipoProductoDao;
 
     public String show() {
         tiposProducto = tipoProductoDao.findAll();

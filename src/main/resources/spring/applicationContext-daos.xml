@@ -13,10 +13,7 @@
 
     <bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor" />
 
-    <!-- Usuarios -->
-    <bean class="com.palermotenis.controller.daos.UsuarioServiceImpl" id="usuariosService" />
-
-    <bean class="com.palermotenis.controller.daos.ApplicationInitListener">
+    <!--  bean class="com.palermotenis.controller.daos.ApplicationInitListener">
         <property name="daos">
             <list>
                 <value>com.palermotenis.model.beans.Categoria</value>
@@ -82,7 +79,7 @@
                 <value>com.palermotenis.model.beans.ventas.Venta</value>
             </list>
         </property>
-    </bean>
+    </bean-->
 
 
 

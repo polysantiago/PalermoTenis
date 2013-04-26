@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Modelo;
 import com.palermotenis.model.beans.atributos.AtributoMultipleValores;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
@@ -19,6 +18,7 @@ import com.palermotenis.model.beans.atributos.tipos.TipoAtributoMultipleValores;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion;
 import com.palermotenis.model.beans.productos.Producto;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -42,10 +42,10 @@ public class MostrarProducto extends ActionSupport {
     private Map<TipoAtributoMultipleValores, StringBuilder> multiplesMap = new HashMap<TipoAtributoMultipleValores, StringBuilder>();
 
     @Autowired
-    private GenericDao<Modelo, Integer> modeloDao;
+    private Dao<Modelo, Integer> modeloDao;
 
     @Autowired
-    private GenericDao<TipoAtributo, Integer> tipoAtributoDao;
+    private Dao<TipoAtributo, Integer> tipoAtributoDao;
 
     @Override
     public String execute() {

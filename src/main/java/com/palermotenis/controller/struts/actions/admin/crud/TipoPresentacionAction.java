@@ -13,10 +13,10 @@ import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ImmutableMap;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -35,10 +35,10 @@ public class TipoPresentacionAction extends JsonActionSupport {
     private Collection<TipoPresentacion> tiposPresentacion;
 
     @Autowired
-    private GenericDao<TipoPresentacion, Integer> tipoPresentacionDao;
+    private Dao<TipoPresentacion, Integer> tipoPresentacionDao;
 
     @Autowired
-    private GenericDao<TipoProducto, Integer> tipoProductoDao;
+    private Dao<TipoProducto, Integer> tipoProductoDao;
 
     public String show() {
         TipoProducto tipoProducto = tipoProductoDao.find(tipoProductoId);

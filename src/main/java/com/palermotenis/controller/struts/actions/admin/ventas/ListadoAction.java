@@ -8,11 +8,11 @@ import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.ventas.Listado;
 import com.palermotenis.model.beans.ventas.StockListado;
 import com.palermotenis.model.beans.ventas.StockListadoPK;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.SecurityUtil;
 
 /**
@@ -34,13 +34,13 @@ public class ListadoAction extends ActionSupport {
     private String accion;
 
     @Autowired
-    private GenericDao<Listado, String> listadoDao;
+    private Dao<Listado, String> listadoDao;
 
     @Autowired
-    private GenericDao<StockListado, StockListadoPK> stockListadoDao;
+    private Dao<StockListado, StockListadoPK> stockListadoDao;
 
     @Autowired
-    private GenericDao<Stock, Integer> stockDao;
+    private Dao<Stock, Integer> stockDao;
 
     @Autowired
     private SecurityUtil securityUtil;

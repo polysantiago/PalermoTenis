@@ -7,9 +7,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.authorities.Rol;
 import com.palermotenis.model.beans.usuarios.Usuario;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 
 /**
@@ -24,7 +24,7 @@ public class CheckRol extends ActionSupport {
     private InputStream inputStream;
     
     @Autowired
-    private GenericDao<Rol, Integer> rolDao;
+    private Dao<Rol, Integer> rolDao;
     
 
     public String check() {

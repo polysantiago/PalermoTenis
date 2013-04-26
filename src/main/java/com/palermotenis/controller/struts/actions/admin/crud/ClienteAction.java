@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.clientes.Cliente;
 import com.palermotenis.model.beans.newsletter.Suscriptor;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 
 /**
@@ -23,10 +23,10 @@ public class ClienteAction extends ActionSupport {
     private Cliente cliente = new Cliente();
 
     @Autowired
-    private GenericDao<Cliente, Integer> clienteDao;
+    private Dao<Cliente, Integer> clienteDao;
 
     @Autowired
-    private GenericDao<Suscriptor, Integer> suscriptorDao;
+    private Dao<Suscriptor, Integer> suscriptorDao;
 
     public String create() {
         clienteDao.create(cliente);

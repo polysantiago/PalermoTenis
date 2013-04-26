@@ -7,11 +7,11 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.precios.PrecioPresentacion;
 import com.palermotenis.model.beans.precios.pks.PrecioPresentacionPK;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -23,13 +23,13 @@ public class GetPrecioValorPosible
     private static final Logger logger = Logger.getLogger(GetPrecioValorPosible.class);
 
     private static final long serialVersionUID = 2108253535821338518L;
-    private GenericDao<PrecioPresentacion, PrecioPresentacionPK> precioPresentacionDao;
+    private Dao<PrecioPresentacion, PrecioPresentacionPK> precioPresentacionDao;
 
     private Collection<PrecioPresentacion> precios;
 
-    private GenericDao<Presentacion, Integer> presentacionDao;
+    private Dao<Presentacion, Integer> presentacionDao;
     private Integer presentacionId;
-    private GenericDao<Producto, Integer> productoDao;
+    private Dao<Producto, Integer> productoDao;
 
     private Integer productoId;
 

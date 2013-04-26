@@ -10,9 +10,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.model.beans.usuarios.Usuario;
 import com.palermotenis.model.beans.ventas.Listado;
+import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.SecurityUtil;
 
 /**
@@ -34,7 +34,7 @@ public class Autorizar extends ActionSupport {
     private Listado listado;
 
     @Autowired
-    private GenericDao<Listado, String> listadoDao;
+    private Dao<Listado, String> listadoDao;
 
     @Autowired
     private AuthenticationManager authenticationManager;

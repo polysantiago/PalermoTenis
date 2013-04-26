@@ -16,13 +16,13 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.google.common.collect.ImmutableMap;
-import com.palermotenis.controller.daos.GenericDao;
 import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.Unidad;
-import com.palermotenis.model.beans.atributos.Atributo;
+import com.palermotenis.model.beans.atributos.AtributoSimple;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
 import com.palermotenis.model.beans.atributos.tipos.clasif.TipoAtributoClasif;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
+import com.palermotenis.model.dao.Dao;
 
 /**
  * 
@@ -48,16 +48,16 @@ public class TipoAtributoAction extends JsonActionSupport {
     private PlatformTransactionManager transactionManager;
 
     @Autowired
-    private GenericDao<TipoAtributo, Integer> tipoAtributoDao;
+    private Dao<TipoAtributo, Integer> tipoAtributoDao;
 
     @Autowired
-    private GenericDao<TipoAtributoClasif, Character> tipoAtributoClasifDao;
+    private Dao<TipoAtributoClasif, Character> tipoAtributoClasifDao;
 
     @Autowired
-    private GenericDao<TipoProducto, Integer> tipoProductoDao;
+    private Dao<TipoProducto, Integer> tipoProductoDao;
 
     @Autowired
-    private GenericDao<Unidad, Integer> unidadDao;
+    private Dao<Unidad, Integer> unidadDao;
 
     public String show() {
         TipoProducto tipoProducto = tipoProductoDao.find(tipoProductoId);
@@ -140,7 +140,7 @@ public class TipoAtributoAction extends JsonActionSupport {
             }
 
             if (tipoAtributo.getClase() == Double.class && clase.equals("java.lang.Integer")) {
-                for (Atributo a : tipoAtributo.getAtributos()) {
+                for (AtributoSimple a : tipoAtributo.getAtributos()) {
                     if (a.getValor() != null && a.getValor().getUnidad() != null) {
                         int i = (int) ((Double) a.getValor().getUnidad()).doubleValue();
                         a.getValor().setUnidad(Integer.valueOf(i));
