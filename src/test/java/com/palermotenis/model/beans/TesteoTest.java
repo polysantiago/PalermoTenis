@@ -156,7 +156,7 @@ public class TesteoTest {
                 Map<String, Object> model = new HashMap<String, Object>();
 
                 String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
-                    "com/palermotenis/templates/newsletter/newsletter.vm", "ISO-8859-1", model);
+                    "templates/newsletter/newsletter.vm", "ISO-8859-1", model);
 
                 message.setText(text, true);
             }

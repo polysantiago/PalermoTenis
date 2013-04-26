@@ -44,6 +44,7 @@ import com.palermotenis.util.StringUtility;
  */
 public class EnviarPedido extends ActionSupport implements ServletRequestAware {
 
+    private static final String PEDIDO_TEMPLATE = "templates/mail/pedido.vm";
     private static final long serialVersionUID = -8773400739393474328L;
     private static final Logger logger = Logger.getLogger(CarritoAction.class);
     private static final Locale LOCALE_ES_AR = new Locale("es", "AR");
@@ -129,8 +130,8 @@ public class EnviarPedido extends ActionSupport implements ServletRequestAware {
                     .put("locale", LOCALE_ES_AR)
                     .build();
 
-                String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
-                    "com/palermotenis/templates/mail/pedido.vm", "ISO-8859-1", model);
+                String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, PEDIDO_TEMPLATE,
+                    "ISO-8859-1", model);
 
                 message.setText(text, true);
             }

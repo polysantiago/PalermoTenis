@@ -27,6 +27,8 @@ import com.palermotenis.util.StringUtility;
  */
 public class AgregarSuscriptor extends JsonActionSupport implements ApplicationAware {
 
+    private static final String CONFIRMACION_TEMPLATE = "templates/mail/confirmacionNewsletter.vm";
+
     private static final long serialVersionUID = 5127795631209333548L;
 
     private String email;
@@ -95,8 +97,8 @@ public class AgregarSuscriptor extends JsonActionSupport implements ApplicationA
                     .put("domain", application.get("domain"))
                     .build();
 
-                String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
-                    "com/palermotenis/templates/mail/confirmacionNewsletter.vm", "ISO-8859-1", model);
+                String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, CONFIRMACION_TEMPLATE,
+                    "ISO-8859-1", model);
 
                 message.setText(text, true);
             }

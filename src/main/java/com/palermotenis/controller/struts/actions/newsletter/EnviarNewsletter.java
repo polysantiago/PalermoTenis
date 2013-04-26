@@ -61,6 +61,7 @@ public class EnviarNewsletter extends ActionSupport implements ApplicationContex
 
     private class EnviarNewsletterTask implements Runnable {
 
+        private static final String NEWSLETTER_TEMPLATE = "templates/newsletter/newsletter.vm";
         private final String to;
 
         public EnviarNewsletterTask(String to) {
@@ -87,7 +88,7 @@ public class EnviarNewsletter extends ActionSupport implements ApplicationContex
                         ImageIO.read(resource.getFile())).build();
 
                     String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
-                        "com/palermotenis/templates/newsletter/newsletter.vm", "ISO-8859-1", model);
+                        NEWSLETTER_TEMPLATE, "ISO-8859-1", model);
 
                     message.setText(text, true);
                 }
