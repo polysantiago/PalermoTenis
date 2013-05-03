@@ -30,8 +30,8 @@ import com.palermotenis.model.exceptions.IllegalValueException;
 @Entity
 @Table(name = "atributos", catalog = "palermotenis", schema = "")
 @NamedQueries(
-    { @NamedQuery(name = "Atributo.findByProducto,Tipo",
-            query = "SELECT a FROM Atributo a WHERE a.tipoAtributo = :tipoAtributo AND a.producto = :producto") })
+    { @NamedQuery(name = "AtributoSimple.findByProducto,Tipo",
+            query = "SELECT a FROM AtributoSimple a WHERE a.tipoAtributo = :tipoAtributo AND a.producto = :producto") })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorFormula("(SELECT t.tipo FROM tipo_atributos t WHERE t.ID = TipoAtributo)")
 @DiscriminatorValue("S")

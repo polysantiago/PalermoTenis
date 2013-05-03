@@ -38,4 +38,9 @@ public class ValorClasificatorio extends ValorPosible {
         this.stocks = stocks;
     }
 
+    @Override
+    public String toString() {
+        return "ValorClasificatorio[unidad=" + getUnidad() + "]";
+    }
+
 }

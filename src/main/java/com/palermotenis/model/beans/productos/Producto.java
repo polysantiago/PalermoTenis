@@ -32,9 +32,9 @@ import org.hibernate.annotations.Where;
 
 import com.palermotenis.model.beans.Modelo;
 import com.palermotenis.model.beans.Stock;
-import com.palermotenis.model.beans.atributos.AtributoSimple;
 import com.palermotenis.model.beans.atributos.AtributoClasificatorio;
 import com.palermotenis.model.beans.atributos.AtributoMultipleValores;
+import com.palermotenis.model.beans.atributos.AtributoSimple;
 import com.palermotenis.model.beans.atributos.AtributoTipado;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributoClasificatorio;
@@ -488,6 +488,11 @@ public class Producto implements Serializable {
             }
         }
         return atributosT;
+    }
+
+    @Override
+    public String toString() {
+        return "Producto[nombre=" + modelo.getNombre() + "]";
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.palermotenis.controller.struts.actions.admin.crud;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -9,80 +8,63 @@ import java.util.logging.Logger;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.results.ImageCapable;
+import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.Marca;
-import com.palermotenis.model.dao.Dao;
-import com.palermotenis.util.StringUtility;
+import com.palermotenis.model.service.marcas.MarcaService;
 
-/**
- * 
- * @author Poly
- */
-public class MarcaAction extends ActionSupport implements ImageCapable {
+public class MarcaAction extends JsonActionSupport implements ImageCapable {
 
     private static final long serialVersionUID = 5928001748528938792L;
 
-    private final String SHOW = "show";
     private final String SHOW_IMAGE = "showImage";
-    private final String JSON = "json";
 
     private Collection<Marca> marcas;
+
     private Integer marcaId;
     private String nombre;
-    private InputStream inputStream;
 
     private Marca tmpMarca;
 
     @Autowired
-    private Dao<Marca, Integer> marcaDao;
+    private MarcaService marcaService;
 
     public String show() {
-        marcas = marcaDao.findAll();
         return SHOW;
     }
 
     public String create() {
-        Marca marca = new Marca();
-        marca.setNombre(nombre);
-        marcaDao.create(marca);
-
-        inputStream = StringUtility.getInputString("OK");
+        marcaService.createNewMarca(nombre);
+        success();
         return JSON;
     }
 
     public String edit() {
         try {
-            Marca marca = marcaDao.find(marcaId);
-            marca.setNombre(nombre);
-            marcaDao.edit(marca);
-            inputStream = StringUtility.getInputString("OK");
+            marcaService.updateMarca(marcaId, nombre);
+            success();
         } catch (HibernateException ex) {
-            Logger.getLogger(TipoProductoAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+            failure(ex);
         } catch (Exception ex) {
-            Logger.getLogger(TipoProductoAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+            failure(ex);
         }
         return JSON;
     }
 
     public String destroy() {
         try {
-            marcaDao.destroy(marcaDao.find(marcaId));
-            inputStream = StringUtility.getInputString("OK");
+            marcaService.deleteMarca(marcaId);
+            success();
         } catch (HibernateException ex) {
-            Logger.getLogger(TipoProductoAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+            failure(ex);
         } catch (Exception ex) {
-            Logger.getLogger(TipoProductoAction.class.getName()).log(Level.SEVERE, null, ex);
-            inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+            failure(ex);
         }
         return JSON;
     }
 
     public String showImage() {
-        tmpMarca = marcaDao.find(marcaId);
+        tmpMarca = marcaService.getMarcaById(marcaId);
         return SHOW_IMAGE;
     }
 
@@ -99,40 +81,26 @@ public class MarcaAction extends ActionSupport implements ImageCapable {
     @Override
     public int getContentLength() {
         try {
-            return (tmpMarca == null) ? inputStream.available() : (int) tmpMarca.getImagen().length;
+            return (tmpMarca == null) ? getInputStream().available() : (int) tmpMarca.getImagen().length;
         } catch (IOException ex) {
             Logger.getLogger(MarcaAction.class.getName()).log(Level.SEVERE, null, ex);
         }
         return 0;
     }
 
-    /**
-     * @return the marcas
-     */
     public Collection<Marca> getMarcas() {
+        if (marcas == null) {
+            marcas = marcaService.getAllMarcas();
+        }
         return marcas;
     }
 
-    /**
-     * @param marcaId
-     *            the marcaId to set
-     */
     public void setMarcaId(Integer marcaId) {
         this.marcaId = marcaId;
     }
 
-    /**
-     * @param nombre
-     *            the nombre to set
-     */
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
-    /**
-     * @return the inputStream
-     */
-    public InputStream getInputStream() {
-        return inputStream;
-    }
 }

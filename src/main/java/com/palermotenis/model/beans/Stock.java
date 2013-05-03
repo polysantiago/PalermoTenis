@@ -1,15 +1,11 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 package com.palermotenis.model.beans;
 
-import com.palermotenis.model.beans.pedidos.PedidoProducto;
-import com.palermotenis.model.beans.productos.Producto;
-import com.palermotenis.model.beans.presentaciones.Presentacion;
-import com.palermotenis.model.beans.valores.ValorClasificatorio;
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,36 +22,82 @@ import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
+import com.palermotenis.model.beans.pedidos.PedidoProducto;
+import com.palermotenis.model.beans.presentaciones.Presentacion;
+import com.palermotenis.model.beans.productos.Producto;
+import com.palermotenis.model.beans.valores.ValorClasificatorio;
+
 /**
- *
+ * 
  * @author Poly
  */
 @Entity
 @Table(name = "stock")
-@NamedQueries({
-    @NamedQuery(name = "Stock.findAll", query = "SELECT s FROM Stock s"),
-    @NamedQuery(name = "Stock.findById", query = "SELECT s FROM Stock s WHERE s.id = :id"),
-    @NamedQuery(name = "Stock.findByStock", query = "SELECT s FROM Stock s WHERE s.stock = :stock"),
-    @NamedQuery(name = "Stock.findByProducto", query = "SELECT s FROM Stock s WHERE s.producto = :producto"),
-    @NamedQuery(name = "Stock.findByProducto-CountPrecio", query = "SELECT COUNT(s) FROM Stock s LEFT JOIN s.producto.preciosUnidad p LEFT JOIN s.producto.preciosCantidad pc WHERE s.producto = :producto AND (s.presentacion = null OR s.presentacion = pc.id.presentacion)"),
-    @NamedQuery(name = "Stock.findByProductoClasificable", query = "SELECT s FROM Stock s LEFT JOIN s.presentacion p LEFT JOIN p.tipoPresentacion tp LEFT JOIN s.valorClasificatorio vc WHERE s.producto = :producto ORDER BY s.sucursal.nombre DESC, vc.valor, tp.nombre, p.cantidad"),
-    @NamedQuery(name = "Stock.findByProducto,SumOfStock", query = "SELECT SUM(s.stock) FROM Stock s WHERE s.producto = :producto GROUP BY s.producto"),
-    @NamedQuery(name = "Stock.findByProducto,ValorClasificatorio", query = "SELECT s FROM Stock s WHERE s.producto = :producto AND s.valorClasificatorio = :valorClasificatorio"),
-    @NamedQuery(name = "Stock.findByProducto,Presentacion", query = "SELECT s FROM Stock s WHERE s.producto = :producto AND s.presentacion = :presentacion"),
-    @NamedQuery(name = "Stock.findByProducto,Presentacion-Active", query = "SELECT s FROM Stock s WHERE s.producto = :producto AND s.presentacion = :presentacion AND s.stock > 0"),
-    @NamedQuery(name = "Stock.findByProducto,Presentacion,ValorClasificatorio", query = "SELECT s FROM Stock s WHERE s.producto = :producto AND s.valorClasificatorio = :valorClasificatorio AND s.presentacion = :presentacion ORDER BY s.producto.modelo.nombre"),
-    @NamedQuery(name = "Stock.findByTipoProducto", query = "SELECT DISTINCT s FROM Stock s WHERE s.producto.tipoProducto = :tipoProducto"),
-    @NamedQuery(name = "Stock.findByTipoProducto-Count", query = "SELECT COUNT(s) FROM Stock s WHERE s.producto.tipoProducto = :tipoProducto"),
-    @NamedQuery(name = "Stock.findByTipoProducto-CountPrecio", query = "SELECT COUNT(s) FROM Stock s LEFT JOIN s.producto.preciosUnidad p LEFT JOIN s.producto.preciosCantidad pc WHERE s.producto.tipoProducto = :tipoProducto AND (s.presentacion = null OR s.presentacion = pc.id.presentacion)"),
-    @NamedQuery(name = "Stock.findByTipoProducto,Marca", query = "SELECT DISTINCT s FROM Stock s WHERE s.producto.tipoProducto = :tipoProducto AND s.producto.modelo.marca = :marca"),
-    @NamedQuery(name = "Stock.findByTipoProducto,Marca-Count", query = "SELECT COUNT(s) FROM Stock s WHERE s.producto.tipoProducto = :tipoProducto AND s.producto.modelo.marca = :marca"),
-    @NamedQuery(name = "Stock.findByTipoProducto,Marca-CountPrecio", query = "SELECT COUNT(s) FROM Stock s LEFT JOIN s.producto.preciosUnidad p LEFT JOIN s.producto.preciosCantidad pc WHERE s.producto.tipoProducto = :tipoProducto AND s.producto.modelo.marca = :marca AND (s.presentacion = null OR s.presentacion = pc.id.presentacion)"),
-    @NamedQuery(name = "Stock.findByModelo", query = "SELECT s FROM Stock s WHERE s.producto.modelo = :modelo"),
-    @NamedQuery(name = "Stock.findByModelo-Count", query = "SELECT COUNT(s) FROM Stock s WHERE s.producto.modelo = :modelo"),
-    @NamedQuery(name = "Stock.findByModelo-CountPrecio", query = "SELECT COUNT(s) FROM Stock s LEFT JOIN s.producto.preciosUnidad p LEFT JOIN s.producto.preciosCantidad pc WHERE s.producto.modelo = :modelo"),
-    @NamedQuery(name = "Stock.findByNombre", query = "SELECT s FROM Stock s JOIN s.producto.modelo m LEFT JOIN s.producto.modelo.padre p WHERE m.nombre LIKE :nombre OR p.nombre LIKE :nombre OR m.marca.nombre LIKE :nombre or s.producto.tipoProducto.nombre LIKE :nombre)"),
-    @NamedQuery(name = "Stock.findByNombre-Active", query = "SELECT s FROM Stock s JOIN s.producto.modelo m LEFT JOIN s.producto.modelo.padre p WHERE s.stock > 0 AND (m.nombre LIKE :nombre OR p.nombre LIKE :nombre OR m.marca.nombre LIKE :nombre OR s.producto.tipoProducto.nombre LIKE :nombre)")
-})
+@NamedQueries(
+    {
+            @NamedQuery(name = "Stock.findAll", query = "SELECT s FROM Stock s"),
+            @NamedQuery(name = "Stock.findById", query = "SELECT s FROM Stock s WHERE s.id = :id"),
+            @NamedQuery(name = "Stock.findByStock", query = "SELECT s FROM Stock s WHERE s.stock = :stock"),
+            @NamedQuery(name = "Stock.findByProducto", query = "SELECT s FROM Stock s WHERE s.producto = :producto"),
+            @NamedQuery(
+                    name = "Stock.findByProducto-CountPrecio",
+                    query = "SELECT COUNT(s) FROM Stock s LEFT JOIN s.producto.preciosUnidad p LEFT JOIN s.producto.preciosCantidad pc WHERE s.producto = :producto AND (s.presentacion = null OR s.presentacion = pc.id.presentacion)"),
+            @NamedQuery(
+                    name = "Stock.findByProductoClasificable",
+                    query = "SELECT s FROM Stock s LEFT JOIN s.presentacion p LEFT JOIN p.tipoPresentacion tp LEFT JOIN s.valorClasificatorio vc WHERE s.producto = :producto ORDER BY s.sucursal.nombre DESC, vc.valor, tp.nombre, p.cantidad"),
+            @NamedQuery(name = "Stock.findByProducto,SumOfStock",
+                    query = "SELECT SUM(s.stock) FROM Stock s WHERE s.producto = :producto GROUP BY s.producto"),
+            @NamedQuery(
+                    name = "Stock.findByProducto,ValorClasificatorio",
+                    query = "SELECT s FROM Stock s WHERE s.producto = :producto AND s.valorClasificatorio = :valorClasificatorio"),
+            @NamedQuery(name = "Stock.findByProducto,Presentacion",
+                    query = "SELECT s FROM Stock s WHERE s.producto = :producto AND s.presentacion = :presentacion"),
+            @NamedQuery(
+                    name = "Stock.findByProducto,Presentacion-Active",
+                    query = "SELECT s FROM Stock s WHERE s.producto = :producto AND s.presentacion = :presentacion AND s.stock > 0"),
+            @NamedQuery(
+                    name = "Stock.findByProducto,Presentacion,ValorClasificatorio",
+                    query = "SELECT s FROM Stock s WHERE s.producto = :producto AND s.valorClasificatorio = :valorClasificatorio AND s.presentacion = :presentacion ORDER BY s.producto.modelo.nombre"),
+            @NamedQuery(name = "Stock.findByProducto,Sucursal",
+                    query = "SELECT s FROM Stock s WHERE s.producto = :producto AND s.sucursal = :sucursal"),
+            @NamedQuery(
+                    name = "Stock.findByProducto,Sucursal,Presentacion",
+                    query = "SELECT s FROM Stock s WHERE s.producto = :producto AND s.sucursal = :sucursal AND s.presentacion = :presentacion"),
+            @NamedQuery(
+                    name = "Stock.findByProducto,Sucursal,ValorClasificatorio",
+                    query = "SELECT s FROM Stock s WHERE s.producto = :producto AND s.valorClasificatorio = :valorClasificatorio AND s.sucursal = :sucursal"),
+            @NamedQuery(
+                    name = "Stock.findByProducto,Sucursal,ValorClasificatorio,Presentacion",
+                    query = "SELECT s FROM Stock s WHERE s.producto = :producto AND s.valorClasificatorio = :valorClasificatorio AND s.presentacion = :presentacion AND s.sucursal = :sucursal"),
+            @NamedQuery(name = "Stock.findByTipoProducto",
+                    query = "SELECT DISTINCT s FROM Stock s WHERE s.producto.tipoProducto = :tipoProducto"),
+            @NamedQuery(name = "Stock.findByTipoProducto-Count",
+                    query = "SELECT COUNT(s) FROM Stock s WHERE s.producto.tipoProducto = :tipoProducto"),
+            @NamedQuery(
+                    name = "Stock.findByTipoProducto-CountPrecio",
+                    query = "SELECT COUNT(s) FROM Stock s LEFT JOIN s.producto.preciosUnidad p LEFT JOIN s.producto.preciosCantidad pc WHERE s.producto.tipoProducto = :tipoProducto AND (s.presentacion = null OR s.presentacion = pc.id.presentacion)"),
+            @NamedQuery(
+                    name = "Stock.findByTipoProducto,Marca",
+                    query = "SELECT DISTINCT s FROM Stock s WHERE s.producto.tipoProducto = :tipoProducto AND s.producto.modelo.marca = :marca"),
+            @NamedQuery(
+                    name = "Stock.findByTipoProducto,Marca-Count",
+                    query = "SELECT COUNT(s) FROM Stock s WHERE s.producto.tipoProducto = :tipoProducto AND s.producto.modelo.marca = :marca"),
+            @NamedQuery(
+                    name = "Stock.findByTipoProducto,Marca-CountPrecio",
+                    query = "SELECT COUNT(s) FROM Stock s LEFT JOIN s.producto.preciosUnidad p LEFT JOIN s.producto.preciosCantidad pc WHERE s.producto.tipoProducto = :tipoProducto AND s.producto.modelo.marca = :marca AND (s.presentacion = null OR s.presentacion = pc.id.presentacion)"),
+            @NamedQuery(name = "Stock.findByModelo", query = "SELECT s FROM Stock s WHERE s.producto.modelo = :modelo"),
+            @NamedQuery(name = "Stock.findByModelo-Count",
+                    query = "SELECT COUNT(s) FROM Stock s WHERE s.producto.modelo = :modelo"),
+            @NamedQuery(
+                    name = "Stock.findByModelo-CountPrecio",
+                    query = "SELECT COUNT(s) FROM Stock s LEFT JOIN s.producto.preciosUnidad p LEFT JOIN s.producto.preciosCantidad pc WHERE s.producto.modelo = :modelo"),
+            @NamedQuery(
+                    name = "Stock.findByNombre",
+                    query = "SELECT s FROM Stock s JOIN s.producto.modelo m LEFT JOIN s.producto.modelo.padre p WHERE m.nombre LIKE :nombre OR p.nombre LIKE :nombre OR m.marca.nombre LIKE :nombre or s.producto.tipoProducto.nombre LIKE :nombre)"),
+            @NamedQuery(
+                    name = "Stock.findByNombre-Active",
+                    query = "SELECT s FROM Stock s JOIN s.producto.modelo m LEFT JOIN s.producto.modelo.padre p WHERE s.stock > 0 AND (m.nombre LIKE :nombre OR p.nombre LIKE :nombre OR m.marca.nombre LIKE :nombre OR s.producto.tipoProducto.nombre LIKE :nombre)"),
+            @NamedQuery(name = "Stock.findBySucursal", query = "SELECT s FROM Stock s WHERE s.sucursal = :sucursal") })
 public class Stock implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -103,7 +145,8 @@ public class Stock implements Serializable {
         this.presentacion = presentacion;
     }
 
-    public Stock(Producto producto, Sucursal sucursal, ValorClasificatorio valorClasificatorio, Presentacion presentacion) {
+    public Stock(Producto producto, Sucursal sucursal, ValorClasificatorio valorClasificatorio,
+            Presentacion presentacion) {
         this.producto = producto;
         this.sucursal = sucursal;
         this.valorClasificatorio = valorClasificatorio;
@@ -158,7 +201,8 @@ public class Stock implements Serializable {
     }
 
     /**
-     * @param presentacion the presentacion to set
+     * @param presentacion
+     *            the presentacion to set
      */
     public void setPresentacion(Presentacion presentacion) {
         this.presentacion = presentacion;
@@ -206,15 +250,18 @@ public class Stock implements Serializable {
 
     @Override
     public String toString() {
-        return "Stock[" + id + "]";
+        return "Stock[producto=" + producto + ",sucursal= " + sucursal + ",valorClasificatorio=" + valorClasificatorio
+                + ",presentacion=" + presentacion + "]";
     }
 
     @PrePersist
     public void createCodigoDeBarras() {
-        String modeloZF = ("0000" + producto.getModelo().getId()).substring(String.valueOf(producto.getModelo().getId()).length());
+        String modeloZF = ("0000" + producto.getModelo().getId()).substring(String
+            .valueOf(producto.getModelo().getId())
+            .length());
         String productoZF = ("0000" + producto.getId()).substring(String.valueOf(producto.getId()).length());
-        String presentacionZF = (presentacion != null)
-                ? ("0000" + presentacion.getId()).substring(String.valueOf(presentacion.getId()).length()) : "0000";
+        String presentacionZF = (presentacion != null) ? ("0000" + presentacion.getId()).substring(String.valueOf(
+            presentacion.getId()).length()) : "0000";
         setCodigoDeBarra(modeloZF + productoZF + presentacionZF);
     }
 }

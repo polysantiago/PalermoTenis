@@ -28,11 +28,11 @@ import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.beans.valores.Valor;
 import com.palermotenis.model.beans.valores.ValorClasificatorio;
 import com.palermotenis.model.beans.valores.ValorPosible;
-import com.palermotenis.model.dao.Dao;
 import com.palermotenis.model.dao.atributos.AtributoMultipleValoresDao;
 import com.palermotenis.model.dao.atributos.AtributoSimpleDao;
 import com.palermotenis.model.dao.atributos.AtributoTipadoDao;
 import com.palermotenis.model.service.atributos.AtributoService;
+import com.palermotenis.model.service.atributos.tipos.TipoAtributoService;
 import com.palermotenis.model.service.presentaciones.PresentacionService;
 import com.palermotenis.model.service.stock.StockService;
 import com.palermotenis.model.service.sucursales.SucursalService;
@@ -64,10 +64,7 @@ public class AtributoServiceImpl implements AtributoService {
     private StockService stockService;
 
     @Autowired
-    private Dao<TipoAtributo, Integer> tipoAtributoDao;
-
-    @Autowired
-    private Dao<ValorPosible, Integer> valorPosibleDao;
+    private TipoAtributoService tipoAtributoService;
 
     @Override
     public void delete(AtributoSimple atributo) {
@@ -243,11 +240,11 @@ public class AtributoServiceImpl implements AtributoService {
     }
 
     private ValorPosible getValorPosible(Integer valorPosibleId) {
-        return valorPosibleDao.find(valorPosibleId);
+        return valorService.getValorPosibleById(valorPosibleId);
     }
 
     private TipoAtributo getTipoAtributo(Integer tipoAtributoId) {
-        return tipoAtributoDao.find(tipoAtributoId);
+        return tipoAtributoService.getTipoAtributoById(tipoAtributoId);
     }
 
     @Override

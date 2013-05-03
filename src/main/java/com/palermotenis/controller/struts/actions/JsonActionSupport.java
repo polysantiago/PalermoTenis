@@ -36,7 +36,7 @@ public class JsonActionSupport extends ActionSupport implements GZIPCapable {
 
     protected void failure(Exception ex) {
         logger.error(ex.getMessage(), ex);
-        inputStream = StringUtility.getInputString(ex.getLocalizedMessage());
+        writeResponse(ex.getLocalizedMessage());
     }
 
     @Override

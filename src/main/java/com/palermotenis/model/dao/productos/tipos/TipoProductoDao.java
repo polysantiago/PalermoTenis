@@ -9,4 +9,6 @@ public interface TipoProductoDao extends Dao<TipoProducto, Integer> {
 
     List<TipoProducto> getRootsTipoProducto();
 
+    List<Object[]> getTiposProductoAndMarcasAndProductoCount();
+
 }

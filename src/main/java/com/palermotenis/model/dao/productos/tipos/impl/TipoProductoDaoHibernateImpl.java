@@ -17,4 +17,12 @@ public class TipoProductoDaoHibernateImpl extends AbstractHibernateDao<TipoProdu
         return query("Childless");
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Object[]> getTiposProductoAndMarcasAndProductoCount() {
+        return getEntityManager().createQuery(
+            "select t,m, (select count(*) from Producto p where p.tipoProducto = t and p.modelo.marca = m) "
+                    + "from TipoProducto t, Marca m order by t.nombre, m.nombre").getResultList();
+    }
+
 }

@@ -7,17 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.palermotenis.controller.struts.actions.JsonActionSupport;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
-import com.palermotenis.model.dao.Dao;
+import com.palermotenis.model.service.productos.tipos.TipoProductoService;
 
-/**
- * 
- * @author Poly
- */
 public class TipoProductoAction extends JsonActionSupport {
 
     private static final long serialVersionUID = 5098335306548843831L;
-
-    private final String SHOW = "show";
 
     private Collection<TipoProducto> tiposProducto;
 
@@ -26,26 +20,21 @@ public class TipoProductoAction extends JsonActionSupport {
     private Boolean presentable;
 
     @Autowired
-    private Dao<TipoProducto, Integer> tipoProductoDao;
+    private TipoProductoService tipoProductoService;
 
     public String show() {
-        tiposProducto = tipoProductoDao.findAll();
         return SHOW;
     }
 
     public String create() {
-        tipoProductoDao.create(new TipoProducto(nombre, presentable));
+        tipoProductoService.createNewTipoProducto(nombre, presentable);
         success();
         return JSON;
     }
 
     public String edit() {
         try {
-            TipoProducto tipoProducto = tipoProductoDao.find(tipoProductoId);
-            tipoProducto.setNombre(nombre);
-            tipoProducto.setPresentable(presentable);
-
-            tipoProductoDao.edit(tipoProducto);
+            tipoProductoService.updateTipoProducto(tipoProductoId, nombre, presentable);
             success();
         } catch (HibernateException ex) {
             failure(ex);
@@ -57,7 +46,7 @@ public class TipoProductoAction extends JsonActionSupport {
 
     public String destroy() {
         try {
-            tipoProductoDao.destroy(tipoProductoDao.find(tipoProductoId));
+            tipoProductoService.deleteTipoProducto(tipoProductoId);
             success();
         } catch (HibernateException ex) {
             failure(ex);
@@ -67,33 +56,21 @@ public class TipoProductoAction extends JsonActionSupport {
         return JSON;
     }
 
-    /**
-     * @return the tiposProducto
-     */
     public Collection<TipoProducto> getTiposProducto() {
+        if (tiposProducto == null) {
+            tiposProducto = tipoProductoService.getAllTipoProducto();
+        }
         return tiposProducto;
     }
 
-    /**
-     * @param tipoProductoId
-     *            the tipoProductoId to set
-     */
     public void setTipoProductoId(Integer tipoProductoId) {
         this.tipoProductoId = tipoProductoId;
     }
 
-    /**
-     * @param nombre
-     *            the nombre to set
-     */
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
-    /**
-     * @param presentable
-     *            the presentable to set
-     */
     public void setPresentable(Boolean presentable) {
         this.presentable = presentable;
     }

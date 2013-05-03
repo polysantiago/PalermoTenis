@@ -158,19 +158,6 @@
     </bean>-->
     <!-- END XStream -->
 
-    <!-- Currency Convertor -->
-    <bean class="com.palermotenis.util.Convertor" id="convertor" >
-        <property name="currencyConvertor" ref="currencyConvertor"/>        
-    </bean>
-    <!-- END Currency Convertor -->
-
-    <!-- Carrito -->
-    <bean class="com.palermotenis.controller.carrito.CarritoImpl" id="carrito" scope="session">
-        <property name="pagoService" ref="pagoService"/>
-        <property name="convertor" ref="convertor"/>
-        <aop:scoped-proxy/>
-    </bean>
-
     <bean class="org.springframework.web.context.support.ServletContextAttributeExporter">
         <property name="attributes">
             <map>

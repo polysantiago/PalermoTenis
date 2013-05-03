@@ -1,16 +1,12 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 
 package com.palermotenis.model.beans.presentaciones;
 
-import com.palermotenis.model.beans.Stock;
-import com.palermotenis.model.beans.precios.PrecioPresentacion;
-import com.palermotenis.model.beans.productos.Producto;
-import com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion;
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -27,24 +23,35 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import com.palermotenis.model.beans.Stock;
+import com.palermotenis.model.beans.precios.PrecioPresentacion;
+import com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion;
+import com.palermotenis.model.beans.productos.Producto;
+
 /**
- *
+ * 
  * @author Poly
  */
 @Entity
 @Table(name = "presentaciones")
-@NamedQueries({
-    @NamedQuery(name = "Presentacion.findAll", query = "SELECT p FROM Presentacion p"),
-    @NamedQuery(name = "Presentacion.findById", query = "SELECT p FROM Presentacion p WHERE p.id = :id"),
-    @NamedQuery(name = "Presentacion.findByCantidad", query = "SELECT p FROM Presentacion p WHERE p.cantidad = :cantidad"),
-    @NamedQuery(name = "Presentacion.findByUnidad", query = "SELECT p FROM Presentacion p WHERE p.unidad = :unidad"),
-    @NamedQuery(name = "Presentacion.findByNombre", query = "SELECT p FROM Presentacion p WHERE p.nombre = :nombre"),
-    @NamedQuery(name = "Presentacion.findByTipo", query = "SELECT p FROM Presentacion p WHERE p.tipoPresentacion = :tipo"),
-    @NamedQuery(name = "Presentacion.findByTipoList", query = "SELECT p FROM Presentacion p WHERE p.tipoPresentacion IN (:tipoList)")
-})
+@NamedQueries(
+    {
+            @NamedQuery(name = "Presentacion.findAll", query = "SELECT p FROM Presentacion p"),
+            @NamedQuery(name = "Presentacion.findById", query = "SELECT p FROM Presentacion p WHERE p.id = :id"),
+            @NamedQuery(name = "Presentacion.findByCantidad",
+                    query = "SELECT p FROM Presentacion p WHERE p.cantidad = :cantidad"),
+            @NamedQuery(name = "Presentacion.findByUnidad",
+                    query = "SELECT p FROM Presentacion p WHERE p.unidad = :unidad"),
+            @NamedQuery(name = "Presentacion.findByNombre",
+                    query = "SELECT p FROM Presentacion p WHERE p.nombre = :nombre"),
+            @NamedQuery(name = "Presentacion.findByTipo",
+                    query = "SELECT p FROM Presentacion p WHERE p.tipoPresentacion = :tipo"),
+            @NamedQuery(name = "Presentacion.findByTipoList",
+                    query = "SELECT p FROM Presentacion p WHERE p.tipoPresentacion IN (:tipoList)") })
 public class Presentacion implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -52,7 +59,7 @@ public class Presentacion implements Serializable {
     @Basic(optional = false)
     @Column(name = "ID")
     private Integer id;
-    
+
     @Basic(optional = false)
     @Column(name = "Cantidad")
     private double cantidad;
@@ -69,9 +76,8 @@ public class Presentacion implements Serializable {
 
     @Fetch(FetchMode.SUBSELECT)
     @ManyToMany(cascade = CascadeType.REMOVE)
-    @JoinTable(name = "precios_presentaciones",
-        joinColumns = @JoinColumn(name = "presentacion"),
-        inverseJoinColumns = @JoinColumn(name = "producto"))
+    @JoinTable(name = "precios_presentaciones", joinColumns = @JoinColumn(name = "presentacion"),
+            inverseJoinColumns = @JoinColumn(name = "producto"))
     private Collection<Producto> productos;
 
     @OneToMany(mappedBy = "presentacion", fetch = FetchType.LAZY)
@@ -117,7 +123,7 @@ public class Presentacion implements Serializable {
     }
 
     public String getNombre() {
-        if(nombre == null){
+        if (nombre == null) {
             return "x" + cantidad + " " + unidad;
         }
         return nombre;
@@ -143,7 +149,8 @@ public class Presentacion implements Serializable {
     }
 
     /**
-     * @param productos the productos to set
+     * @param productos
+     *            the productos to set
      */
     public void setProductos(Collection<Producto> productos) {
         this.productos = productos;
@@ -157,7 +164,8 @@ public class Presentacion implements Serializable {
     }
 
     /**
-     * @param precios the precios to set
+     * @param precios
+     *            the precios to set
      */
     public void setPrecios(Collection<PrecioPresentacion> precios) {
         this.precios = precios;
@@ -171,10 +179,16 @@ public class Presentacion implements Serializable {
     }
 
     /**
-     * @param stocks the stocks to set
+     * @param stocks
+     *            the stocks to set
      */
     public void setStocks(Collection<Stock> stocks) {
         this.stocks = stocks;
+    }
+
+    @Override
+    public String toString() {
+        return "Presentacion[unidad=" + unidad + ",cantidad=" + cantidad + "]";
     }
 
     @Override

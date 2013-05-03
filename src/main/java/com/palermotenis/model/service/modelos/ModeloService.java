@@ -8,7 +8,15 @@ import com.palermotenis.model.beans.Modelo;
 
 public interface ModeloService {
 
+    Integer createNewModelo(Integer padreId, Integer tipoProductoId, Integer marcaId, String nombre);
+
+    void updateModelo(Integer modeloId, String nombre);
+
     void updateModelo(Modelo modelo, String nombre, Collection<Categoria> categorias);
+
+    void moveModelo(Integer modeloId, Integer modeloOrden, Integer modeloRgtId, Integer modeloRgtOrden);
+
+    void deleteModelo(Integer modeloId);
 
     Modelo getModeloById(Integer modeloId);
 

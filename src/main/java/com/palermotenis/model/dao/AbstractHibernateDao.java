@@ -31,18 +31,18 @@ public abstract class AbstractHibernateDao<T, PK extends Serializable> implement
     }
 
     @Override
-    public void create(T o) {
-        entityManager.persist(o);
+    public void create(T entity) {
+        entityManager.persist(entity);
     }
 
     @Override
-    public void edit(T o) {
-        entityManager.merge(o);
+    public void edit(T entity) {
+        entityManager.merge(entity);
     }
 
     @Override
-    public void destroy(T o) {
-        entityManager.remove(o);
+    public void destroy(T entity) {
+        entityManager.remove(entity);
     }
 
     @Override
@@ -60,8 +60,8 @@ public abstract class AbstractHibernateDao<T, PK extends Serializable> implement
     }
 
     @Override
-    public boolean exists(T o) {
-        return entityManager.contains(o);
+    public boolean exists(T entity) {
+        return entityManager.contains(entity);
     }
 
     @Override

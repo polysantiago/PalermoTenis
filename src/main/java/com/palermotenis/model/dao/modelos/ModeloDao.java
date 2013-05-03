@@ -17,4 +17,6 @@ public interface ModeloDao extends Dao<Modelo, Integer> {
 
     List<Modelo> getModelosByActiveParent(Modelo parent);
 
+    void moveModelo(Integer modeloId, Integer modeloOrden, Integer modeloRgtId, Integer modeloRgtOrden);
+
 }

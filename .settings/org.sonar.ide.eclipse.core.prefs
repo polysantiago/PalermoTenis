@@ -1,6 +1,6 @@
-analyseLocally=true
+analyseLocally=false
 eclipse.preferences.version=1
 extraProperties=
-projectKey=PalermoTenis\:PalermoTenis
+projectKey=com.palermotenis\:palermotenis
 serverUrl=http\://localhost\:9000
 version=2

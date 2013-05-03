@@ -11,7 +11,6 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -54,7 +53,7 @@ public class Sucursal implements Serializable {
     @Column(name = "Direccion")
     private String direccion;
 
-    @OneToMany(mappedBy = "sucursal", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "sucursal", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<Stock> stocks;
 
     public Sucursal() {
@@ -141,7 +140,7 @@ public class Sucursal implements Serializable {
 
     @Override
     public String toString() {
-        return "com.palermotenis.model.beans.Sucursal[id=" + id + "]";
+        return "Sucursal[nombre=" + nombre + "]";
     }
 
 }
