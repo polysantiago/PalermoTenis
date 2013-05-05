@@ -1,55 +1,45 @@
 package com.palermotenis.controller.struts.actions;
 
-import java.io.InputStream;
-import java.util.Collection;
-
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.opensymphony.xwork2.ActionSupport;
+import com.google.common.collect.Maps;
 import com.palermotenis.model.beans.Moneda;
 import com.palermotenis.model.beans.Pago;
-import com.palermotenis.model.dao.Dao;
-import com.palermotenis.util.StringUtility;
+import com.palermotenis.model.service.monedas.MonedaService;
+import com.palermotenis.model.service.pagos.PagoService;
 
-/**
- *
- * @author Poly
- */
-public class GetPrecioUnidadOptions extends ActionSupport {
+public class GetPrecioUnidadOptions extends JsonActionSupport {
 
-	private static final long serialVersionUID = -5154325699304286629L;
+    private static final long serialVersionUID = -5154325699304286629L;
 
-	private InputStream inputStream;
-    
     @Autowired
-    private Dao<Pago, Integer> pagoDao;
-    
+    private PagoService pagoService;
+
     @Autowired
-    private Dao<Moneda, Integer> monedaDao;
+    private MonedaService monedaService;
+
+    private final Map<String, Object> map = Maps.newLinkedHashMap();
 
     @Override
     public String execute() {
-
-        Collection<Pago> pagos = pagoDao.findAll();
-        Collection<Moneda> monedas = monedaDao.findAll();
-
-        JSONObject jsonObject = new JSONObject();
-
-        JsonConfig jsonConfigMonedas = new JsonConfig();
-        jsonConfigMonedas.setExcludes(new String[]{"nombre","contrario","paises","formatter","locale"});
-
-        jsonObject.element("monedas", monedas, jsonConfigMonedas);
-        jsonObject.element("pagos", pagos);
-
-        inputStream = StringUtility.getInputString(jsonObject.toString());
-
+        map.put("monedas", getMonedas());
+        map.put("pagos", getPagos());
         return SUCCESS;
     }
 
-    public InputStream getInputStream() {
-        return inputStream;
+    private List<Moneda> getMonedas() {
+        return monedaService.getAllMonedas();
     }
+
+    private List<Pago> getPagos() {
+        return pagoService.getAllPagos();
+    }
+
+    public Map<String, Object> getMap() {
+        return map;
+    }
+
 }

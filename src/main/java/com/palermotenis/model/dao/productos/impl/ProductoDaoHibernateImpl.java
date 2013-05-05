@@ -16,4 +16,9 @@ public class ProductoDaoHibernateImpl extends AbstractHibernateDao<Producto, Int
         return query("Ofertas");
     }
 
+    @Override
+    public List<Producto> getProductosInOferta(int maxResults) {
+        return query("Ofertas", maxResults, 0);
+    }
+
 }

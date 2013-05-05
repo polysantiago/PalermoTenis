@@ -1,86 +1,58 @@
 package com.palermotenis.controller.struts.actions;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
-import net.sf.json.processors.PropertyNameProcessor;
-
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
-import com.palermotenis.model.dao.Dao;
+import com.palermotenis.model.service.productos.ProductoService;
+import com.palermotenis.model.service.productos.tipos.TipoProductoService;
 
-/**
- * 
- * @author Poly
- */
 public class PrepararPresentaciones extends ActionSupport {
 
     private static final long serialVersionUID = -6953347495272026802L;
 
+    private final Map<String, Object> map = Maps.newHashMap();
+
+    @Autowired
+    private TipoProductoService tipoProductoService;
+
+    @Autowired
+    private ProductoService productoService;
+
     private Integer productoId;
-    private InputStream inputStream;
-
-    @Autowired
-    private Dao<TipoProducto, Integer> tipoProductoDao;
-
-    @Autowired
-    private Dao<Producto, Integer> productoDao;
 
     @Override
     public String execute() {
-
-        JsonConfig tipoPresentacionConfig = new JsonConfig();
-        tipoPresentacionConfig.setExcludes(new String[]
-            { "tipoProducto", "presentaciones", "presentacionesByProd" });
-        tipoPresentacionConfig.registerJavaPropertyNameProcessor(TipoPresentacion.class, new PropertyNameProcessor() {
-            @Override
-            public String processPropertyName(Class beanClass, String name) {
-                return StringUtils.equals(name, "nombre") ? "text" : name;
-            }
-        });
-
-        JSONObject mainJson = new JSONObject();
-        JSONArray tiposProdArray = new JSONArray();
-        for (TipoProducto t : tipoProductoDao.findAll()) {
-            if (t.isPresentable()) {
-                JSONObject jObj = new JSONObject();
-                jObj.element("id", t.getId());
-                jObj.element("text", t.getNombre());
-                jObj.element("children", t.getTiposPresentacion(), tipoPresentacionConfig);
-                tiposProdArray.add(jObj);
-            }
+        List<Map<String, Object>> tiposProductos = Lists.newArrayList();
+        for (TipoProducto tipoProducto : getTiposProducto()) {
+            tiposProductos.add(new ImmutableMap.Builder<String, Object>()
+                .put("id", tipoProducto.getId())
+                .put("text", tipoProducto.getNombre())
+                .put("children", tipoProducto.getTiposPresentacion())
+                .build());
         }
-        Producto producto = productoDao.find(productoId);
-
-        mainJson.element("tiposProducto", tiposProdArray);
-        mainJson.element("preselectFirst", producto.getTipoProducto().getId());
-
-        byte[] bytes = mainJson.toString().getBytes();
-        inputStream = new ByteArrayInputStream(bytes);
-
+        Producto producto = productoService.getProductById(productoId);
+        map.put("tiposProducto", tiposProductos);
+        map.put("preselectFirst", producto.getTipoProducto().getId());
         return SUCCESS;
     }
 
-    /**
-     * @param productoId
-     *            the productoId to set
-     */
+    private List<TipoProducto> getTiposProducto() {
+        return tipoProductoService.getAllTiposProductoPresentables();
+    }
+
     public void setProductoId(Integer productoId) {
         this.productoId = productoId;
     }
 
-    /**
-     * @return the inputStream
-     */
-    public InputStream getInputStream() {
-        return inputStream;
+    public Map<String, Object> getMap() {
+        return map;
     }
 }

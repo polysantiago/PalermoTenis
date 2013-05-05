@@ -1,28 +1,24 @@
 package com.palermotenis.controller.struts.actions;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-import net.sf.json.JsonConfig;
-import net.sf.json.processors.JsonBeanProcessor;
+import javax.annotation.Nullable;
 
+import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.palermotenis.model.beans.Modelo;
 import com.palermotenis.model.beans.productos.Producto;
-import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.service.modelos.ModeloService;
 import com.palermotenis.model.service.productos.tipos.TipoProductoService;
-import com.palermotenis.xstream.XStreamMarshaller;
 
 public class ListarModelos extends JsonActionSupport {
-
-    private static final String XML = "xml";
 
     private static final long serialVersionUID = -3479740110175074239L;
 
@@ -36,147 +32,122 @@ public class ListarModelos extends JsonActionSupport {
     @Autowired
     private TipoProductoService tipoProductoService;
 
-    @Autowired
-    private XStreamMarshaller xstreamMarshaller;
+    private List<Map<String, Object>> resultList;
 
     public String listAll() {
-        List<Modelo> modelos = null;
-
-        if (idMarca != null) {
-            modelos = modeloService.getModelosByMarcaAndTipoProducto(idMarca, idTipoProducto);
-        } else {
-            modelos = modeloService.getModelosByTipoProducto(idTipoProducto);
-        }
-
+        List<Modelo> modelos = isMarcaRequired() ? getModelosByMarca() : getModelos();
         Collections.sort(modelos);
-
-        JsonConfig jsonConfig = new JsonConfig();
-        jsonConfig.registerJsonBeanProcessor(Modelo.class, new JsonBeanProcessor() {
-
-            @Override
-            public JSONObject processBean(Object bean, JsonConfig jsonConfig) {
-                Modelo m = (Modelo) bean;
-                JSONObject o = new JSONObject();
-                o.element("id", m.getId());
-                o.element("text", m.getNombre());
-                o.element("leaf", m.isLeaf());
-                o.element("producible", m.isProducible());
-                if (m.getProducto() != null) {
-                    o.element("activo", m.getProducto().isActivo());
-                    o.element("hasStock", m.getProducto().hasStock());
-                } else {
-                    o.element("children", m.getHijos(), jsonConfig);
-                }
-                return o;
-            }
-        });
-        writeResponse(JSONSerializer.toJSON(modelos, jsonConfig));
+        resultList = createModelosList(new BasicMapCreator(), modelos);
         return SUCCESS;
-    }
-
-    public String listAllXML() {
-        List<TipoProducto> tiposProducto = tipoProductoService.getAllTipoProducto();
-        writeResponse(xstreamMarshaller.toXML(tiposProducto));
-        return XML;
     }
 
     public String listActive() {
-        List<Modelo> modelos = modeloService.getModelosByMarcaAndActiveTipoProducto(idMarca, idTipoProducto);
-
-        JsonConfig jsonConfig = new JsonConfig();
-        jsonConfig.registerJsonBeanProcessor(Modelo.class, new JsonBeanProcessor() {
-
-            @Override
-            public JSONObject processBean(Object bean, JsonConfig jsonConfig) {
-                Modelo modelo = (Modelo) bean;
-                JSONObject jsonObject = new JSONObject();
-
-                if (isValid(modelo)) {
-                    jsonObject.element("id", modelo.getId());
-                    jsonObject.element("text", modelo.getNombre());
-                    jsonObject.element("leaf", modelo.isLeaf());
-                    jsonObject.element("producible", modelo.isProducible());
-                } else if (!modelo.isLeaf()) {
-                    List<Modelo> rawHijos = modeloService.getModelosByActiveParent(modelo);
-                    List<Modelo> hijos = new ArrayList<Modelo>();
-                    if (isValid(rawHijos)) {
-                        for (Modelo hijo : rawHijos) {
-                            if (isValid(hijo)) {
-                                hijos.add(hijo);
-                            } else if (!hijo.isLeaf()) {
-                                List<Modelo> rawHijos2 = modeloService.getModelosByActiveParent(modelo);
-                                add(jsonObject, rawHijos2, modelo, jsonConfig);
-                            }
-                        }
-                        add(jsonObject, hijos, modelo, jsonConfig);
-                    }
-                }
-                return jsonObject;
-            }
-        });
-
-        JSONArray jArray = (JSONArray) JSONSerializer.toJSON(modelos, jsonConfig);
-        writeResponse(doCleanUp(new JSONArray(), jArray));
+        resultList = createModelosList(new ActiveMapCreator(), getActiveModelos());
         return SUCCESS;
     }
 
-    @SuppressWarnings("unchecked")
-    private JSONArray doCleanUp(JSONArray fArray, JSONArray jArray) {
-        Iterator<Object> iterator = jArray.iterator();
-        while (iterator.hasNext()) {
-            JSONObject jsonObject = (JSONObject) iterator.next();
-            if (!jsonObject.isEmpty()) {
-                fArray.add(jsonObject);
+    private List<Map<String, Object>> createModelosList(MapCreator mapCreator, List<Modelo> modelos) {
+        List<Map<String, Object>> list = Lists.newArrayList();
+        for (Modelo modelo : modelos) {
+            list.add(mapCreator.createMap(modelo));
+        }
+        Iterables.removeIf(list, new Predicate<Map<String, Object>>() {
+            @Override
+            public boolean apply(@Nullable Map<String, Object> input) {
+                return MapUtils.isEmpty(input);
             }
-        }
-        return fArray;
+        });
+        return list;
     }
 
-    private void add(JSONObject jsonObject, List<Modelo> hijos, Modelo modelo, JsonConfig jsonConfig) {
-        if (isValid(hijos)) {
-            jsonObject.element("id", modelo.getId());
-            jsonObject.element("text", modelo.getNombre());
-            jsonObject.element("children", hijos, jsonConfig);
-        }
+    private void addBasicInfoToMap(Map<String, Object> map, Modelo modelo) {
+        map.put("id", modelo.getId());
+        map.put("text", modelo.getNombre());
+        map.put("leaf", modelo.isLeaf());
+        map.put("producible", modelo.isProducible());
     }
 
-    private boolean isValid(Modelo modelo) {
+    private boolean isActive(Modelo modelo) {
         Producto producto = modelo.getProducto();
         return modelo.isLeaf() && producto != null && producto.hasStock();
     }
 
-    private boolean isValid(List<Modelo> modelos) {
-        return modelos != null && !modelos.isEmpty();
+    private boolean isMarcaRequired() {
+        return idMarca != null;
     }
 
-    /**
-     * @param idTipoProducto
-     *            the idTipoProducto to set
-     */
+    private List<Modelo> getModelos() {
+        return modeloService.getModelosByTipoProducto(idTipoProducto);
+    }
+
+    private List<Modelo> getModelosByMarca() {
+        return modeloService.getModelosByMarcaAndTipoProducto(idMarca, idTipoProducto);
+    }
+
+    private List<Modelo> getActiveModelos() {
+        return modeloService.getModelosByMarcaAndActiveTipoProducto(idMarca, idTipoProducto);
+    }
+
+    private List<Modelo> getHijos(Modelo modelo) {
+        return modeloService.getModelosByActiveParent(modelo);
+    }
+
+    public List<Map<String, Object>> getResultList() {
+        return resultList;
+    }
+
     public void setIdTipoProducto(Integer idTipoProducto) {
         this.idTipoProducto = idTipoProducto;
     }
 
-    /**
-     * @param idMarca
-     *            the idMarca to set
-     */
     public void setIdMarca(Integer idMarca) {
         this.idMarca = idMarca;
     }
 
-    /**
-     * @return the root
-     */
     public Boolean getRoot() {
         return root;
     }
 
-    /**
-     * @param root
-     *            the root to set
-     */
     public void setRoot(Boolean root) {
         this.root = root;
+    }
+
+    private interface MapCreator {
+        Map<String, Object> createMap(Modelo modelo);
+    }
+
+    private class BasicMapCreator implements MapCreator {
+
+        @Override
+        public Map<String, Object> createMap(Modelo modelo) {
+            Map<String, Object> map = Maps.newLinkedHashMap();
+            addBasicInfoToMap(map, modelo);
+            if (modelo.isProducible()) {
+                map.put("activo", modelo.getProducto().isActivo());
+                map.put("hasStock", modelo.getProducto().hasStock());
+            } else {
+                map.put("children", createModelosList(this, Lists.newArrayList(modelo.getHijos())));
+            }
+            return map;
+        }
+    }
+
+    private class ActiveMapCreator implements MapCreator {
+
+        @Override
+        public Map<String, Object> createMap(Modelo modelo) {
+            Map<String, Object> map = Maps.newLinkedHashMap();
+            if (isActive(modelo)) {
+                addBasicInfoToMap(map, modelo);
+            } else if (!modelo.isLeaf()) {
+                List<Map<String, Object>> list = createModelosList(this, getHijos(modelo));
+                if (!list.isEmpty()) {
+                    map.put("id", modelo.getId());
+                    map.put("text", modelo.getNombre());
+                    map.put("children", list);
+                }
+            }
+            return map;
+        }
     }
 }

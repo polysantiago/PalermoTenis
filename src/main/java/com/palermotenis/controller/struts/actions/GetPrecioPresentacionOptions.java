@@ -2,12 +2,11 @@ package com.palermotenis.controller.struts.actions;
 
 import java.util.Collection;
 import java.util.List;
-
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.Maps;
 import com.palermotenis.model.beans.Moneda;
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion;
@@ -30,26 +29,30 @@ public class GetPrecioPresentacionOptions extends JsonActionSupport {
     @Autowired
     private TipoPresentacionService tipoPresentacionService;
 
+    private final Map<String, Object> map = Maps.newLinkedHashMap();
+
     @Override
     public String execute() {
-        List<Pago> pagos = pagoService.getAllPagos();
-        Collection<Moneda> monedas = monedaService.getAllMonedas();
-        Collection<TipoPresentacion> tiposPresentacion = tipoPresentacionService
-            .getTiposPresentacionByTipoProducto(tipoProductoId);
-
-        JSONObject jsonObject = new JSONObject();
-        JsonConfig jsonConfigMonedas = new JsonConfig();
-        jsonConfigMonedas.setExcludes(new String[]
-            { "nombre", "contrario", "paises", "formatter", "locale" });
-        JsonConfig jsonConfigTiposPresentacion = new JsonConfig();
-        jsonConfigTiposPresentacion.setExcludes(new String[]
-            { "tipoProducto", "presentaciones", "presentacionesByProd" });
-        jsonObject.element("monedas", monedas, jsonConfigMonedas);
-        jsonObject.element("tiposPresentacion", tiposPresentacion, jsonConfigTiposPresentacion);
-        jsonObject.element("pagos", pagos);
-
-        writeResponse(jsonObject);
+        map.put("monedas", getMonedas());
+        map.put("tiposPresentacion", getTiposPresentacion());
+        map.put("pagos", getPagos());
         return SUCCESS;
+    }
+
+    private Collection<TipoPresentacion> getTiposPresentacion() {
+        return tipoPresentacionService.getTiposPresentacionByTipoProducto(tipoProductoId);
+    }
+
+    private List<Moneda> getMonedas() {
+        return monedaService.getAllMonedas();
+    }
+
+    private List<Pago> getPagos() {
+        return pagoService.getAllPagos();
+    }
+
+    public Map<String, Object> getMap() {
+        return map;
     }
 
     public void setTipoProductoId(Integer tipoProductoId) {

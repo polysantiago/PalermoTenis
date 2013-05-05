@@ -1,69 +1,42 @@
 package com.palermotenis.controller.struts.actions;
 
-import java.io.InputStream;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-import net.sf.json.JsonConfig;
-import net.sf.json.processors.JsonBeanProcessor;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.opensymphony.xwork2.ActionSupport;
+import com.google.common.collect.ImmutableMap;
 import com.palermotenis.model.beans.productos.Producto;
-import com.palermotenis.model.dao.Dao;
-import com.palermotenis.util.StringUtility;
+import com.palermotenis.model.service.productos.ProductoService;
 
-/**
- * 
- * @author Santiago
- */
-public class Latest extends ActionSupport {
+public class Latest extends JsonActionSupport {
 
     private static final long serialVersionUID = -9117974645418468534L;
-    private static final String JSON = "json";
 
-    private List<Producto> productos;
-    private InputStream inputStream;
+    private final List<Map<String, Object>> productosMap = new ArrayList<Map<String, Object>>();
 
     @Autowired
-    private Dao<Producto, Integer> productoDao;
+    private ProductoService productoService;
 
     @Override
     public String execute() {
-        productos = productoDao.query("Ofertas", 8, 0);
-
-        JsonConfig jsonConfig = new JsonConfig();
-        jsonConfig.registerJsonBeanProcessor(Producto.class, new JsonBeanProcessor() {
-
-            @Override
-            public JSONObject processBean(Object bean, JsonConfig jsonConfig) {
-                Producto p = (Producto) bean;
-                JSONObject o = new JSONObject();
-                o.element("id", p.getId());
-                o.element("text", p.getModelo().getNombre());
-                o.element("activo", p.isActivo());
-                o.element("hasStock", p.hasStock());
-                return o;
-            }
-        });
-
-        JSONArray jArray = (JSONArray) JSONSerializer.toJSON(productos, jsonConfig);
-
-        inputStream = StringUtility.getInputString(jArray.toString());
-
+        for (Producto producto : getOfertas()) {
+            productosMap.add(new ImmutableMap.Builder<String, Object>()
+                .put("id", producto.getId())
+                .put("text", producto.getModelo().getNombre())
+                .put("activo", producto.isActivo())
+                .put("hasStock", producto.hasStock())
+                .build());
+        }
         return JSON;
     }
 
-    public Collection<Producto> getProductos() {
-        return productos;
+    private List<Producto> getOfertas() {
+        return productoService.getLatest8Ofertas();
     }
 
-    public InputStream getInputStream() {
-        return inputStream;
+    public List<Map<String, Object>> getProductosMap() {
+        return productosMap;
     }
-
 }

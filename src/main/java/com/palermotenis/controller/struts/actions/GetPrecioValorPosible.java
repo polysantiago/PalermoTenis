@@ -1,80 +1,50 @@
 package com.palermotenis.controller.struts.actions;
 
 import java.util.Collection;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
-import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.model.beans.precios.PrecioPresentacion;
-import com.palermotenis.model.beans.precios.pks.PrecioPresentacionPK;
-import com.palermotenis.model.beans.presentaciones.Presentacion;
-import com.palermotenis.model.beans.productos.Producto;
-import com.palermotenis.model.dao.Dao;
+import com.palermotenis.model.service.precios.impl.PrecioService;
 
-/**
- * 
- * @author Poly
- */
-public class GetPrecioValorPosible
-    extends ActionSupport {
+public class GetPrecioValorPosible extends ActionSupport {
 
     private static final Logger logger = Logger.getLogger(GetPrecioValorPosible.class);
 
     private static final long serialVersionUID = 2108253535821338518L;
-    private Dao<PrecioPresentacion, PrecioPresentacionPK> precioPresentacionDao;
-
-    private Collection<PrecioPresentacion> precios;
-
-    private Dao<Presentacion, Integer> presentacionDao;
-    private Integer presentacionId;
-    private Dao<Producto, Integer> productoDao;
 
     private Integer productoId;
+    private Integer presentacionId;
+    private Collection<PrecioPresentacion> precios;
+
+    @Autowired
+    private PrecioService precioService;
 
     @Override
     public String execute() {
-        try {
-            Map<String, Object> args = new ImmutableMap.Builder<String, Object>()
-                .put("producto", productoDao.find(productoId))
-                .put("presentacion", presentacionDao.find(presentacionId))
-                .build();
-            setPrecios(precioPresentacionDao.queryBy("Producto,Presentacion", args));
-        } catch (Exception e) {
-            logger.error("No se pudo obtener el precio por valor posible de Producto[" + productoId
-                    + "], Presentacion[" + presentacionId + "]", e);
+        setPrecios(precioService.getPrecios(productoId, presentacionId));
+        if (CollectionUtils.isEmpty(getPrecios())) {
+            logger.warn("No se pudo obtener el precio por valor posible de Producto[" + productoId + "], Presentacion["
+                    + presentacionId + "]");
         }
         return SUCCESS;
     }
 
-    /**
-     * @return the precio
-     */
     public Collection<PrecioPresentacion> getPrecios() {
         return precios;
     }
 
-    /**
-     * @param precio
-     *            the precio to set
-     */
     public void setPrecios(Collection<PrecioPresentacion> precios) {
         this.precios = precios;
     }
 
-    /**
-     * @param presentacionId
-     *            the presentacionId to set
-     */
     public void setPresentacionId(Integer presentacionId) {
         this.presentacionId = presentacionId;
     }
 
-    /**
-     * @param productoId
-     *            the productoId to set
-     */
     public void setProductoId(Integer productoId) {
         this.productoId = productoId;
     }

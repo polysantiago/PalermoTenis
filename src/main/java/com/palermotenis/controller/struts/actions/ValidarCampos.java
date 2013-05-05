@@ -17,10 +17,6 @@ import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
 import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 
-/**
- * 
- * @author Poly
- */
 public class ValidarCampos extends ActionSupport {
 
     private static final long serialVersionUID = -8704778453708125123L;
@@ -58,17 +54,10 @@ public class ValidarCampos extends ActionSupport {
         return SUCCESS;
     }
 
-    /**
-     * @param camposJson
-     *            the camposJson to set
-     */
     public void setCamposJson(String camposJson) {
         this.camposJson = camposJson;
     }
 
-    /**
-     * @return the inputStream
-     */
     public InputStream getInputStream() {
         return inputStream;
     }

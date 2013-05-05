@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.palermotenis.model.beans.Marca;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.dao.productos.tipos.TipoProductoDao;
@@ -58,6 +63,16 @@ public class TipoProductoServiceImpl implements TipoProductoService {
     @Override
     public List<TipoProducto> getAllTipoProducto() {
         return tipoProductoDao.findAll();
+    }
+
+    @Override
+    public List<TipoProducto> getAllTiposProductoPresentables() {
+        return Lists.newArrayList(Iterables.filter(getAllTipoProducto(), new Predicate<TipoProducto>() {
+            @Override
+            public boolean apply(@Nullable TipoProducto tipoProducto) {
+                return tipoProducto.isPresentable();
+            }
+        }));
     }
 
     @Override

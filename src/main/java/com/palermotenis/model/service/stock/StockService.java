@@ -41,7 +41,13 @@ public interface StockService {
 
     Stock getStockByProductoClasificable(Integer productoId);
 
+    List<Stock> getStocksByProductoAndPresentacion(Integer productoId, Integer presentacionId);
+
     List<Stock> getStocksByProductoClasificable(Integer productoId);
+
+    List<Stock> getStocksByNombre(String nombre, int maxResults);
+
+    List<Stock> getActiveStocksByNombre(String nombre, int maxResults);
 
     int getSumOfStockByProducto(Integer productoId);
 

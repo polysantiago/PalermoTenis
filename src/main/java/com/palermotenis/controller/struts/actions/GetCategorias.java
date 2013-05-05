@@ -6,28 +6,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.model.beans.Categoria;
-import com.palermotenis.model.dao.Dao;
+import com.palermotenis.model.service.categorias.CategoriaService;
 
-/**
- *
- * @author Santiago
- */
 public class GetCategorias extends ActionSupport {
-    
-	private static final long serialVersionUID = -6301824235569113278L;
 
-	private List<Categoria> categorias;
-    
+    private static final long serialVersionUID = -6301824235569113278L;
+
+    private List<Categoria> categorias;
+
     @Autowired
-    private Dao<Categoria, Integer> categoriaDao;
-    
+    private CategoriaService categoriaService;
+
     @Override
     public String execute() {
-        categorias = categoriaDao.findAll();
-        return SUCCESS;   
+        return SUCCESS;
     }
 
     public List<Categoria> getCategorias() {
+        if (categorias == null) {
+            categorias = categoriaService.getAllCategorias();
+        }
         return categorias;
-    }   
+    }
 }

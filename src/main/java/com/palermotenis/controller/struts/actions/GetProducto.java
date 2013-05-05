@@ -4,12 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.model.beans.productos.Producto;
-import com.palermotenis.model.dao.Dao;
+import com.palermotenis.model.service.productos.ProductoService;
 
-/**
- * 
- * @author Poly
- */
 public class GetProducto extends ActionSupport {
 
     private static final long serialVersionUID = -5926960147665282516L;
@@ -21,40 +17,28 @@ public class GetProducto extends ActionSupport {
     private String redirectPago;
 
     @Autowired
-    private Dao<Producto, Integer> productoDao;
+    private ProductoService productoService;
 
     @Override
     public String execute() {
-        producto = productoDao.find(productoId);
         return SUCCESS;
     }
 
-    /**
-     * @return the producto
-     */
     public Producto getProducto() {
+        if (producto == null) {
+            producto = productoService.getProductById(productoId);
+        }
         return producto;
     }
 
-    /**
-     * @return the redirect
-     */
     public String getRedirectPage() {
         return redirectPago;
     }
 
-    /**
-     * @param productoId
-     *            the productoId to set
-     */
     public void setProductoId(Integer productoId) {
         this.productoId = productoId;
     }
 
-    /**
-     * @param redirect
-     *            the redirect to set
-     */
     public void setRedirectPage(String redirectPage) {
         this.redirectPago = redirectPage;
     }

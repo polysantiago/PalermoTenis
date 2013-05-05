@@ -2,11 +2,13 @@ package com.palermotenis.controller.struts.actions;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.palermotenis.model.beans.Marca;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.service.productos.tipos.TipoProductoService;
@@ -15,40 +17,42 @@ public class ListarTipoProductoMarcas extends JsonActionSupport {
 
     private static final long serialVersionUID = -226270066237959031L;
 
+    @Autowired
     private TipoProductoService tipoProductoService;
+
+    private final List<Map<String, Object>> resultList = Lists.newArrayList();
 
     @Override
     public String execute() {
+        Map<TipoProducto, ArrayList<LinkedHashMap<Marca, Long>>> map = getMap();
+        for (TipoProducto tipoProducto : map.keySet()) {
+            Map<String, Object> jsonMap = Maps.newLinkedHashMap();
+            jsonMap.put("id", tipoProducto.getId());
+            jsonMap.put("text", tipoProducto.getNombre());
 
-        Map<TipoProducto, ArrayList<LinkedHashMap<Marca, Long>>> map = tipoProductoService
-            .getTiposProductoAndMarcasAndProductoCount();
-        JSONArray jsonArray = transformToJsonArray(map);
-        writeResponse(jsonArray);
+            List<Map<String, Object>> marcasList = Lists.newArrayList();
+            for (Map<Marca, Long> marcaProductoCountMap : map.get(tipoProducto)) {
+                for (Marca marca : marcaProductoCountMap.keySet()) {
+                    Map<String, Object> jsonMarcaMap = Maps.newLinkedHashMap();
+                    jsonMarcaMap.put("id", marca.getId());
+                    jsonMarcaMap.put("text", marca.getNombre());
+                    jsonMarcaMap.put("leaf", "true");
+                    jsonMarcaMap.put("productosCount", marcaProductoCountMap.get(marca));
+                    marcasList.add(jsonMarcaMap);
+                }
+            }
+            jsonMap.put("children", marcasList);
+            resultList.add(jsonMap);
+        }
         return SUCCESS;
     }
 
-    private JSONArray transformToJsonArray(Map<TipoProducto, ArrayList<LinkedHashMap<Marca, Long>>> map) {
-        JSONArray jsonArray = new JSONArray();
-        for (TipoProducto tipoProducto : map.keySet()) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.element("id", tipoProducto.getId());
-            jsonObject.element("text", tipoProducto.getNombre());
+    private Map<TipoProducto, ArrayList<LinkedHashMap<Marca, Long>>> getMap() {
+        return tipoProductoService.getTiposProductoAndMarcasAndProductoCount();
+    }
 
-            JSONArray jsonArrMarcas = new JSONArray();
-            for (Map<Marca, Long> marcaProductoCountMap : map.get(tipoProducto)) {
-                for (Marca marca : marcaProductoCountMap.keySet()) {
-                    JSONObject jsonObjMarca = new JSONObject();
-                    jsonObjMarca.element("id", marca.getId());
-                    jsonObjMarca.element("text", marca.getNombre());
-                    jsonObjMarca.element("leaf", "true");
-                    jsonObjMarca.element("productosCount", marcaProductoCountMap.get(marca));
-                    jsonArrMarcas.add(jsonObjMarca);
-                }
-            }
-            jsonObject.element("children", jsonArrMarcas);
-            jsonArray.add(jsonObject);
-        }
-        return jsonArray;
+    public List<Map<String, Object>> getResultList() {
+        return resultList;
     }
 
 }

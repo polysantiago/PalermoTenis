@@ -6,31 +6,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.model.beans.Pago;
-import com.palermotenis.model.dao.Dao;
+import com.palermotenis.model.service.pagos.PagoService;
 
-/**
- *
- * @author Poly
- */
 public class GetPagos extends ActionSupport {
-	
-	private static final long serialVersionUID = 8264803144351552901L;
 
-	private Collection<Pago> pagos;
-    
+    private static final long serialVersionUID = 8264803144351552901L;
+
+    private Collection<Pago> pagos;
+
     @Autowired
-    private Dao<Pago, Integer> pagoDao;
+    private PagoService pagoService;
 
     @Override
-    public String execute(){
-        pagos = pagoDao.findAll();
+    public String execute() {
         return SUCCESS;
     }
 
-    /**
-     * @return the pagos
-     */
     public Collection<Pago> getPagos() {
+        if (pagos == null) {
+            pagos = pagoService.getAllPagos();
+        }
         return pagos;
     }
 

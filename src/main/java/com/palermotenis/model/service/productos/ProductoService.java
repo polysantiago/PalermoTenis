@@ -10,6 +10,8 @@ public interface ProductoService {
 
     List<Producto> getProductosOnSale();
 
+    List<Producto> getLatest8Ofertas();
+
     void createNewProducto(int modeloId, int tipoProductoId, String descripcion, Collection<Integer> categoriasIds,
             Map<Integer, String> atributosSimples, Map<Integer, Integer> atributosTipados,
             Map<Integer, Collection<String>> atributosMultiples);

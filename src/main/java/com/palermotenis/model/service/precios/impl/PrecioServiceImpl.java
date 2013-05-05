@@ -21,10 +21,13 @@ import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.pedidos.Pedido;
 import com.palermotenis.model.beans.pedidos.PedidoProducto;
 import com.palermotenis.model.beans.precios.Precio;
+import com.palermotenis.model.beans.precios.PrecioPresentacion;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.dao.precios.PrecioPresentacionDao;
 import com.palermotenis.model.dao.precios.PrecioUnidadDao;
+import com.palermotenis.model.service.pagos.PagoService;
+import com.palermotenis.model.service.presentaciones.PresentacionService;
 import com.palermotenis.model.service.productos.ProductoService;
 import com.palermotenis.model.ws.CurrencyConvertor;
 
@@ -44,6 +47,12 @@ public class PrecioServiceImpl implements PrecioService {
 
     @Autowired
     private ProductoService productoService;
+
+    @Autowired
+    private PresentacionService presentacionService;
+
+    @Autowired
+    private PagoService pagoService;
 
     @Override
     public double calculatePrecioUnitarioPesos(Precio precio) {
@@ -141,6 +150,15 @@ public class PrecioServiceImpl implements PrecioService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
+    public Precio estimarPrecio(Stock stock, int cuotas) {
+        Pago pago = pagoService.getFirstPago();
+        Presentacion presentacion = stock.getPresentacion();
+        Producto producto = stock.getProducto();
+        return estimarPrecio(presentacion, producto, cuotas, pago);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public Precio estimarPrecio(Stock stock, Pago pago, int cuotas) {
         Presentacion presentacion = stock.getPresentacion();
         Producto producto = stock.getProducto();
@@ -184,6 +202,13 @@ public class PrecioServiceImpl implements PrecioService {
     public boolean hasPrecio(Integer productoId) {
         Producto producto = productoService.getProductById(productoId);
         return hasPrecio(producto);
+    }
+
+    @Override
+    public List<PrecioPresentacion> getPrecios(Integer productoId, Integer presentacionId) {
+        Producto producto = productoService.getProductById(productoId);
+        Presentacion presentacion = presentacionService.getPresentacionById(presentacionId);
+        return precioPresentacionDao.getPrecios(producto, presentacion);
     }
 
     private double calculateCotizacion(Moneda moneda) {

@@ -25,7 +25,7 @@ public class ModeloDaoHibernateImpl extends AbstractHibernateDao<Modelo, Integer
 
     @Override
     public List<Modelo> getModelosByTipoProducto(TipoProducto tipoProducto) {
-        return queryBy("TipoProducto", "tipoProduco", tipoProducto);
+        return queryBy("TipoProducto", "tipoProducto", tipoProducto);
     }
 
     @Override

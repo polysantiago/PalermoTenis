@@ -12,7 +12,7 @@
     <constant name="struts.convention.action.suffix" value="Controller"/>
     <constant name="struts.convention.package.locators" value="controllers"/>
 
-    <package name="default" namespace="/" extends="struts-default">
+    <package name="default" namespace="/" extends="struts-default,json-default">
         <result-types>
             <result-type name="bytesResult" class="com.palermotenis.controller.results.BytesResult" />
             <result-type name="gzipResult" class="com.palermotenis.controller.results.GZIPResult" />
@@ -40,25 +40,20 @@
         </action>
 
         <action name="ListarTipoProductoMarcas" class="com.palermotenis.controller.struts.actions.ListarTipoProductoMarcas">
-            <result type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
-                <param name="inputName">inputStream</param>
+            <result type="json">
+                <param name="root">resultList</param>
             </result>
         </action>
 
         <action name="ListarModelos_*" method="{1}" class="com.palermotenis.controller.struts.actions.ListarModelos">
-            <result type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
-                <param name="inputName">inputStream</param>
-            </result>
-            <result type="gzipResult" name="xml">
-                <param name="contentType">application/xml;charset=ISO-8859-1</param>
+            <result type="json">
+                <param name="root">resultList</param>
             </result>
         </action>
 
         <action name="GetCotizacion" class="com.palermotenis.controller.struts.actions.GetCotizacion">
             <result type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="contentType">text/plain;charset=ISO-8859-1</param>
                 <param name="inputName">inputStream</param>
             </result>
         </action>
@@ -82,10 +77,9 @@
         </action>
         
         <action name="Latest" class="com.palermotenis.controller.struts.actions.Latest">
-            <result type="stream">
-                <param name="contentType">application/json</param>
-                <param name="inputName">inputStream</param>
-            </result>
+			<result name="json" type="json">
+				<param name="root">productosMap</param>
+			</result>
         </action>
 
         <action name="GetImagen" class="com.palermotenis.controller.struts.actions.GetImagen">
@@ -104,44 +98,70 @@
         </action>
 
         <action name="GetPrecioUnidadOptions" class="com.palermotenis.controller.struts.actions.GetPrecioUnidadOptions">
-            <result type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
-                <param name="inputName">inputStream</param>
+            <result type="json">
+                <param name="root">map</param>
+                <param name="excludeProperties">
+                	^monedas\[\d+\]\.nombre,
+                	^monedas\[\d+\]\.contrario,
+                	^monedas\[\d+\]\.paises,
+                	^monedas\[\d+\]\.formatter,
+                	^monedas\[\d+\]\.locale
+               	</param>
             </result>
         </action>
 
         <action name="GetPrecioPresentacionOptions" class="com.palermotenis.controller.struts.actions.GetPrecioPresentacionOptions">
-            <result type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
-                <param name="inputName">inputStream</param>
+            <result type="json">
+                <param name="root">map</param>
+                <param name="excludeProperties">
+                	^monedas\[\d+\]\.nombre,
+                	^monedas\[\d+\]\.contrario,
+                	^monedas\[\d+\]\.paises,
+                	^monedas\[\d+\]\.formatter,
+                	^monedas\[\d+\]\.locale,
+                	^tiposPresentacion\[\d+\]\.tipoProducto,
+                	^tiposPresentacion\[\d+\]\.presentaciones,
+                	^tiposPresentacion\[\d+\]\.presentacionByProd
+               	</param>
             </result>
         </action>
 
         <action name="GetValoresClasificatoriosByPresentacion" class="com.palermotenis.controller.struts.actions.GetValoresClasificatoriosByPresentacion">
-            <result type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
-                <param name="inputName">inputStream</param>
+            <result type="json">
+                <param name="root">valoresClasificatorios</param>
+                <param name="includeProperties">
+                	^\[\d+\]\.id,
+                	^\[\d+\]\.nombre
+                </param>
             </result>
         </action>
 
         <action name="GetPresentacionesByTipo" class="com.palermotenis.controller.struts.actions.GetPresentacionesByTipo">
-            <result type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
-                <param name="inputName">inputStream</param>
+            <result type="json">
+                <param name="root">presentaciones</param>
+                <param name="excludeProperties">
+                	^\[\d+\]\.tipoPresentacion,
+                	^\[\d+\]\.productos,
+                	^\[\d+\]\.stocks,
+                	^\[\d+\]\.precios
+               	</param>
             </result>
         </action>
 
         <action name="PrepararPresentaciones" class="com.palermotenis.controller.struts.actions.PrepararPresentaciones">
-            <result type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
-                <param name="inputName">inputStream</param>
-            </result>
+            <result type="json">
+                <param name="root">map</param>
+                <param name="excludeProperties">
+					^tiposProducto\[\d+\]\.children\[\d+\]\.tipoProducto,
+					^tiposProducto\[\d+\]\.children\[\d+\]\.presentaciones,
+                	^tiposProducto\[\d+\]\.children\[\d+\]\.presentacionesByProd
+                </param>
+            </result>	
         </action>
 
         <action name="GetClasificaciones" class="com.palermotenis.controller.struts.actions.GetClasificaciones">
-            <result type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
-                <param name="inputName">inputStream</param>
+            <result type="json">
+    			<param name="root">tipoAtributoClasifs</param>
             </result>
         </action>
 
@@ -153,7 +173,7 @@
         </action>
         <action name="GetCiudades" class="com.palermotenis.controller.struts.actions.GetCiudades">
             <result type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="contentType">text/plain;charset=ISO-8859-1</param>
                 <param name="inputName">inputStream</param>
             </result>
         </action>

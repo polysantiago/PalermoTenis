@@ -14,6 +14,8 @@ public interface PresentacionService {
 
     void delete(Integer presentacionId);
 
+    Presentacion getPresentacionById(Integer presentacionId);
+
     List<Presentacion> getPresentacionesByTipo(Integer tipoPresentacionId);
 
     List<Presentacion> getPresentacionesByTipo(TipoPresentacion tipoPresentacion);

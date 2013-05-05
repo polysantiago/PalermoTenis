@@ -72,6 +72,11 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
+    public List<Producto> getLatest8Ofertas() {
+        return productoDao.getProductosInOferta(8);
+    }
+
+    @Override
     public void createNewProducto(int modeloId, int tipoProductoId, String descripcion,
             Collection<Integer> categoriasIds, Map<Integer, String> atributosSimples,
             Map<Integer, Integer> atributosTipados, Map<Integer, Collection<String>> atributosMultiples) {
@@ -158,6 +163,7 @@ public class ProductoServiceImpl implements ProductoService {
         return categorias;
     }
 
+    @Override
     public void updateProducto(int modeloId, String nombre, String descripcion, boolean activo,
             Collection<Integer> categoriasIds, Map<Integer, String> atributosSimples,
             Map<Integer, Integer> atributosTipados, Map<Integer, Collection<String>> atributosMultiples) {

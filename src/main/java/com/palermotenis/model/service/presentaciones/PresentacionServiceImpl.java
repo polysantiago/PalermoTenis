@@ -41,6 +41,11 @@ public class PresentacionServiceImpl implements PresentacionService {
     private StockDao stockDao;
 
     @Override
+    public Presentacion getPresentacionById(Integer presentacionId) {
+        return presentacionDao.find(presentacionId);
+    }
+
+    @Override
     public List<Presentacion> getPresentacionesByTipo(Integer tipoPresentacionId) {
         TipoPresentacion tipoPresentacion = tipoPresentacionService.getTipoPresentacionById(tipoPresentacionId);
         return getPresentacionesByTipo(tipoPresentacion);

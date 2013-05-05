@@ -9,4 +9,6 @@ public interface ProductoDao extends Dao<Producto, Integer> {
 
     List<Producto> getProductosOnSale();
 
+    List<Producto> getProductosInOferta(int maxResults);
+
 }

@@ -1,5 +1,7 @@
 package com.palermotenis.model.service.atributos.tipos.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -7,7 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributoTipado;
+import com.palermotenis.model.beans.atributos.tipos.clasif.TipoAtributoClasif;
 import com.palermotenis.model.beans.valores.ValorPosible;
+import com.palermotenis.model.dao.atributos.tipos.TipoAtributoClasificatorioDao;
 import com.palermotenis.model.dao.atributos.tipos.TipoAtributoSimpleDao;
 import com.palermotenis.model.dao.atributos.tipos.TipoAtributoTipadoDao;
 import com.palermotenis.model.service.atributos.tipos.TipoAtributoService;
@@ -22,6 +26,9 @@ public class TipoAtributoServiceImpl implements TipoAtributoService {
     @Autowired
     private TipoAtributoTipadoDao tipoAtributoTipadoDao;
 
+    @Autowired
+    private TipoAtributoClasificatorioDao tipoAtributoClasificatorioDao;
+
     @Override
     public TipoAtributo getTipoAtributoById(Integer tipoAtributoId) {
         return tipoAtributoSimpleDao.getTipoAtributoSimpleById(tipoAtributoId);
@@ -35,6 +42,11 @@ public class TipoAtributoServiceImpl implements TipoAtributoService {
             tipoAtributoTipadoDao.edit(tipoAtributo);
         }
 
+    }
+
+    @Override
+    public List<TipoAtributoClasif> getAllTiposAtributosClasificatorios() {
+        return tipoAtributoClasificatorioDao.findAll();
     }
 
 }

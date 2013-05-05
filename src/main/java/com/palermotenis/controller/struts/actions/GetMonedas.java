@@ -1,73 +1,51 @@
 package com.palermotenis.controller.struts.actions;
 
-import java.io.InputStream;
 import java.util.Collection;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONSerializer;
 import net.sf.json.JsonConfig;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.model.beans.Moneda;
-import com.palermotenis.model.dao.Dao;
-import com.palermotenis.util.StringUtility;
+import com.palermotenis.model.service.monedas.MonedaService;
 
-/**
- *
- * @author Poly
- */
-public class GetMonedas extends ActionSupport {
+public class GetMonedas extends JsonActionSupport {
 
-	private static final long serialVersionUID = 4337274661669247525L;
-
-	private static final String JSON = "json";
+    private static final long serialVersionUID = 4337274661669247525L;
 
     private Collection<Moneda> monedas;
 
     private String resultType;
 
-    private InputStream inputStream;
-    
     @Autowired
-    private Dao<Moneda, Integer> monedaDao;
+    private MonedaService monedaService;
 
     @Override
-    public String execute(){
-
-        monedas = monedaDao.findAll();
-
-        if(resultType != null && resultType.equalsIgnoreCase("JSON")){
+    public String execute() {
+        if (StringUtils.equalsIgnoreCase(JSON, resultType)) {
             JsonConfig config = new JsonConfig();
-            config.setExcludes(new String[]{"nombre","contrario","paises","locale","formatter"});
-            JSONArray jsonArray = (JSONArray)JSONSerializer.toJSON(monedas, config);
-            inputStream = StringUtility.getInputString(jsonArray.toString());
+            config.setExcludes(new String[]
+                { "nombre", "contrario", "paises", "locale", "formatter" });
+            JSONArray jsonArray = (JSONArray) JSONSerializer.toJSON(getMonedas(), config);
+            writeResponse(jsonArray);
             return JSON;
         }
         return SUCCESS;
 
     }
-    
-    /**
-     * @return the monedas
-     */
+
     public Collection<Moneda> getMonedas() {
+        if (monedas != null) {
+            monedas = monedaService.getAllMonedas();
+        }
         return monedas;
     }
 
-    /**
-     * @param resultType the resultType to set
-     */
     public void setResultType(String resultType) {
         this.resultType = resultType;
-    }
-
-    /**
-     * @return the inputStream
-     */
-    public InputStream getInputStream() {
-        return inputStream;
     }
 
 }

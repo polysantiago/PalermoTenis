@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.ImmutableMap;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.Sucursal;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
@@ -14,6 +15,7 @@ import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.valores.ValorClasificatorio;
 import com.palermotenis.model.dao.stock.StockDao;
 import com.palermotenis.model.service.atributos.AtributoService;
+import com.palermotenis.model.service.presentaciones.PresentacionService;
 import com.palermotenis.model.service.productos.ProductoService;
 import com.palermotenis.model.service.valores.ValorService;
 
@@ -32,6 +34,9 @@ public class StockServiceImpl implements StockService {
 
     @Autowired
     private AtributoService atributoService;
+
+    @Autowired
+    private PresentacionService presentacionService;
 
     @Override
     public void createNewStock(Integer productoId, Integer cantidad) {
@@ -144,8 +149,36 @@ public class StockServiceImpl implements StockService {
         return stockDao.getIntResultBy("Producto,SumOfStock", "producto", producto);
     }
 
+    @Override
+    public List<Stock> getStocksByProductoAndPresentacion(Integer productoId, Integer presentacionId) {
+        Producto producto = getProducto(productoId);
+        Presentacion presentacion = getPresentacion(presentacionId);
+        return stockDao.queryBy("Producto,Presentacion-Active",
+            new ImmutableMap.Builder<String, Object>()
+                .put("producto", producto)
+                .put("presentacion", presentacion)
+                .build());
+    }
+
+    @Override
+    public List<Stock> getStocksByNombre(String nombre, int maxResults) {
+        return stockDao.queryBy("Nombre", new ImmutableMap.Builder<String, Object>().put("nombre", nombre).build(),
+            maxResults, 0);
+    }
+
+    @Override
+    public List<Stock> getActiveStocksByNombre(String nombre, int maxResults) {
+        return stockDao.queryBy("Nombre-Active", new ImmutableMap.Builder<String, Object>()
+            .put("nombre", nombre)
+            .build(), maxResults, 0);
+    }
+
     private Producto getProducto(Integer productoId) {
         return productoService.getProductById(productoId);
+    }
+
+    private Presentacion getPresentacion(Integer presentacionId) {
+        return presentacionService.getPresentacionById(presentacionId);
     }
 
 }

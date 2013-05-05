@@ -1,6 +1,3 @@
-/*
- * To change this template, choose Tools | Templates and open the template in the editor.
- */
 package com.palermotenis.controller.carrito;
 
 import java.util.HashMap;
@@ -11,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.precios.Precio;
-import com.palermotenis.model.dao.Dao;
+import com.palermotenis.model.service.pagos.PagoService;
 import com.palermotenis.model.service.precios.impl.PrecioService;
 
 public class CarritoImpl implements Carrito {
@@ -23,7 +20,7 @@ public class CarritoImpl implements Carrito {
     private int cuotas;
 
     @Autowired
-    private transient Dao<Pago, Integer> pagoDao;
+    private transient PagoService pagoService;
 
     @Autowired
     private transient PrecioService precioService;
@@ -78,12 +75,12 @@ public class CarritoImpl implements Carrito {
             return;
         } else {
             if (pago == null) {
-                pago = pagoDao.find(1);
+                pago = pagoService.getFirstPago();
             }
-            Item i = contenido.get(stock);
-            Precio p = precioService.estimarPrecio(stock, pago, cuotas);
-            i.setPrecioUnitario(precioService.calculatePrecioUnitarioPesos(p));
-            i.setSubtotal(precioService.calculateSubtotalPesos(p, i.getCantidad()));
+            Item item = contenido.get(stock);
+            Precio precio = precioService.estimarPrecio(stock, pago, cuotas);
+            item.setPrecioUnitario(precioService.calculatePrecioUnitarioPesos(precio));
+            item.setSubtotal(precioService.calculateSubtotalPesos(precio, item.getCantidad()));
         }
     }
 
@@ -116,18 +113,11 @@ public class CarritoImpl implements Carrito {
         }
     }
 
-    /**
-     * @return the pago
-     */
     @Override
     public Pago getPago() {
         return pago;
     }
 
-    /**
-     * @param pago
-     *            the pago to set
-     */
     @Override
     public void setPago(Pago pago) {
         if (this.pago == null) {
@@ -138,18 +128,11 @@ public class CarritoImpl implements Carrito {
         }
     }
 
-    /**
-     * @return the cuotas
-     */
     @Override
     public int getCuotas() {
         return cuotas;
     }
 
-    /**
-     * @param cuotas
-     *            the cuotas to set
-     */
     @Override
     public void setCuotas(int cuotas) {
         if (this.cuotas != cuotas) {

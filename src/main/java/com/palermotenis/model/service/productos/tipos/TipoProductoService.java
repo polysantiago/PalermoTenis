@@ -20,6 +20,8 @@ public interface TipoProductoService {
 
     List<TipoProducto> getAllTipoProducto();
 
+    List<TipoProducto> getAllTiposProductoPresentables();
+
     List<TipoProducto> getRootsTipoProducto();
 
     Map<TipoProducto, ArrayList<LinkedHashMap<Marca, Long>>> getTiposProductoAndMarcasAndProductoCount();
