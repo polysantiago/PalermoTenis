@@ -1,46 +1,50 @@
 package com.palermotenis.controller.struts.actions;
 
-import java.io.InputStream;
+import javax.persistence.NoResultException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.model.beans.authorities.Rol;
 import com.palermotenis.model.beans.usuarios.Usuario;
-import com.palermotenis.model.dao.Dao;
-import com.palermotenis.util.StringUtility;
+import com.palermotenis.model.service.authorities.RolService;
 
-/**
- *
- * @author poly
- */
-public class CheckRol extends ActionSupport {
+public class CheckRol extends JsonActionSupport {
 
-	private static final long serialVersionUID = -7583788267327228266L;
-	
-	private String role;
-    private InputStream inputStream;
-    
+    private static final long serialVersionUID = -7583788267327228266L;
+
+    private String role;
+
     @Autowired
-    private Dao<Rol, Integer> rolDao;
-    
+    private RolService rolService;
 
     public String check() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = getAuthentication();
         if (!(authentication.getPrincipal() instanceof Usuario)) {
-            inputStream = StringUtility.getInputString("NOT_AUTHENTICATED");
-        } else if (!authentication.getAuthorities().contains(rolDao.findBy("Rol", "rol", role))) {
-            inputStream = StringUtility.getInputString("NOT_IN_ROLE");
+            writeResponse("NOT_AUTHENTICATED");
+        } else if (!isInRol(authentication)) {
+            writeResponse("NOT_IN_ROLE");
         } else {
-            inputStream = StringUtility.getInputString("OK");
+            success();
         }
         return SUCCESS;
     }
 
-    public InputStream getInputStream() {
-        return inputStream;
+    private boolean isInRol(Authentication authentication) {
+        try {
+            return authentication.getAuthorities().contains(getRol());
+        } catch (NoResultException ex) {
+            return false;
+        }
+    }
+
+    private Rol getRol() {
+        return rolService.getRol(role);
+    }
+
+    private Authentication getAuthentication() {
+        return SecurityContextHolder.getContext().getAuthentication();
     }
 
     public void setRole(String role) {

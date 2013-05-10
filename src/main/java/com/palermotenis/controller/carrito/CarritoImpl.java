@@ -75,7 +75,7 @@ public class CarritoImpl implements Carrito {
             return;
         } else {
             if (pago == null) {
-                pago = pagoService.getFirstPago();
+                pago = pagoService.getEfectivo();
             }
             Item item = contenido.get(stock);
             Precio precio = precioService.estimarPrecio(stock, pago, cuotas);

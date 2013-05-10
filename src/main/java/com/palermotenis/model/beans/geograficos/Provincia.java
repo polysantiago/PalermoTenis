@@ -1,11 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.model.beans.geograficos;
 
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,21 +16,17 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-/**
- *
- * @author Poly
- */
 @Entity
 @Table(name = "provincias")
-@NamedQueries({
-    @NamedQuery(name = "Provincia.findAll", query = "SELECT p FROM Provincia p"),
-    @NamedQuery(name = "Provincia.findById", query = "SELECT p FROM Provincia p WHERE p.id = :id"),
-    @NamedQuery(name = "Provincia.findByNombre", query = "SELECT p FROM Provincia p WHERE p.nombre = :nombre")
-})
-@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+@NamedQueries(
+    { @NamedQuery(name = "Provincia.findAll", query = "SELECT p FROM Provincia p"),
+            @NamedQuery(name = "Provincia.findById", query = "SELECT p FROM Provincia p WHERE p.id = :id"),
+            @NamedQuery(name = "Provincia.findByNombre", query = "SELECT p FROM Provincia p WHERE p.nombre = :nombre") })
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Provincia implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -61,6 +54,11 @@ public class Provincia implements Serializable {
     public Provincia(Integer id, String nombre) {
         this.id = id;
         this.nombre = nombre;
+    }
+
+    public Provincia(String nombre, Pais pais) {
+        this.nombre = nombre;
+        this.pais = pais;
     }
 
     public Integer getId() {

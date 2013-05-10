@@ -1,11 +1,11 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 
 package com.palermotenis.model.beans;
 
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,19 +17,18 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
- *
+ * 
  * @author Poly
  */
 @Entity
 @Table(name = "pagos")
-@NamedQueries({
-    @NamedQuery(name = "Pago.findAll", query = "SELECT p FROM Pago p"),
-    @NamedQuery(name = "Pago.findById", query = "SELECT p FROM Pago p WHERE p.id = :id"),
-    @NamedQuery(name = "Pago.findByNombre", query = "SELECT p FROM Pago p WHERE p.nombre = :nombre")
-})
+@NamedQueries(
+    { @NamedQuery(name = "Pago.findAll", query = "SELECT p FROM Pago p"),
+            @NamedQuery(name = "Pago.findById", query = "SELECT p FROM Pago p WHERE p.id = :id"),
+            @NamedQuery(name = "Pago.findByNombre", query = "SELECT p FROM Pago p WHERE p.nombre = :nombre") })
 public class Pago implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -45,6 +44,10 @@ public class Pago implements Serializable {
 
     public Pago(Integer id) {
         this.id = id;
+    }
+
+    public Pago(String nombre) {
+        this.nombre = nombre;
     }
 
     public Pago(Integer id, String nombre) {

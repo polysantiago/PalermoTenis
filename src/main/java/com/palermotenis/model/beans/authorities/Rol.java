@@ -1,13 +1,12 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 
 package com.palermotenis.model.beans.authorities;
 
-import com.palermotenis.model.beans.usuarios.Usuario;
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,21 +19,24 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+
 import org.springframework.security.core.GrantedAuthority;
 
+import com.palermotenis.model.beans.usuarios.Usuario;
+
 /**
- *
+ * 
  * @author Poly
  */
 @Entity
 @Table(name = "roles")
-@NamedQueries({
-    @NamedQuery(name = "Rol.findAll", query = "SELECT r FROM Rol r"),
-    @NamedQuery(name = "Rol.findById", query = "SELECT r FROM Rol r WHERE r.id = :id"),
-    @NamedQuery(name = "Rol.findByRol", query = "SELECT r FROM Rol r WHERE r.rol = :rol")})
+@NamedQueries(
+    { @NamedQuery(name = "Rol.findAll", query = "SELECT r FROM Rol r"),
+            @NamedQuery(name = "Rol.findById", query = "SELECT r FROM Rol r WHERE r.id = :id"),
+            @NamedQuery(name = "Rol.findByRol", query = "SELECT r FROM Rol r WHERE r.rol = :rol") })
 public class Rol implements Serializable, GrantedAuthority {
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -53,6 +55,10 @@ public class Rol implements Serializable, GrantedAuthority {
 
     public Rol(Integer id) {
         this.id = id;
+    }
+
+    public Rol(String rol) {
+        this.rol = rol;
     }
 
     public Rol(Integer id, String rol) {
@@ -84,7 +90,8 @@ public class Rol implements Serializable, GrantedAuthority {
     }
 
     /**
-     * @param usuarios the usuarios to set
+     * @param usuarios
+     *            the usuarios to set
      */
     public void setUsuarios(Collection<Usuario> usuarios) {
         this.usuarios = usuarios;
@@ -115,6 +122,7 @@ public class Rol implements Serializable, GrantedAuthority {
         return rol;
     }
 
+    @Override
     public String getAuthority() {
         return rol;
     }

@@ -113,4 +113,5 @@
   <classpathentry kind="var" path="M2_REPO/com/thoughtworks/qdox/qdox/1.10/qdox-1.10.jar" sourcepath="M2_REPO/com/thoughtworks/qdox/qdox/1.10/qdox-1.10-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/groovy-all/1.7.4/groovy-all-1.7.4.jar" sourcepath="M2_REPO/org/codehaus/groovy/groovy-all/1.7.4/groovy-all-1.7.4-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/jline/jline/0.9.94/jline-0.9.94.jar" sourcepath="M2_REPO/jline/jline/0.9.94/jline-0.9.94-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/googlecode/flyway/flyway-core/2.1.1/flyway-core-2.1.1.jar" sourcepath="M2_REPO/com/googlecode/flyway/flyway-core/2.1.1/flyway-core-2.1.1-sources.jar"/>
 </classpath>

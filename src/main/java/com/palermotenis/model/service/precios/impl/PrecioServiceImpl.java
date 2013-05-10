@@ -151,7 +151,7 @@ public class PrecioServiceImpl implements PrecioService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public Precio estimarPrecio(Stock stock, int cuotas) {
-        Pago pago = pagoService.getFirstPago();
+        Pago pago = pagoService.getEfectivo();
         Presentacion presentacion = stock.getPresentacion();
         Producto producto = stock.getProducto();
         return estimarPrecio(presentacion, producto, cuotas, pago);

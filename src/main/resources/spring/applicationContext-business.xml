@@ -200,7 +200,7 @@
     <!-- HIBERNATE -->
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
 
-    <bean class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" id="entityManagerFactory">
+    <bean class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" id="entityManagerFactory" depends-on="flyway">
         <property name="dataSource" ref="dataSource"/>
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
@@ -250,6 +250,10 @@
 
     <tx:annotation-driven transaction-manager="jtaTransactionManager" />
 
+	<bean id="flyway" class="com.googlecode.flyway.core.Flyway" init-method="migrate">
+    	<property name="dataSource" ref="dataSource" />
+	</bean>
+	
     <import resource="/applicationContext-jobs.xml" />
 
 </beans>

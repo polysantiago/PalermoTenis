@@ -33,9 +33,8 @@
         </action>
 
         <action name="ListarTipoProductos" class="com.palermotenis.controller.struts.actions.ListarTipoProductos">
-            <result type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
-                <param name="inputName">inputStream</param>
+          	<result type="json">
+                <param name="root">resultList</param>
             </result>
         </action>
 
@@ -187,7 +186,7 @@
 
         <action name="CheckRol_*" method="{1}" class="com.palermotenis.controller.struts.actions.CheckRol">
             <result type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="contentType">text/plain;charset=ISO-8859-1</param>
                 <param name="inputName">inputStream</param>
             </result>
         </action>

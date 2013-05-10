@@ -1,15 +1,14 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 
 package com.palermotenis.model.beans;
 
-import com.palermotenis.model.beans.geograficos.Pais;
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Locale;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,17 +25,19 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.palermotenis.model.beans.geograficos.Pais;
+
 /**
- *
+ * 
  * @author Poly
  */
 @Entity
 @Table(name = "monedas")
-@NamedQueries({
-    @NamedQuery(name = "Moneda.findAll", query = "SELECT m FROM Moneda m"),
-    @NamedQuery(name = "Moneda.findById", query = "SELECT m FROM Moneda m WHERE m.id = :id"),
-    @NamedQuery(name = "Moneda.findByNombre", query = "SELECT m FROM Moneda m WHERE m.nombre = :nombre")
-})
+@NamedQueries(
+    { @NamedQuery(name = "Moneda.findAll", query = "SELECT m FROM Moneda m"),
+            @NamedQuery(name = "Moneda.findById", query = "SELECT m FROM Moneda m WHERE m.id = :id"),
+            @NamedQuery(name = "Moneda.findByCodigo", query = "SELECT m FROM Moneda m WHERE m.codigo = :codigo"),
+            @NamedQuery(name = "Moneda.findByNombre", query = "SELECT m FROM Moneda m WHERE m.nombre = :nombre") })
 public class Moneda implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -78,6 +79,12 @@ public class Moneda implements Serializable {
 
     public Moneda(Integer id, String nombre) {
         this.id = id;
+        this.nombre = nombre;
+    }
+
+    public Moneda(String simbolo, String codigo, String nombre) {
+        this.simbolo = simbolo;
+        this.codigo = codigo;
         this.nombre = nombre;
     }
 
@@ -130,11 +137,13 @@ public class Moneda implements Serializable {
         return "test.Moneda[id=" + id + "]";
     }
 
-    public String formatear(Double valor, Pais pais){
-        if(getLocale() == null)
+    public String formatear(Double valor, Pais pais) {
+        if (getLocale() == null) {
             setLocale(new Locale(pais.getIdioma().getCodigo(), pais.getCodigo()));
-        if(getFormatter() == null)
+        }
+        if (getFormatter() == null) {
             setFormatter(NumberFormat.getInstance(getLocale()));
+        }
         getFormatter().setMinimumFractionDigits(2);
         return getFormatter().getCurrency().getSymbol() + " " + getFormatter().format(valor);
     }
@@ -147,7 +156,8 @@ public class Moneda implements Serializable {
     }
 
     /**
-     * @param locale the locale to set
+     * @param locale
+     *            the locale to set
      */
     public void setLocale(Locale locale) {
         this.locale = locale;
@@ -161,7 +171,8 @@ public class Moneda implements Serializable {
     }
 
     /**
-     * @param formatter the formatter to set
+     * @param formatter
+     *            the formatter to set
      */
     public void setFormatter(NumberFormat formatter) {
         this.formatter = formatter;
@@ -175,7 +186,8 @@ public class Moneda implements Serializable {
     }
 
     /**
-     * @param simbolo the simbolo to set
+     * @param simbolo
+     *            the simbolo to set
      */
     public void setSimbolo(String simbolo) {
         this.simbolo = simbolo;
@@ -189,7 +201,8 @@ public class Moneda implements Serializable {
     }
 
     /**
-     * @param codigo the codigo to set
+     * @param codigo
+     *            the codigo to set
      */
     public void setCodigo(String codigo) {
         this.codigo = codigo;
@@ -203,7 +216,8 @@ public class Moneda implements Serializable {
     }
 
     /**
-     * @param contrario the contrario to set
+     * @param contrario
+     *            the contrario to set
      */
     public void setContrario(Moneda contrario) {
         this.contrario = contrario;

@@ -1,12 +1,11 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 package com.palermotenis.model.beans.geograficos;
 
-import com.palermotenis.model.beans.*;
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,21 +19,24 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import com.palermotenis.model.beans.Idioma;
+import com.palermotenis.model.beans.Moneda;
+
 /**
- *
+ * 
  * @author Poly
  */
 @Entity
 @Table(name = "paises")
-@NamedQueries({
-    @NamedQuery(name = "Pais.findAll", query = "SELECT p FROM Pais p"),
-    @NamedQuery(name = "Pais.findById", query = "SELECT p FROM Pais p WHERE p.id = :id"),
-    @NamedQuery(name = "Pais.findByCodigo", query = "SELECT p FROM Pais p WHERE p.codigo = :codigo"),
-    @NamedQuery(name = "Pais.findByNombre", query = "SELECT p FROM Pais p WHERE p.nombre = :nombre")
-})
+@NamedQueries(
+    { @NamedQuery(name = "Pais.findAll", query = "SELECT p FROM Pais p"),
+            @NamedQuery(name = "Pais.findById", query = "SELECT p FROM Pais p WHERE p.id = :id"),
+            @NamedQuery(name = "Pais.findByCodigo", query = "SELECT p FROM Pais p WHERE p.codigo = :codigo"),
+            @NamedQuery(name = "Pais.findByNombre", query = "SELECT p FROM Pais p WHERE p.nombre = :nombre") })
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class Pais implements Serializable {
 
@@ -70,6 +72,18 @@ public class Pais implements Serializable {
         this.id = id;
         this.codigo = codigo;
         this.nombre = nombre;
+    }
+
+    public Pais(String codigo, String nombre) {
+        this.codigo = codigo;
+        this.nombre = nombre;
+    }
+
+    public Pais(String codigo, String nombre, Idioma idioma, Moneda moneda) {
+        this.codigo = codigo;
+        this.nombre = nombre;
+        this.idioma = idioma;
+        this.moneda = moneda;
     }
 
     public Integer getId() {
@@ -120,7 +134,8 @@ public class Pais implements Serializable {
     }
 
     /**
-     * @param provincias the provincias to set
+     * @param provincias
+     *            the provincias to set
      */
     public void setProvincias(Collection<Provincia> provincias) {
         this.provincias = provincias;
@@ -128,19 +143,53 @@ public class Pais implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((codigo == null) ? 0 : codigo.hashCode());
+        result = prime * result + ((idioma == null) ? 0 : idioma.hashCode());
+        result = prime * result + ((moneda == null) ? 0 : moneda.hashCode());
+        result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
+        return result;
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Pais)) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
             return false;
         }
-        Pais other = (Pais) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Pais other = (Pais) obj;
+        if (codigo == null) {
+            if (other.codigo != null) {
+                return false;
+            }
+        } else if (!codigo.equals(other.codigo)) {
+            return false;
+        }
+        if (idioma == null) {
+            if (other.idioma != null) {
+                return false;
+            }
+        } else if (!idioma.equals(other.idioma)) {
+            return false;
+        }
+        if (moneda == null) {
+            if (other.moneda != null) {
+                return false;
+            }
+        } else if (!moneda.equals(other.moneda)) {
+            return false;
+        }
+        if (nombre == null) {
+            if (other.nombre != null) {
+                return false;
+            }
+        } else if (!nombre.equals(other.nombre)) {
             return false;
         }
         return true;

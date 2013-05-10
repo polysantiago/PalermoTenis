@@ -1,13 +1,12 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 
 package com.palermotenis.model.beans;
 
-import com.palermotenis.model.beans.geograficos.Pais;
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,18 +19,19 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.palermotenis.model.beans.geograficos.Pais;
+
 /**
- *
+ * 
  * @author Poly
  */
 @Entity
 @Table(name = "idiomas")
-@NamedQueries({
-    @NamedQuery(name = "Idioma.findAll", query = "SELECT i FROM Idioma i"),
-    @NamedQuery(name = "Idioma.findById", query = "SELECT i FROM Idioma i WHERE i.id = :id"),
-    @NamedQuery(name = "Idioma.findByCodigo", query = "SELECT i FROM Idioma i WHERE i.codigo = :codigo"),
-    @NamedQuery(name = "Idioma.findByNombre", query = "SELECT i FROM Idioma i WHERE i.nombre = :nombre")
-})
+@NamedQueries(
+    { @NamedQuery(name = "Idioma.findAll", query = "SELECT i FROM Idioma i"),
+            @NamedQuery(name = "Idioma.findById", query = "SELECT i FROM Idioma i WHERE i.id = :id"),
+            @NamedQuery(name = "Idioma.findByCodigo", query = "SELECT i FROM Idioma i WHERE i.codigo = :codigo"),
+            @NamedQuery(name = "Idioma.findByNombre", query = "SELECT i FROM Idioma i WHERE i.nombre = :nombre") })
 public class Idioma implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -57,6 +57,11 @@ public class Idioma implements Serializable {
 
     public Idioma(Integer id, String codigo, String nombre) {
         this.id = id;
+        this.codigo = codigo;
+        this.nombre = nombre;
+    }
+
+    public Idioma(String codigo, String nombre) {
         this.codigo = codigo;
         this.nombre = nombre;
     }
