@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.NoResultException;
+
 import com.palermotenis.model.beans.Marca;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 
@@ -17,6 +19,8 @@ public interface TipoProductoService {
     void deleteTipoProducto(Integer tipoProductoId);
 
     TipoProducto getTipoProductoById(Integer tipoProductoId);
+
+    TipoProducto getTipoProductoByNombre(String nombre) throws NoResultException;
 
     List<TipoProducto> getAllTipoProducto();
 

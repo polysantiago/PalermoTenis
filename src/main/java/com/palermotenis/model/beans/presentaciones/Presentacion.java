@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates and open the template in the editor.
- */
-
 package com.palermotenis.model.beans.presentaciones;
 
 import java.io.Serializable;
@@ -32,10 +28,6 @@ import com.palermotenis.model.beans.precios.PrecioPresentacion;
 import com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion;
 import com.palermotenis.model.beans.productos.Producto;
 
-/**
- * 
- * @author Poly
- */
 @Entity
 @Table(name = "presentaciones")
 @NamedQueries(
@@ -53,7 +45,9 @@ import com.palermotenis.model.beans.productos.Producto;
             @NamedQuery(name = "Presentacion.findByTipoList",
                     query = "SELECT p FROM Presentacion p WHERE p.tipoPresentacion IN (:tipoList)") })
 public class Presentacion implements Serializable {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = -6743186115006655837L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

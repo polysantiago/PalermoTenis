@@ -17,7 +17,7 @@ import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.model.beans.Categoria;
 import com.palermotenis.model.beans.Marca;
 import com.palermotenis.model.beans.Modelo;
@@ -33,7 +33,7 @@ import com.palermotenis.model.service.productos.ProductoService;
 import com.palermotenis.model.service.productos.tipos.TipoProductoService;
 import com.thoughtworks.xstream.converters.ConversionException;
 
-public class ProductoAction extends JsonActionSupport {
+public class ProductoAction extends InputStreamActionSupport {
     private static final long serialVersionUID = -9146563702043871823L;
 
     private static final String PREPARE = "prepare";

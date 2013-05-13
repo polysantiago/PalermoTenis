@@ -16,10 +16,10 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.google.common.collect.ImmutableMap;
-import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.model.beans.Unidad;
 import com.palermotenis.model.beans.atributos.AtributoSimple;
-import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoSimple;
 import com.palermotenis.model.beans.atributos.tipos.clasif.TipoAtributoClasif;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.dao.Dao;
@@ -28,14 +28,14 @@ import com.palermotenis.model.dao.Dao;
  * 
  * @author Poly
  */
-public class TipoAtributoAction extends JsonActionSupport {
+public class TipoAtributoAction extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -2783725459788707738L;
 
     private final String SHOW = "show";
 
     private EntityManager entityManager;
-    private Collection<TipoAtributo> tiposAtributo;
+    private Collection<TipoAtributoSimple> tiposAtributo;
     private Collection<TipoAtributoClasif> clasificaciones;
     private Integer tipoProductoId;
     private Integer tipoAtributoId;
@@ -48,7 +48,7 @@ public class TipoAtributoAction extends JsonActionSupport {
     private PlatformTransactionManager transactionManager;
 
     @Autowired
-    private Dao<TipoAtributo, Integer> tipoAtributoDao;
+    private Dao<TipoAtributoSimple, Integer> tipoAtributoDao;
 
     @Autowired
     private Dao<TipoAtributoClasif, Character> tipoAtributoClasifDao;
@@ -77,7 +77,7 @@ public class TipoAtributoAction extends JsonActionSupport {
 
     public String create() {
         try {
-            final TipoAtributo tipoAtributo = new TipoAtributo();
+            final TipoAtributoSimple tipoAtributo = new TipoAtributoSimple();
             tipoAtributo.setTipoProducto(tipoProductoDao.find(tipoProductoId));
             tipoAtributo.setNombre(nombre);
             tipoAtributo.setClase(Class.forName(clase));
@@ -117,7 +117,7 @@ public class TipoAtributoAction extends JsonActionSupport {
 
     public String editName() {
         try {
-            TipoAtributo tipoAtributo = tipoAtributoDao.find(tipoAtributoId);
+            TipoAtributoSimple tipoAtributo = tipoAtributoDao.find(tipoAtributoId);
             tipoAtributo.setNombre(nombre);
             tipoAtributoDao.edit(tipoAtributo);
 
@@ -132,7 +132,7 @@ public class TipoAtributoAction extends JsonActionSupport {
 
     public String edit() {
         try {
-            TipoAtributo tipoAtributo = tipoAtributoDao.find(tipoAtributoId);
+            TipoAtributoSimple tipoAtributo = tipoAtributoDao.find(tipoAtributoId);
             Unidad unidad = null;
 
             if (unidadId != null) {
@@ -181,7 +181,7 @@ public class TipoAtributoAction extends JsonActionSupport {
     /**
      * @return the tiposAtributo
      */
-    public Collection<TipoAtributo> getTiposAtributo() {
+    public Collection<TipoAtributoSimple> getTiposAtributo() {
         return tiposAtributo;
     }
 

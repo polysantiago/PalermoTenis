@@ -12,7 +12,7 @@ import net.sf.json.JsonConfig;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.model.beans.proveedores.Proveedor;
 import com.palermotenis.model.dao.Dao;
 
@@ -20,7 +20,7 @@ import com.palermotenis.model.dao.Dao;
  * 
  * @author Poly
  */
-public class ProveedorAction extends JsonActionSupport {
+public class ProveedorAction extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -5774790471392620713L;
     private final String SHOW = "show";

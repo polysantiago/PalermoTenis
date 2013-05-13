@@ -1,6 +1,3 @@
-/*
- * To change this template, choose Tools | Templates and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions.admin.crud;
 
 import javax.persistence.EntityManager;
@@ -13,7 +10,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.model.beans.Moneda;
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.beans.precios.PrecioPresentacion;
@@ -24,11 +21,7 @@ import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.dao.Dao;
 
-/**
- * 
- * @author Poly
- */
-public class PrecioAction extends JsonActionSupport {
+public class PrecioAction extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -4112606099516303261L;
 

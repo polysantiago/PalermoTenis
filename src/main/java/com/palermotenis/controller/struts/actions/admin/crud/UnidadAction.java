@@ -9,7 +9,7 @@ import net.sf.json.JsonConfig;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.model.beans.Unidad;
 import com.palermotenis.model.dao.Dao;
 
@@ -17,7 +17,7 @@ import com.palermotenis.model.dao.Dao;
  * 
  * @author Poly
  */
-public class UnidadAction extends JsonActionSupport {
+public class UnidadAction extends InputStreamActionSupport {
 
     private static final long serialVersionUID = 9051985059330393430L;
 

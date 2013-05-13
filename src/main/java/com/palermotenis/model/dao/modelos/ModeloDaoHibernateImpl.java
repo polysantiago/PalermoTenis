@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -19,6 +20,8 @@ import com.palermotenis.model.dao.AbstractHibernateDao;
 
 @Repository("modeloDao")
 public class ModeloDaoHibernateImpl extends AbstractHibernateDao<Modelo, Integer> implements ModeloDao {
+
+    private static final Logger LOGGER = Logger.getLogger(ModeloDaoHibernateImpl.class);
 
     @Resource
     private PlatformTransactionManager transactionManager;
@@ -70,6 +73,42 @@ public class ModeloDaoHibernateImpl extends AbstractHibernateDao<Modelo, Integer
             .put("marca", marca)
             .build();
         return args;
+    }
+
+    @Override
+    public void updateTree(Integer right) {
+        int rowsUpdated = edit("Tree", "right", right);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("updateTree() - " + rowsUpdated + " rows updated");
+        }
+    }
+
+    @Override
+    public void destroy(Modelo modelo) {
+        Integer right = modelo.getRight();
+        Integer left = modelo.getLeft();
+        Integer width = modelo.getWidth();
+
+        super.destroy(modelo);
+
+        if (!modelo.isLeaf()) {
+            int deleted = destroy("Range", argsMap("right", right, "left", left));
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("delete() - " + deleted + " rows deleted");
+            }
+        }
+        int updated = edit("RightAfterDelete", argsMap("right", right, "width", width));
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("delete() - " + updated + " rows updated on right fix");
+        }
+        updated = edit("LeftAfterDelete", argsMap("right", right, "width", width));
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("delete() - " + updated + " rows updated on left fix");
+        }
+    }
+
+    private Map<String, Object> argsMap(String argName1, Object arg1, String argName2, Object arg2) {
+        return new ImmutableMap.Builder<String, Object>().put(argName1, arg1).put(argName2, arg2).build();
     }
 
 }

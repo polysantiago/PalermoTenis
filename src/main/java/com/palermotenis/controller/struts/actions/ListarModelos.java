@@ -18,7 +18,7 @@ import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.service.modelos.ModeloService;
 import com.palermotenis.model.service.productos.tipos.TipoProductoService;
 
-public class ListarModelos extends JsonActionSupport {
+public class ListarModelos extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -3479740110175074239L;
 

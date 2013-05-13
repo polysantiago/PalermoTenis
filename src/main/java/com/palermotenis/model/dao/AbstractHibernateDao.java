@@ -11,13 +11,19 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.apache.commons.collections.MapUtils;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.ImmutableMap;
 
-@Transactional
+@Transactional(propagation = Propagation.REQUIRED, noRollbackFor =
+    { NoResultException.class, EntityNotFoundException.class }, readOnly = true)
 public abstract class AbstractHibernateDao<T, PK extends Serializable> implements Dao<T, PK> {
 
+    private static final String DESTROY_POSTFIX = ".destroy";
+    private static final String EDIT_POSTFIX = ".edit";
+    private static final String FIND_POSTFIX = ".find";
     private final Class<T> type;
     private EntityManager entityManager;
 
@@ -31,18 +37,61 @@ public abstract class AbstractHibernateDao<T, PK extends Serializable> implement
     }
 
     @Override
+    @Transactional(readOnly = false)
     public void create(T entity) {
         entityManager.persist(entity);
     }
 
     @Override
+    @Transactional(readOnly = false)
     public void edit(T entity) {
         entityManager.merge(entity);
     }
 
     @Override
+    @Transactional(readOnly = false)
+    public int edit(String queryName) {
+        return executeUpdate(entityManager.createNamedQuery(editName(queryName)));
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int edit(String queryName, String arg, Object queryArg) {
+        return executeUpdate(entityManager.createNamedQuery(editName(queryName)).setParameter(arg, queryArg));
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int edit(String queryName, Map<String, Object> queryArgs) {
+        return executeUpdate(create(editName(queryName), queryArgs, true, -1, -1));
+    }
+
+    @Override
+    @Transactional(readOnly = false)
     public void destroy(T entity) {
         entityManager.remove(entity);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int destroy(String queryName) {
+        return executeUpdate(entityManager.createNamedQuery(destroyName(queryName)));
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int destroy(String queryName, String arg, Object queryArg) {
+        return executeUpdate(entityManager.createNamedQuery(destroyName(queryName)).setParameter(arg, queryArg));
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int destroy(String queryName, Map<String, Object> queryArgs) {
+        return executeUpdate(create(destroyName(queryName), queryArgs, true, -1, -1));
+    }
+
+    private int executeUpdate(Query query) {
+        return query.executeUpdate();
     }
 
     @Override
@@ -52,11 +101,11 @@ public abstract class AbstractHibernateDao<T, PK extends Serializable> implement
 
     @Override
     public T load(PK id) throws EntityNotFoundException {
-        T t = find(id);
-        if (t == null) {
+        T entity = find(id);
+        if (entity == null) {
             throw new EntityNotFoundException("Entity " + type.getName() + "[" + id + "] not found");
         }
-        return t;
+        return entity;
     }
 
     @Override
@@ -86,13 +135,8 @@ public abstract class AbstractHibernateDao<T, PK extends Serializable> implement
     @SuppressWarnings("unchecked")
     @Override
     public T findBy(String queryName, Map<String, Object> args) throws NoResultException {
-        Query q = entityManager.createNamedQuery(queryName("By" + queryName));
-        if (args != null && !args.isEmpty()) {
-            for (Map.Entry<String, ?> entry : args.entrySet()) {
-                q.setParameter(entry.getKey(), entry.getValue());
-            }
-        }
-        return (T) q.getSingleResult();
+        Query query = create(queryName("By" + queryName), args, true, -1, -1);
+        return (T) query.getSingleResult();
     }
 
     @Override
@@ -127,21 +171,8 @@ public abstract class AbstractHibernateDao<T, PK extends Serializable> implement
 
     @SuppressWarnings("unchecked")
     private List<T> query(String queryName, Map<String, Object> queryArgs, boolean all, int maxResults, int firstResult) {
-        try {
-            Query query = entityManager.createNamedQuery(queryName(queryName));
-            if (!all) {
-                query.setMaxResults(maxResults);
-                query.setFirstResult(firstResult);
-            }
-            if (queryArgs != null && !queryArgs.isEmpty()) {
-                for (Map.Entry<String, ?> entry : queryArgs.entrySet()) {
-                    query.setParameter(entry.getKey(), entry.getValue());
-                }
-            }
-            return query.getResultList();
-        } finally {
-            // entityManager.close();
-        }
+        Query query = create(queryName(queryName), queryArgs, all, maxResults, firstResult);
+        return query.getResultList();
     }
 
     @Override
@@ -161,21 +192,41 @@ public abstract class AbstractHibernateDao<T, PK extends Serializable> implement
 
     @Override
     public int getIntResultBy(String by, Map<String, Object> queryArgs) {
-        Query q = entityManager.createNamedQuery(queryName("By" + by));
-        if (queryArgs != null && !queryArgs.isEmpty()) {
-            for (Map.Entry<String, ?> entry : queryArgs.entrySet()) {
-                q.setParameter(entry.getKey(), entry.getValue());
-            }
-        }
-        return queryInt(q);
+        return queryInt(create(queryName("By" + by), queryArgs, true, -1, -1));
     }
 
     private int queryInt(Query query) {
-        return ((Long) query.getSingleResult()).intValue();
+        return ((Integer) query.getSingleResult()).intValue();
+    }
+
+    private Query create(String queryName, Map<String, Object> queryArgs, boolean all, int maxResults, int firstResult) {
+        Query query = entityManager.createNamedQuery(queryName);
+        if (!all) {
+            query.setMaxResults(maxResults);
+            query.setFirstResult(firstResult);
+        }
+        if (MapUtils.isNotEmpty(queryArgs)) {
+            for (Map.Entry<String, ?> entry : queryArgs.entrySet()) {
+                query.setParameter(entry.getKey(), entry.getValue());
+            }
+        }
+        return query;
     }
 
     private String queryName(String name) {
-        return type.getSimpleName() + ".find" + name;
+        return buildName(name, FIND_POSTFIX);
+    }
+
+    private String editName(String name) {
+        return buildName(name, EDIT_POSTFIX);
+    }
+
+    private String destroyName(String name) {
+        return buildName(name, DESTROY_POSTFIX);
+    }
+
+    private String buildName(String name, String postfix) {
+        return type.getSimpleName() + postfix + name;
     }
 
     public EntityManager getEntityManager() {

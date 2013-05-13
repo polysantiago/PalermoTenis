@@ -20,7 +20,7 @@ import com.palermotenis.model.beans.Modelo;
 import com.palermotenis.model.beans.atributos.AtributoMultipleValores;
 import com.palermotenis.model.beans.atributos.AtributoSimple;
 import com.palermotenis.model.beans.atributos.AtributoTipado;
-import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoSimple;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributoTipado;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
@@ -142,7 +142,9 @@ public class ProductoServiceImpl implements ProductoService {
         TipoProducto tipoProducto = tipoProductoDao.find(tipoProductoId);
 
         Collection<Categoria> categorias = getCategorias(categoriasIds);
-        modelo.setCategorias(categorias);
+        for (Categoria categoria : categorias) {
+            modelo.addCategoria(categoria);
+        }
 
         Producto producto = new Producto(descripcion, tipoProducto, modelo);
 
@@ -182,7 +184,7 @@ public class ProductoServiceImpl implements ProductoService {
     private void updateAtributosSimples(Map<Integer, String> atributosSimples, Producto producto) {
         for (Integer tipoAtributoId : atributosSimples.keySet()) {
             String valor = atributosSimples.get(tipoAtributoId);
-            TipoAtributo tipoAtributo = tipoAtributoSimpleDao.getTipoAtributoSimpleById(tipoAtributoId);
+            TipoAtributoSimple tipoAtributo = tipoAtributoSimpleDao.getTipoAtributoSimpleById(tipoAtributoId);
             try {
                 AtributoSimple atributoSimple = atributoService.getAtributoSimple(producto, tipoAtributo);
                 if (!StringUtils.isBlank(valor)) {
@@ -200,7 +202,7 @@ public class ProductoServiceImpl implements ProductoService {
     private void updateAtributosTipados(Map<Integer, Integer> atributosTipados, Producto producto) {
         for (Integer tipoAtributoId : atributosTipados.keySet()) {
             Integer valorPosibleId = atributosTipados.get(tipoAtributoId);
-            TipoAtributo tipoAtributo = getTipoAtributo(tipoAtributoId);
+            TipoAtributoSimple tipoAtributo = getTipoAtributo(tipoAtributoId);
             try {
                 AtributoTipado atributoTipado = atributoService.getAtributoTipado(producto, tipoAtributo);
                 if (valorPosibleId != null) {

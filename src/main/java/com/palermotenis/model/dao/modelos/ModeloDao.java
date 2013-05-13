@@ -19,4 +19,6 @@ public interface ModeloDao extends Dao<Modelo, Integer> {
 
     void moveModelo(Integer modeloId, Integer modeloOrden, Integer modeloRgtId, Integer modeloRgtOrden);
 
+    void updateTree(Integer right);
+
 }

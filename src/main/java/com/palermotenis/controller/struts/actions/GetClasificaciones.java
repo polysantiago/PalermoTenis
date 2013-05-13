@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.model.beans.atributos.tipos.clasif.TipoAtributoClasif;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoClasificatorio;
 import com.palermotenis.model.service.atributos.tipos.TipoAtributoService;
 
 public class GetClasificaciones extends ActionSupport {
@@ -15,7 +15,7 @@ public class GetClasificaciones extends ActionSupport {
     @Autowired
     private TipoAtributoService tipoAtributoService;
 
-    public List<TipoAtributoClasif> getTipoAtributoClasifs() {
+    public List<TipoAtributoClasificatorio> getTipoAtributoClasifs() {
         return tipoAtributoService.getAllTiposAtributosClasificatorios();
     }
 }

@@ -3,6 +3,7 @@ package com.palermotenis.model.service.modelos.impl;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import com.palermotenis.model.beans.Marca;
 import com.palermotenis.model.beans.Modelo;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.dao.modelos.ModeloDao;
+import com.palermotenis.model.service.categorias.CategoriaService;
 import com.palermotenis.model.service.marcas.MarcaService;
 import com.palermotenis.model.service.modelos.ModeloService;
 import com.palermotenis.model.service.productos.tipos.TipoProductoService;
@@ -35,18 +37,48 @@ public class ModeloServiceImpl implements ModeloService {
     @Autowired
     private TipoProductoService tipoProductoService;
 
+    @Autowired
+    private CategoriaService categoriaService;
+
     @Override
     public Integer createNewModelo(Integer padreId, Integer tipoProductoId, Integer marcaId, String nombre) {
         Assert.notNull(nombre, "Nombre cannot be null");
 
-        Modelo modelo = new Modelo();
-        if (padreId != null) {
-            modelo.setPadre(getModeloById(padreId));
+        TipoProducto tipoProducto = getTipoProducto(tipoProductoId);
+        Marca marca = getMarca(marcaId);
+        Modelo padre = padreId != null ? getModeloById(padreId) : null;
+
+        Modelo modelo = create(padre, tipoProducto, marca, nombre, null);
+        return modelo.getId();
+    }
+
+    @Override
+    public Modelo createNewModelo(TipoProducto tipoProducto, Marca marca, String nombre, List<Categoria> categorias) {
+        return create(null, tipoProducto, marca, nombre, categorias);
+    }
+
+    private Modelo create(Modelo padre, TipoProducto tipoProducto, Marca marca, String nombre,
+            List<Categoria> categorias) {
+        Modelo modelo = new Modelo(padre, nombre, tipoProducto, marca);
+
+        if (CollectionUtils.isNotEmpty(categorias)) {
+            for (Categoria categoria : categorias) {
+                modelo.addCategoria(categoria);
+            }
         }
 
-        modelo.setTipoProducto(getTipoProducto(tipoProductoId));
-        modelo.setMarca(getMarca(marcaId));
-        modelo.setNombre(nombre);
+        if (modelo.isRoot()) {
+            int maxRight = modeloDao.getIntResult("MaxRight");
+            modelo.setLeft(maxRight + 1);
+            modelo.setRight(maxRight + 2);
+            modelo.setOrden(maxRight + 1);
+        } else {
+            Integer right = padre.getRight();
+            modeloDao.updateTree(right);
+            modelo.setLeft(right);
+            modelo.setRight(right + 1);
+            modelo.setOrden(right);
+        }
 
         modeloDao.create(modelo);
 
@@ -54,8 +86,7 @@ public class ModeloServiceImpl implements ModeloService {
 
         modelo.setOrden(modelo.getId());
         modeloDao.edit(modelo);
-
-        return modelo.getId();
+        return modelo;
     }
 
     @Override
@@ -70,7 +101,9 @@ public class ModeloServiceImpl implements ModeloService {
     @Override
     public void updateModelo(Modelo modelo, String nombre, Collection<Categoria> categorias) {
         setNombre(modelo, nombre);
-        modelo.setCategorias(categorias);
+        for (Categoria categoria : categorias) {
+            modelo.addCategoria(categoria);
+        }
         modeloDao.edit(modelo);
     }
 
@@ -98,6 +131,11 @@ public class ModeloServiceImpl implements ModeloService {
     @Override
     public Modelo getModeloById(Integer modeloId) {
         return modeloDao.find(modeloId);
+    }
+
+    @Override
+    public Modelo getModeloByNombre(String nombre) {
+        return modeloDao.findBy("Nombre", "nombre", nombre);
     }
 
     @Override

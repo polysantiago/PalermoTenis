@@ -10,7 +10,7 @@ import com.palermotenis.model.beans.authorities.Rol;
 import com.palermotenis.model.beans.usuarios.Usuario;
 import com.palermotenis.model.service.authorities.RolService;
 
-public class CheckRol extends JsonActionSupport {
+public class CheckRol extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -7583788267327228266L;
 

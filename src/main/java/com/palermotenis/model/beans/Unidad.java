@@ -1,13 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.palermotenis.model.beans;
 
-import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,16 +14,14 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-/**
- *
- * @author Poly
- */
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
+
 @Entity
 @Table(name = "tipo_atributos_unidades")
-@NamedQueries({
-    @NamedQuery(name = "Unidad.findAll", query = "SELECT u FROM Unidad u"),
-    @NamedQuery(name = "Unidad.findById", query = "SELECT u FROM Unidad u WHERE u.id = :id")
-})
+@NamedQueries(
+    { @NamedQuery(name = "Unidad.findAll", query = "SELECT u FROM Unidad u"),
+            @NamedQuery(name = "Unidad.findById", query = "SELECT u FROM Unidad u WHERE u.id = :id"),
+            @NamedQuery(name = "Unidad.findByNombre", query = "SELECT u FROM Unidad u WHERE u.nombre = :nombre") })
 public class Unidad implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -50,6 +43,11 @@ public class Unidad implements Serializable {
 
     public Unidad(Integer id) {
         this.id = id;
+    }
+
+    public Unidad(String nombre, String desc) {
+        this.nombre = nombre;
+        this.descripcion = desc;
     }
 
     public Unidad(Integer id, String nombre, String desc) {

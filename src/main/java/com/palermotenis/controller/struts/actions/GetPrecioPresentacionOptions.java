@@ -14,7 +14,7 @@ import com.palermotenis.model.service.monedas.MonedaService;
 import com.palermotenis.model.service.pagos.PagoService;
 import com.palermotenis.model.service.presentaciones.tipos.TipoPresentacionService;
 
-public class GetPrecioPresentacionOptions extends JsonActionSupport {
+public class GetPrecioPresentacionOptions extends InputStreamActionSupport {
 
     private static final long serialVersionUID = 3609468539847111988L;
 

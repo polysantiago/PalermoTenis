@@ -1,8 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.xstream;
+
+import org.hibernate.proxy.HibernateProxy;
 
 import com.thoughtworks.xstream.converters.ConverterLookup;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -10,15 +8,10 @@ import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.mapper.Mapper;
-import org.hibernate.proxy.HibernateProxy;
 
-/**
- *
- * @author poly
- */
 public class HibernateProxyConverter extends ReflectionConverter {
 
-    private ConverterLookup converterLookup;
+    private final ConverterLookup converterLookup;
 
     public HibernateProxyConverter(Mapper mapper, ReflectionProvider provider, ConverterLookup converterLookup) {
         super(mapper, provider);
@@ -29,6 +22,7 @@ public class HibernateProxyConverter extends ReflectionConverter {
      * be responsible for hibernate proxy
      */
     @Override
+    @SuppressWarnings("rawtypes")
     public boolean canConvert(Class clazz) {
         return HibernateProxy.class.isAssignableFrom(clazz);
     }

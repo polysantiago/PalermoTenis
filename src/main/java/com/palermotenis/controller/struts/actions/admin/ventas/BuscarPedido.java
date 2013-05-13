@@ -15,7 +15,7 @@ import net.sf.json.util.CycleDetectionStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ImmutableMap;
-import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.model.beans.pedidos.Pedido;
 import com.palermotenis.model.dao.Dao;
 
@@ -23,7 +23,7 @@ import com.palermotenis.model.dao.Dao;
  * 
  * @author Poly
  */
-public class BuscarPedido extends JsonActionSupport {
+public class BuscarPedido extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -12350657411437334L;
 

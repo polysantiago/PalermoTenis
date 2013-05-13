@@ -22,7 +22,7 @@ import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.DiscriminatorFormula;
 import org.hibernate.annotations.Type;
 
-import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoSimple;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.valores.Valor;
 import com.palermotenis.model.exceptions.IllegalValueException;
@@ -47,7 +47,7 @@ public class AtributoSimple implements Serializable {
 
     @JoinColumn(name = "tipoatributo", insertable = false)
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    private TipoAtributo tipoAtributo;
+    private TipoAtributoSimple tipoAtributo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Producto")
@@ -61,16 +61,16 @@ public class AtributoSimple implements Serializable {
     public AtributoSimple() {
     }
 
-    public AtributoSimple(TipoAtributo tipoAtributo) {
+    public AtributoSimple(TipoAtributoSimple tipoAtributo) {
         this.tipoAtributo = tipoAtributo;
     }
 
-    public AtributoSimple(TipoAtributo tipoAtributo, Producto producto) {
+    public AtributoSimple(TipoAtributoSimple tipoAtributo, Producto producto) {
         this.tipoAtributo = tipoAtributo;
         this.producto = producto;
     }
 
-    public AtributoSimple(TipoAtributo tipoAtributo, Valor valor) {
+    public AtributoSimple(TipoAtributoSimple tipoAtributo, Valor valor) {
         this(tipoAtributo);
         this.valor = valor;
     }
@@ -92,7 +92,7 @@ public class AtributoSimple implements Serializable {
     /**
      * @return the tipoAtributo
      */
-    public TipoAtributo getTipoAtributo() {
+    public TipoAtributoSimple getTipoAtributo() {
         return tipoAtributo;
     }
 
@@ -100,7 +100,7 @@ public class AtributoSimple implements Serializable {
      * @param tipoAtributo
      *            the tipoAtributo to set
      */
-    public void setTipoAtributo(TipoAtributo tipoAtributo) {
+    public void setTipoAtributo(TipoAtributoSimple tipoAtributo) {
         this.tipoAtributo = tipoAtributo;
     }
 

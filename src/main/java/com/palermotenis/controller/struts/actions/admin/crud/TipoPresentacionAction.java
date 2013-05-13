@@ -13,7 +13,7 @@ import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ImmutableMap;
-import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.dao.Dao;
@@ -22,7 +22,7 @@ import com.palermotenis.model.dao.Dao;
  * 
  * @author Poly
  */
-public class TipoPresentacionAction extends JsonActionSupport {
+public class TipoPresentacionAction extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -6672132861920246917L;
     private final String SHOW = "show";

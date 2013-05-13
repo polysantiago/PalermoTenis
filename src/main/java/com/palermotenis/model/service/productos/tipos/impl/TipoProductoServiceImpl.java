@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,8 @@ import com.palermotenis.model.dao.productos.tipos.TipoProductoDao;
 import com.palermotenis.model.service.productos.tipos.TipoProductoService;
 
 @Service("tipoProductoService")
-@Transactional(propagation = Propagation.REQUIRED)
+@Transactional(propagation = Propagation.REQUIRED, noRollbackFor =
+    { NoResultException.class, EntityNotFoundException.class })
 public class TipoProductoServiceImpl implements TipoProductoService {
 
     @Autowired
@@ -58,6 +61,11 @@ public class TipoProductoServiceImpl implements TipoProductoService {
     @Override
     public TipoProducto getTipoProductoById(Integer tipoProductoId) {
         return tipoProductoDao.find(tipoProductoId);
+    }
+
+    @Override
+    public TipoProducto getTipoProductoByNombre(String nombre) throws NoResultException {
+        return tipoProductoDao.findBy("Nombre", "nombre", nombre);
     }
 
     @Override

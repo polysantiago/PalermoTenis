@@ -12,7 +12,7 @@ import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.model.beans.Modelo;
 import com.palermotenis.model.beans.atributos.AtributoMultipleValores;
-import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoSimple;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributoClasificatorio;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributoMultipleValores;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
@@ -34,7 +34,7 @@ public class MostrarProducto extends ActionSupport {
 
     private Producto producto;
 
-    private Collection<TipoAtributo> atributosSimples = new ArrayList<TipoAtributo>();
+    private Collection<TipoAtributoSimple> atributosSimples = new ArrayList<TipoAtributoSimple>();
     private Collection<TipoAtributoClasificatorio> atributosClasificatorios = new ArrayList<TipoAtributoClasificatorio>();
     private Collection<TipoAtributoMultipleValores> atributosMultiples = new ArrayList<TipoAtributoMultipleValores>();
     private Collection<TipoPresentacion> presentaciones = new ArrayList<TipoPresentacion>();
@@ -45,7 +45,7 @@ public class MostrarProducto extends ActionSupport {
     private Dao<Modelo, Integer> modeloDao;
 
     @Autowired
-    private Dao<TipoAtributo, Integer> tipoAtributoDao;
+    private Dao<TipoAtributoSimple, Integer> tipoAtributoDao;
 
     @Override
     public String execute() {
@@ -88,8 +88,8 @@ public class MostrarProducto extends ActionSupport {
         return SUCCESS;
     }
 
-    private void createAtributosCollections(Collection<TipoAtributo> atributos) {
-        for (TipoAtributo t : atributos) {
+    private void createAtributosCollections(Collection<TipoAtributoSimple> atributos) {
+        for (TipoAtributoSimple t : atributos) {
             if (t instanceof TipoAtributoClasificatorio) {
                 getAtributosClasificatorios().add((TipoAtributoClasificatorio) t);
             } else if (t instanceof TipoAtributoMultipleValores) {
@@ -125,7 +125,7 @@ public class MostrarProducto extends ActionSupport {
     /**
      * @return the atributosSimples
      */
-    public Collection<TipoAtributo> getAtributosSimples() {
+    public Collection<TipoAtributoSimple> getAtributosSimples() {
         return atributosSimples;
     }
 
@@ -133,7 +133,7 @@ public class MostrarProducto extends ActionSupport {
      * @param atributosSimples
      *            the atributosSimples to set
      */
-    public void setAtributosSimples(Collection<TipoAtributo> atributosSimples) {
+    public void setAtributosSimples(Collection<TipoAtributoSimple> atributosSimples) {
         this.atributosSimples = atributosSimples;
     }
 

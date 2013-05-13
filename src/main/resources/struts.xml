@@ -206,16 +206,16 @@
     </package>
 
     <!--- Admin -->
-    <include file="com/palermotenis/controller/struts/actions/admin/admin.xml" />
+    <include file="struts/admin/palermotenis-struts-admin.xml" />
 
     <!-- Carrito Operations -->
-    <include file="com/palermotenis/controller/struts/actions/carrito/carrito.xml" />
-    <include file="com/palermotenis/controller/struts/actions/carrito/checkout/checkout.xml" />
+    <include file="struts/carrito/palermotenis-struts-carrito.xml" />
+    <include file="struts/carrito/palermotenis-struts-checkout.xml" />
 
     <!-- Newsletter Operations -->
-    <include file="com/palermotenis/controller/struts/actions/newsletter/newsletter.xml" />
+    <include file="struts/newsletter/palermotenis-struts-newsletter.xml" />
 
     <!-- Cliente Operations -->
-    <include file="com/palermotenis/controller/struts/actions/clientes/clientes.xml" />
+    <include file="struts/clientes/palermotenis-struts-clientes.xml" />
 
 </struts>

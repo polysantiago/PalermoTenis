@@ -13,7 +13,7 @@ import com.palermotenis.model.beans.Marca;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.service.productos.tipos.TipoProductoService;
 
-public class ListarTipoProductoMarcas extends JsonActionSupport {
+public class ListarTipoProductoMarcas extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -226270066237959031L;
 

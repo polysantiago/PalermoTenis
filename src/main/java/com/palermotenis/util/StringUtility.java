@@ -1,13 +1,8 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 package com.palermotenis.util;
 
-import com.palermotenis.model.beans.Modelo;
-import com.palermotenis.model.beans.Stock;
-import com.palermotenis.model.beans.presentaciones.Presentacion;
-import com.palermotenis.model.beans.productos.Producto;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -15,8 +10,13 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.palermotenis.model.beans.Modelo;
+import com.palermotenis.model.beans.Stock;
+import com.palermotenis.model.beans.presentaciones.Presentacion;
+import com.palermotenis.model.beans.productos.Producto;
+
 /**
- *
+ * 
  * @author Poly
  */
 public class StringUtility {

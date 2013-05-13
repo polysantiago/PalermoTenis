@@ -1,10 +1,10 @@
 package com.palermotenis.model.dao.atributos.tipos;
 
-import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoSimple;
 import com.palermotenis.model.dao.Dao;
 
-public interface TipoAtributoSimpleDao extends Dao<TipoAtributo, Integer> {
+public interface TipoAtributoSimpleDao extends Dao<TipoAtributoSimple, Integer> {
 
-    TipoAtributo getTipoAtributoSimpleById(Integer tipoAtributoId);
+    TipoAtributoSimple getTipoAtributoSimpleById(Integer tipoAtributoId);
 
 }

@@ -8,7 +8,7 @@ import net.sf.json.JSONSerializer;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.dao.Dao;
 
@@ -16,7 +16,7 @@ import com.palermotenis.model.dao.Dao;
  * 
  * @author Poly
  */
-public class PagoAction extends JsonActionSupport {
+public class PagoAction extends InputStreamActionSupport {
 
     private static final long serialVersionUID = 2529039104976965428L;
 

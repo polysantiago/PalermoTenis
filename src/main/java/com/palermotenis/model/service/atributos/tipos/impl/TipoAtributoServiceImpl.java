@@ -2,23 +2,32 @@ package com.palermotenis.model.service.atributos.tipos.impl;
 
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoClasificatorio;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributoTipado;
-import com.palermotenis.model.beans.atributos.tipos.clasif.TipoAtributoClasif;
 import com.palermotenis.model.beans.valores.ValorPosible;
 import com.palermotenis.model.dao.atributos.tipos.TipoAtributoClasificatorioDao;
+import com.palermotenis.model.dao.atributos.tipos.TipoAtributoDao;
+import com.palermotenis.model.dao.atributos.tipos.TipoAtributoMultipleValoresDao;
 import com.palermotenis.model.dao.atributos.tipos.TipoAtributoSimpleDao;
 import com.palermotenis.model.dao.atributos.tipos.TipoAtributoTipadoDao;
 import com.palermotenis.model.service.atributos.tipos.TipoAtributoService;
 
 @Service("tipoAtributoService")
-@Transactional(propagation = Propagation.REQUIRED)
+@Transactional(propagation = Propagation.REQUIRED, noRollbackFor =
+    { NoResultException.class, EntityNotFoundException.class })
 public class TipoAtributoServiceImpl implements TipoAtributoService {
+
+    @Autowired
+    private TipoAtributoDao tipoAtributoDao;
 
     @Autowired
     private TipoAtributoSimpleDao tipoAtributoSimpleDao;
@@ -29,9 +38,17 @@ public class TipoAtributoServiceImpl implements TipoAtributoService {
     @Autowired
     private TipoAtributoClasificatorioDao tipoAtributoClasificatorioDao;
 
+    @Autowired
+    private TipoAtributoMultipleValoresDao tipoAtributoMultipleValoresDao;
+
     @Override
     public TipoAtributo getTipoAtributoById(Integer tipoAtributoId) {
-        return tipoAtributoSimpleDao.getTipoAtributoSimpleById(tipoAtributoId);
+        return tipoAtributoDao.find(tipoAtributoId);
+    }
+
+    @Override
+    public TipoAtributo getTipoAtributoByNombre(String nombre) throws NoResultException {
+        return tipoAtributoDao.findBy("Nombre", "nombre", nombre);
     }
 
     @Override
@@ -45,7 +62,7 @@ public class TipoAtributoServiceImpl implements TipoAtributoService {
     }
 
     @Override
-    public List<TipoAtributoClasif> getAllTiposAtributosClasificatorios() {
+    public List<TipoAtributoClasificatorio> getAllTiposAtributosClasificatorios() {
         return tipoAtributoClasificatorioDao.findAll();
     }
 

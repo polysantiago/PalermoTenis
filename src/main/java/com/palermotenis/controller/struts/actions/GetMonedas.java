@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.palermotenis.model.beans.Moneda;
 import com.palermotenis.model.service.monedas.MonedaService;
 
-public class GetMonedas extends JsonActionSupport {
+public class GetMonedas extends InputStreamActionSupport {
 
     private static final long serialVersionUID = 4337274661669247525L;
 

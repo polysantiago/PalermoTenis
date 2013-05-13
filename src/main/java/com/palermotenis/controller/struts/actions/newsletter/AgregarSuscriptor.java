@@ -16,7 +16,7 @@ import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import com.google.common.collect.ImmutableMap;
-import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.model.beans.newsletter.Suscriptor;
 import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
@@ -25,7 +25,7 @@ import com.palermotenis.util.StringUtility;
  * 
  * @author Poly
  */
-public class AgregarSuscriptor extends JsonActionSupport implements ApplicationAware {
+public class AgregarSuscriptor extends InputStreamActionSupport implements ApplicationAware {
 
     private static final String CONFIRMACION_TEMPLATE = "templates/mail/confirmacionNewsletter.vm";
 

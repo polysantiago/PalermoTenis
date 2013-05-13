@@ -1,17 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.xstream;
 
-import com.thoughtworks.xstream.mapper.Mapper;
-import com.thoughtworks.xstream.mapper.MapperWrapper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
+
+import org.hibernate.collection.AbstractPersistentCollection;
 import org.hibernate.collection.PersistentBag;
 import org.hibernate.collection.PersistentList;
 import org.hibernate.collection.PersistentMap;
@@ -20,13 +16,12 @@ import org.hibernate.collection.PersistentSortedMap;
 import org.hibernate.collection.PersistentSortedSet;
 import org.hibernate.proxy.HibernateProxy;
 
-/**
- *
- * @author poly
- */
+import com.thoughtworks.xstream.mapper.Mapper;
+import com.thoughtworks.xstream.mapper.MapperWrapper;
+
 public class HibernateMapper extends MapperWrapper {
 
-    private Map collectionMap = new HashMap();
+    private final Map<Class<? extends AbstractPersistentCollection>, Class<?>> collectionMap = new HashMap<Class<? extends AbstractPersistentCollection>, Class<?>>();
 
     public HibernateMapper(Mapper arg0) {
         super(arg0);
@@ -39,15 +34,16 @@ public class HibernateMapper extends MapperWrapper {
     }
 
     @Override
-    public Class defaultImplementationOf(Class clazz) {
+    @SuppressWarnings("rawtypes")
+    public Class<?> defaultImplementationOf(Class clazz) {
         if (collectionMap.containsKey(clazz)) {
-            return (Class) collectionMap.get(clazz);
+            return collectionMap.get(clazz);
         }
-
         return super.defaultImplementationOf(clazz);
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public String serializedClass(Class clazz) {
         // chekc whether we are hibernate proxy and substitute real name
         for (int i = 0; i < clazz.getInterfaces().length; i++) {
@@ -56,7 +52,7 @@ public class HibernateMapper extends MapperWrapper {
             }
         }
         if (collectionMap.containsKey(clazz)) {
-            return ((Class) collectionMap.get(clazz)).getName();
+            return ((Class<?>) collectionMap.get(clazz)).getName();
         }
 
         return super.serializedClass(clazz);

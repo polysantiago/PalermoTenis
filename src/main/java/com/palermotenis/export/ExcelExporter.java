@@ -1,17 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.export;
-
-import com.palermotenis.model.beans.Modelo;
-import com.palermotenis.model.beans.Stock;
-import com.palermotenis.model.beans.productos.tipos.TipoProducto;
-import com.palermotenis.model.beans.precios.Precio;
-import com.palermotenis.model.beans.presentaciones.Presentacion;
-import com.palermotenis.model.beans.productos.Producto;
-import com.palermotenis.model.beans.valores.ValorClasificatorio;
-import com.palermotenis.model.dao.Dao;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import jxl.CellView;
 import jxl.Workbook;
 import jxl.write.Label;
@@ -27,15 +15,21 @@ import jxl.write.Number;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-/**
- *
- * @author Poly
- */
+import com.palermotenis.model.beans.Modelo;
+import com.palermotenis.model.beans.Stock;
+import com.palermotenis.model.beans.precios.Precio;
+import com.palermotenis.model.beans.presentaciones.Presentacion;
+import com.palermotenis.model.beans.productos.Producto;
+import com.palermotenis.model.beans.productos.tipos.TipoProducto;
+import com.palermotenis.model.beans.valores.ValorClasificatorio;
+import com.palermotenis.model.dao.Dao;
+
 public class ExcelExporter extends AbstractExporter implements ApplicationContextAware {
 
     private String[] headers;
@@ -55,7 +49,7 @@ public class ExcelExporter extends AbstractExporter implements ApplicationContex
                 args.put("tipoProducto", tp);
                 List<Stock> stocks = getStockService().queryBy("TipoProducto", args);
                 int contS = 1;
-                for (Stock stock : stocks) {                    
+                for (Stock stock : stocks) {
                     Collection<? extends Precio> precios = stock.getProducto().getPrecios();
                     for (Precio precio : precios) {
                         s.addCell(new Label(0, contS, stock.getSucursal().getNombre()));
@@ -123,15 +117,16 @@ public class ExcelExporter extends AbstractExporter implements ApplicationContex
     private String buildValorPresentacion(Presentacion p) {
         return p == null ? "" : p.getTipoPresentacion().getNombre() + " " + p.getNombre();
     }
-    
-    private Dao<Stock, Integer> getStockService(){
-        return (Dao<Stock, Integer>)applicationContext.getBean("stockService");
+
+    private Dao<Stock, Integer> getStockService() {
+        return (Dao<Stock, Integer>) applicationContext.getBean("stockService");
     }
 
-    private Dao<TipoProducto, Integer> getTipoProductoService(){
-        return (Dao<TipoProducto, Integer>)applicationContext.getBean("tipoProductoService");
+    private Dao<TipoProducto, Integer> getTipoProductoService() {
+        return (Dao<TipoProducto, Integer>) applicationContext.getBean("tipoProductoService");
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }

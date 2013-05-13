@@ -1,28 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.xstream;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.mapper.CannotResolveClassException;
-import com.thoughtworks.xstream.converters.ConversionException;
-import com.thoughtworks.xstream.converters.Converter;
-import com.thoughtworks.xstream.converters.ConverterMatcher;
-import com.thoughtworks.xstream.converters.SingleValueConverter;
-import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
-import com.thoughtworks.xstream.io.StreamException;
-import com.thoughtworks.xstream.io.xml.CompactWriter;
-import com.thoughtworks.xstream.io.xml.QNameMap;
-import com.thoughtworks.xstream.io.xml.SaxWriter;
-import com.thoughtworks.xstream.io.xml.StaxWriter;
-import com.thoughtworks.xstream.mapper.MapperWrapper;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-
 import java.util.Map;
+
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -38,10 +21,20 @@ import org.springframework.util.xml.StaxUtils;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ext.LexicalHandler;
 
-/**
- *
- * @author poly
- */
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.ConversionException;
+import com.thoughtworks.xstream.converters.Converter;
+import com.thoughtworks.xstream.converters.ConverterMatcher;
+import com.thoughtworks.xstream.converters.SingleValueConverter;
+import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
+import com.thoughtworks.xstream.io.StreamException;
+import com.thoughtworks.xstream.io.xml.CompactWriter;
+import com.thoughtworks.xstream.io.xml.QNameMap;
+import com.thoughtworks.xstream.io.xml.SaxWriter;
+import com.thoughtworks.xstream.io.xml.StaxWriter;
+import com.thoughtworks.xstream.mapper.CannotResolveClassException;
+import com.thoughtworks.xstream.mapper.MapperWrapper;
+
 public class XStreamMarshaller extends XStream {
 
     /**
@@ -50,7 +43,7 @@ public class XStreamMarshaller extends XStream {
     public static final String DEFAULT_ENCODING = "UTF-8";
     private HierarchicalStreamDriver streamDriver;
     private String encoding = DEFAULT_ENCODING;
-    private Class[] supportedClasses;
+    private Class<?>[] supportedClasses;
     private ClassLoader classLoader;
 
     @Override
@@ -91,11 +84,11 @@ public class XStreamMarshaller extends XStream {
         }
     }
 
-    public boolean supports(Class clazz) {
+    public boolean supports(Class<?> clazz) {
         if (ObjectUtils.isEmpty(this.supportedClasses)) {
             return true;
         } else {
-            for (Class supportedClass : this.supportedClasses) {
+            for (Class<?> supportedClass : this.supportedClasses) {
                 if (supportedClass.isAssignableFrom(clazz)) {
                     return true;
                 }
@@ -134,9 +127,9 @@ public class XStreamMarshaller extends XStream {
         for (Map.Entry<String, ?> entry : aliases.entrySet()) {
             String alias = entry.getKey();
             Object value = entry.getValue();
-            Class type;
+            Class<?> type;
             if (value instanceof Class) {
-                type = (Class) value;
+                type = (Class<?>) value;
             } else if (value instanceof String) {
                 String s = (String) value;
                 type = ClassUtils.forName(s, classLoader);
@@ -154,7 +147,7 @@ public class XStreamMarshaller extends XStream {
             int idx = field.lastIndexOf('.');
             if (idx != -1) {
                 String className = field.substring(0, idx);
-                Class clazz = ClassUtils.forName(className, classLoader);
+                Class<?> clazz = ClassUtils.forName(className, classLoader);
                 String fieldName = field.substring(idx + 1);
                 aliasField(alias, clazz, fieldName);
             } else {
@@ -184,7 +177,7 @@ public class XStreamMarshaller extends XStream {
         this.encoding = encoding;
     }
 
-    public void setSupportedClasses(Class[] supportedClasses) {
+    public void setSupportedClasses(Class<?>[] supportedClasses) {
         this.supportedClasses = supportedClasses;
     }
 }

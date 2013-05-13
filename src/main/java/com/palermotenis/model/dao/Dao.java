@@ -46,5 +46,17 @@ public interface Dao<T, PK> {
 
     void edit(T o);
 
+    int edit(String queryName);
+
+    int edit(String queryName, String arg, Object queryArg);
+
+    int edit(String queryName, Map<String, Object> queryArgs);
+
     void destroy(T o);
+
+    int destroy(String queryName);
+
+    int destroy(String queryName, String arg, Object queryArg);
+
+    int destroy(String queryName, Map<String, Object> queryArgs);
 }

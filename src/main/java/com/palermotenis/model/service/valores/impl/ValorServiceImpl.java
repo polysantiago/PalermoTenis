@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.palermotenis.model.beans.Stock;
-import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributoClasificatorio;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoSimple;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributoTipado;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.valores.ValorClasificatorio;
@@ -60,7 +60,7 @@ public class ValorServiceImpl implements ValorService {
 
     @Override
     public List<ValorPosible> getValoresPosiblesByTipo(Integer tipoAtributoTipadoId) {
-        TipoAtributo tipoAtributo = getTipoAtributoTipado(tipoAtributoTipadoId);
+        TipoAtributoSimple tipoAtributo = getTipoAtributoTipado(tipoAtributoTipadoId);
         return valorPosibleDao.queryBy("TipoAtributo", "tipoAtributo", tipoAtributo);
     }
 
@@ -173,7 +173,7 @@ public class ValorServiceImpl implements ValorService {
         return ConvertUtils.convert(unidad, tipoAtributoTipado.getClase());
     }
 
-    private boolean isValidField(TipoAtributo tipoAtributo, String unidad) {
+    private boolean isValidField(TipoAtributoSimple tipoAtributo, String unidad) {
         try {
             ConvertUtils.convert(unidad, tipoAtributo.getClase());
         } catch (ConversionException ex) {

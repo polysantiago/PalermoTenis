@@ -9,11 +9,11 @@ import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.palermotenis.controller.results.ImageCapable;
-import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.model.beans.Marca;
 import com.palermotenis.model.service.marcas.MarcaService;
 
-public class MarcaAction extends JsonActionSupport implements ImageCapable {
+public class MarcaAction extends InputStreamActionSupport implements ImageCapable {
 
     private static final long serialVersionUID = 5928001748528938792L;
 

@@ -10,7 +10,7 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.results.GZIPCapable;
 import com.palermotenis.util.StringUtility;
 
-public class JsonActionSupport extends ActionSupport implements GZIPCapable {
+public class InputStreamActionSupport extends ActionSupport implements GZIPCapable {
 
     private static final long serialVersionUID = -8022723052520248208L;
 

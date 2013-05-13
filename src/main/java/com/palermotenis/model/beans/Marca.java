@@ -50,7 +50,6 @@ public class Marca implements Serializable, Comparable<Marca> {
     @Column(name = "Imagen")
     private byte[] imagen;
 
-    @Basic(optional = false)
     @Column(name = "Tamanio")
     private long tamanio;
 
@@ -64,6 +63,13 @@ public class Marca implements Serializable, Comparable<Marca> {
 
     @OneToMany(mappedBy = "marca", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Collection<Modelo> modelos;
+
+    public Marca() {
+    }
+
+    public Marca(String nombre) {
+        this.nombre = nombre;
+    }
 
     /**
      * @return the id

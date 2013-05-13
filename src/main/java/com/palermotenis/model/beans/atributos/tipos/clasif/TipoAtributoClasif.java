@@ -1,11 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.palermotenis.model.beans.atributos.tipos.clasif;
 
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,18 +10,17 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-/**
- *
- * @author Poly
- */
 @Entity
 @Table(name = "tipo_atributos_clasif")
-@NamedQueries({
-    @NamedQuery(name = "TipoAtributoClasif.findAll", query = "SELECT t FROM TipoAtributoClasif t"),
-    @NamedQuery(name = "TipoAtributoClasif.findByClasif", query = "SELECT t FROM TipoAtributoClasif t WHERE t.clasif = :clasif"),
-    @NamedQuery(name = "TipoAtributoClasif.findByNombre", query = "SELECT t FROM TipoAtributoClasif t WHERE t.nombre = :nombre"),
-    @NamedQuery(name = "TipoAtributoClasif.findByClase", query = "SELECT t FROM TipoAtributoClasif t WHERE t.clase = :clase")
-})
+@NamedQueries(
+    {
+            @NamedQuery(name = "TipoAtributoClasif.findAll", query = "SELECT t FROM TipoAtributoClasif t"),
+            @NamedQuery(name = "TipoAtributoClasif.findByClasif",
+                    query = "SELECT t FROM TipoAtributoClasif t WHERE t.clasif = :clasif"),
+            @NamedQuery(name = "TipoAtributoClasif.findByNombre",
+                    query = "SELECT t FROM TipoAtributoClasif t WHERE t.nombre = :nombre"),
+            @NamedQuery(name = "TipoAtributoClasif.findByClase",
+                    query = "SELECT t FROM TipoAtributoClasif t WHERE t.clase = :clase") })
 public class TipoAtributoClasif implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -41,10 +36,9 @@ public class TipoAtributoClasif implements Serializable {
     @Basic(optional = false)
     @Column(name = "Clase")
     private String clase;
-    
+
     @Column(name = "Descripcion")
     private String descripcion;
-
 
     public TipoAtributoClasif() {
     }
@@ -56,6 +50,13 @@ public class TipoAtributoClasif implements Serializable {
     public TipoAtributoClasif(Character clasif, String nombre) {
         this.clasif = clasif;
         this.nombre = nombre;
+    }
+
+    public TipoAtributoClasif(Character clasif, String nombre, String clase, String descripcion) {
+        this.clasif = clasif;
+        this.nombre = nombre;
+        this.clase = clase;
+        this.descripcion = descripcion;
     }
 
     public Character getClasif() {
@@ -82,7 +83,8 @@ public class TipoAtributoClasif implements Serializable {
     }
 
     /**
-     * @param clase the clase to set
+     * @param clase
+     *            the clase to set
      */
     public void setClase(String clase) {
         this.clase = clase;
@@ -96,7 +98,8 @@ public class TipoAtributoClasif implements Serializable {
     }
 
     /**
-     * @param descripcion the descripcion to set
+     * @param descripcion
+     *            the descripcion to set
      */
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;

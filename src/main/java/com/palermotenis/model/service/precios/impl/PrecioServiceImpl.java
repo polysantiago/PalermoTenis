@@ -60,9 +60,8 @@ public class PrecioServiceImpl implements PrecioService {
         Moneda moneda = precio.getId().getMoneda();
         if (moneda.getNombre().equalsIgnoreCase("Pesos")) {
             return valor;
-        } else {
-            return (calculateCotizacion(moneda) * valor);
         }
+        return (calculateCotizacion(moneda) * valor);
     }
 
     @Override
@@ -71,9 +70,8 @@ public class PrecioServiceImpl implements PrecioService {
         Moneda moneda = precio.getId().getMoneda();
         if (moneda.getNombre().equalsIgnoreCase("Dolares")) {
             return valor;
-        } else {
-            return (calculateCotizacion(moneda) * valor);
         }
+        return (calculateCotizacion(moneda) * valor);
     }
 
     @Override

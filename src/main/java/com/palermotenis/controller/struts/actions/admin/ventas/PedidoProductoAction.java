@@ -10,7 +10,7 @@ import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ImmutableMap;
-import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.pedidos.Pedido;
 import com.palermotenis.model.beans.pedidos.PedidoProducto;
@@ -18,7 +18,7 @@ import com.palermotenis.model.beans.pedidos.PedidoProductoPK;
 import com.palermotenis.model.dao.Dao;
 import com.palermotenis.model.service.precios.impl.PrecioService;
 
-public class PedidoProductoAction extends JsonActionSupport {
+public class PedidoProductoAction extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -2042943340293648023L;
 

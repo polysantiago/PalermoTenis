@@ -4,10 +4,10 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.model.service.modelos.ModeloService;
 
-public class ModeloAction extends JsonActionSupport {
+public class ModeloAction extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -3215895548120987791L;
     private static final Logger logger = Logger.getLogger(ModeloAction.class);

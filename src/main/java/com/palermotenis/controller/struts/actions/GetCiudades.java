@@ -12,7 +12,7 @@ import com.palermotenis.model.beans.geograficos.Pais;
 import com.palermotenis.model.beans.geograficos.Provincia;
 import com.palermotenis.model.service.geograficos.GeographicService;
 
-public class GetCiudades extends JsonActionSupport {
+public class GetCiudades extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -4744668583308244516L;
 

@@ -1,63 +1,45 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.model.beans.valores;
 
-import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
 import java.io.Serializable;
+
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoSimple;
 import com.palermotenis.model.exceptions.IllegalValueException;
 
-/**
- *
- * @author Poly
- */
 public class Valor implements Serializable {
 
+    private static final long serialVersionUID = -3205633002530019345L;
+
     private Object unidad;
-    private TipoAtributo tipoAtributo;
+    private TipoAtributoSimple tipoAtributo;
 
     public Valor() {
     }
 
-    public Valor(TipoAtributo tipoAtributo) {
+    public Valor(TipoAtributoSimple tipoAtributo) {
         this.tipoAtributo = tipoAtributo;
     }
 
-    /**
-     * @return the valor
-     */
     public Object getUnidad() {
         return unidad;
     }
 
-    /**
-     * @param valor the valor to set
-     */
     public void setUnidad(Object unidad) throws IllegalValueException {
         this.unidad = unidad;
     }
 
-    /**
-     * @return the tipoAtributo
-     */
-    public TipoAtributo getTipoAtributo() {
+    public TipoAtributoSimple getTipoAtributo() {
         return tipoAtributo;
     }
 
-    /**
-     * @param tipoAtributo the tipoAtributo to set
-     */
-    public void setTipoAtributo(TipoAtributo tipoAtributo) {
+    public void setTipoAtributo(TipoAtributoSimple tipoAtributo) {
         this.tipoAtributo = tipoAtributo;
     }
 
-    public String getNombre(){
-     if(getTipoAtributo().getUnidad() == null){
-         return getUnidad().toString();
-     } else {
-         return getUnidad().toString() + " " + getTipoAtributo().getUnidad().getNombre();
-     }
+    public String getNombre() {
+        if (getTipoAtributo().getUnidad() == null) {
+            return getUnidad().toString();
+        }
+        return getUnidad().toString() + " " + getTipoAtributo().getUnidad().getNombre();
     }
 
     @Override

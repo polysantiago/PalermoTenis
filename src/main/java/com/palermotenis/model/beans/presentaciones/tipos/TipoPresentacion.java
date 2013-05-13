@@ -1,15 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.palermotenis.model.beans.presentaciones.tipos;
 
-import com.palermotenis.model.beans.presentaciones.*;
-import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,20 +20,23 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-/**
- *
- * @author Poly
- */
+import com.palermotenis.model.beans.presentaciones.Presentacion;
+import com.palermotenis.model.beans.productos.tipos.TipoProducto;
+
 @Entity
 @Table(name = "tipo_presentaciones")
-@NamedQueries({
-    @NamedQuery(name = "TipoPresentacion.findAll", query = "SELECT t FROM TipoPresentacion t"),
-    @NamedQuery(name = "TipoPresentacion.findById", query = "SELECT t FROM TipoPresentacion t WHERE t.id = :id"),
-    @NamedQuery(name = "TipoPresentacion.findByTipoProducto", query = "SELECT t FROM TipoPresentacion t WHERE t.tipoProducto = :tipoProducto"),
-    @NamedQuery(name = "TipoPresentacion.findByNombre", query = "SELECT t FROM TipoPresentacion t WHERE t.nombre = :nombre")
-})
+@NamedQueries(
+    {
+            @NamedQuery(name = "TipoPresentacion.findAll", query = "SELECT t FROM TipoPresentacion t"),
+            @NamedQuery(name = "TipoPresentacion.findById", query = "SELECT t FROM TipoPresentacion t WHERE t.id = :id"),
+            @NamedQuery(name = "TipoPresentacion.findByTipoProducto",
+                    query = "SELECT t FROM TipoPresentacion t WHERE t.tipoProducto = :tipoProducto"),
+            @NamedQuery(name = "TipoPresentacion.findByNombre",
+                    query = "SELECT t FROM TipoPresentacion t WHERE t.nombre = :nombre") })
 public class TipoPresentacion implements Serializable, Comparable<TipoPresentacion> {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 6576518147981650652L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -53,8 +50,8 @@ public class TipoPresentacion implements Serializable, Comparable<TipoPresentaci
     @JoinColumn(name = "TipoProducto", referencedColumnName = "ID")
     @ManyToOne(optional = false)
     private TipoProducto tipoProducto;
-    
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY ,mappedBy = "tipoPresentacion")
+
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "tipoPresentacion")
     private Collection<Presentacion> presentaciones;
 
     @Transient
@@ -122,33 +119,27 @@ public class TipoPresentacion implements Serializable, Comparable<TipoPresentaci
 
     @Override
     public String toString() {
-        return "com.palermotenis.model.beans.presentaciones.TipoPresentacion[id=" + id + "]";
+        return "TipoPresentacion[id=" + id + "]";
     }
 
-    /**
-     * @return the presentacionesByProd
-     */
     public Collection<Presentacion> getPresentacionesByProd() {
         return presentacionesByProd;
     }
 
-    /**
-     * @param presentacionesByProd the presentacionesByProd to set
-     */
     public void setPresentacionesByProd(Collection<Presentacion> presentacionesByProd) {
         this.presentacionesByProd = presentacionesByProd;
     }
 
     public void addPresentacionByProd(Presentacion presentacion) {
         if (hasPresentacionByProd(presentacion)) {
-            //TODO handle exception
+            return;
         }
         presentacionesByProd.add(presentacion);
     }
 
     public void removePresentacionByProd(Presentacion presentacion) {
         if (!hasPresentacionByProd(presentacion)) {
-            //TODO handle exception
+            return;
         }
         presentacionesByProd.remove(presentacion);
     }
@@ -157,6 +148,7 @@ public class TipoPresentacion implements Serializable, Comparable<TipoPresentaci
         return presentacionesByProd.contains(presentacion);
     }
 
+    @Override
     public int compareTo(TipoPresentacion o) {
         return nombre.compareTo(o.nombre);
     }

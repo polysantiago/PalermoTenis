@@ -1,12 +1,8 @@
-/*
- * To change this template, choose Tools | Templates and open the template in the editor.
- */
 package com.palermotenis.model.beans.productos;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -26,19 +22,22 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.OrderBy;
 import org.hibernate.annotations.Where;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.palermotenis.model.beans.Modelo;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.atributos.AtributoClasificatorio;
 import com.palermotenis.model.beans.atributos.AtributoMultipleValores;
 import com.palermotenis.model.beans.atributos.AtributoSimple;
 import com.palermotenis.model.beans.atributos.AtributoTipado;
-import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributoClasificatorio;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributoMultipleValores;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoTipado;
 import com.palermotenis.model.beans.compras.Costo;
 import com.palermotenis.model.beans.precios.Precio;
 import com.palermotenis.model.beans.precios.PrecioPresentacion;
@@ -47,10 +46,6 @@ import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.exceptions.IllegalValueException;
 
-/**
- * 
- * @author Poly
- */
 @Entity
 @Table(name = "productos", catalog = "palermotenis", schema = "")
 @NamedQueries(
@@ -72,6 +67,8 @@ import com.palermotenis.model.exceptions.IllegalValueException;
                             + "WHERE pp.id.stock.producto != :producto AND pp.id.stock.stock > 0 AND pp.id.stock.producto.activo = 1 "
                             + "AND p IN (SELECT pp2.id.pedido FROM Pedido pd JOIN pd.pedidosProductos pp2 WHERE pp2.id.stock.producto = :producto)") })
 public class Producto implements Serializable {
+
+    private static final long serialVersionUID = 4951192844589939898L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -462,29 +459,27 @@ public class Producto implements Serializable {
     }
 
     // Generic methods
-    private <T extends TipoAtributo, S extends AtributoSimple> Set<T> createSet(Class<S> clazz) {
+    @SuppressWarnings("unchecked")
+    private <T extends TipoAtributoTipado, S extends AtributoTipado> Set<T> createSet(Class<S> clazz) {
         Set<T> newAtributosSet = null;
         Collection<S> atributosCollection = createCollectionAtributos(clazz);
 
-        if (atributosCollection != null && !atributosCollection.isEmpty()) {
-            newAtributosSet = new HashSet<T>();
-            for (AtributoSimple a : atributosCollection) {
-                newAtributosSet.add((T) a.getTipoAtributo());
+        if (CollectionUtils.isNotEmpty(atributosCollection)) {
+            newAtributosSet = Sets.newHashSet();
+            for (AtributoTipado atributo : atributosCollection) {
+                newAtributosSet.add((T) atributo.getTipoAtributo());
             }
         }
 
         return newAtributosSet;
     }
 
-    private <T extends AtributoSimple> Collection<T> createCollectionAtributos(Class<T> clazz) {
-        Collection<T> atributosT = null;
-        if (hasAtributos()) {
-            atributosT = new ArrayList<T>();
-            for (AtributoSimple a : atributos) {
-                if (a.getClass() == clazz) {
-                    T at = (T) a;
-                    atributosT.add(at);
-                }
+    @SuppressWarnings("unchecked")
+    private <T extends AtributoTipado> Collection<T> createCollectionAtributos(Class<T> clazz) {
+        Collection<T> atributosT = Lists.newArrayList();
+        for (AtributoTipado a : atributosTipados) {
+            if (clazz.isAssignableFrom(a.getClass())) {
+                atributosT.add((T) a);
             }
         }
         return atributosT;

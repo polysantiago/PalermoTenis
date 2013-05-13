@@ -25,7 +25,7 @@ import com.palermotenis.model.service.pagos.PagoService;
 import com.palermotenis.model.service.precios.impl.PrecioService;
 import com.palermotenis.model.service.stock.StockService;
 
-public class GetProductosAutoCompleteList extends JsonActionSupport {
+public class GetProductosAutoCompleteList extends InputStreamActionSupport {
 
     private static final int UNA_CUOTA = 1;
     private static final long serialVersionUID = -7155980564935536463L;

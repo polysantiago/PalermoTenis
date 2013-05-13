@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.palermotenis.model.service.precios.impl.PrecioService;
 
-public class GetCotizacion extends JsonActionSupport {
+public class GetCotizacion extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -3131323335420585748L;
 

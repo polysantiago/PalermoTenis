@@ -6,7 +6,7 @@ import com.palermotenis.model.beans.Sucursal;
 import com.palermotenis.model.beans.atributos.AtributoMultipleValores;
 import com.palermotenis.model.beans.atributos.AtributoSimple;
 import com.palermotenis.model.beans.atributos.AtributoTipado;
-import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoSimple;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.valores.ValorClasificatorio;
@@ -36,7 +36,7 @@ public interface AtributoService {
 
     List<AtributoMultipleValores> getAtributosByProducto(Producto producto);
 
-    AtributoSimple getAtributoSimple(Producto producto, TipoAtributo tipoAtributo);
+    AtributoSimple getAtributoSimple(Producto producto, TipoAtributoSimple tipoAtributo);
 
-    AtributoTipado getAtributoTipado(Producto producto, TipoAtributo tipoAtributo);
+    AtributoTipado getAtributoTipado(Producto producto, TipoAtributoSimple tipoAtributo);
 }

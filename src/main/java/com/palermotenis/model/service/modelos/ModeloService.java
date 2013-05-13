@@ -4,9 +4,13 @@ import java.util.Collection;
 import java.util.List;
 
 import com.palermotenis.model.beans.Categoria;
+import com.palermotenis.model.beans.Marca;
 import com.palermotenis.model.beans.Modelo;
+import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 
 public interface ModeloService {
+
+    Modelo createNewModelo(TipoProducto tipoProducto, Marca marca, String nombre, List<Categoria> categorias);
 
     Integer createNewModelo(Integer padreId, Integer tipoProductoId, Integer marcaId, String nombre);
 
@@ -19,6 +23,8 @@ public interface ModeloService {
     void deleteModelo(Integer modeloId);
 
     Modelo getModeloById(Integer modeloId);
+
+    Modelo getModeloByNombre(String nombre);
 
     List<Modelo> getAllModelos();
 

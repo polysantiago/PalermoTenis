@@ -13,7 +13,7 @@ import org.apache.commons.beanutils.DynaBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoSimple;
 import com.palermotenis.model.dao.Dao;
 import com.palermotenis.util.StringUtility;
 
@@ -26,7 +26,7 @@ public class ValidarCampos extends ActionSupport {
     private InputStream inputStream;
 
     @Autowired
-    private Dao<TipoAtributo, Integer> tipoAtributoDao;
+    private Dao<TipoAtributoSimple, Integer> tipoAtributoDao;
 
     @Override
     public String execute() {
@@ -38,7 +38,7 @@ public class ValidarCampos extends ActionSupport {
             Integer tipoAtributoId = (Integer) bean.get("tipoAtributoId");
             String valor = (String) bean.get("valor");
 
-            TipoAtributo tipoAtributo = tipoAtributoDao.find(tipoAtributoId);
+            TipoAtributoSimple tipoAtributo = tipoAtributoDao.find(tipoAtributoId);
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.element("id", tipoAtributoId);

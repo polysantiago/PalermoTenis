@@ -3,7 +3,7 @@ package com.palermotenis.controller.struts.actions.admin.ventas;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.model.beans.pedidos.Pedido;
 import com.palermotenis.model.dao.Dao;
 
@@ -11,7 +11,7 @@ import com.palermotenis.model.dao.Dao;
  * 
  * @author Poly
  */
-public class PedidoAction extends JsonActionSupport {
+public class PedidoAction extends InputStreamActionSupport {
 
     private static final long serialVersionUID = 5458521843286152938L;
 

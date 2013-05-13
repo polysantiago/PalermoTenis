@@ -1,11 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.model.beans;
 
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,18 +15,18 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-/**
- *
- * @author Poly
- */
+import com.google.common.collect.Sets;
+
 @Entity
 @Table(name = "categorias", catalog = "palermotenis", schema = "")
-@NamedQueries({
-    @NamedQuery(name = "Categoria.findAll", query = "SELECT c FROM Categoria c"),
-    @NamedQuery(name = "Categoria.findById", query = "SELECT c FROM Categoria c WHERE c.id = :id"),
-    @NamedQuery(name = "Categoria.findByNombre", query = "SELECT c FROM Categoria c WHERE c.nombre = :nombre")
-})
+@NamedQueries(
+    { @NamedQuery(name = "Categoria.findAll", query = "SELECT c FROM Categoria c"),
+            @NamedQuery(name = "Categoria.findById", query = "SELECT c FROM Categoria c WHERE c.id = :id"),
+            @NamedQuery(name = "Categoria.findByNombre", query = "SELECT c FROM Categoria c WHERE c.nombre = :nombre"),
+            @NamedQuery(name = "Categoria.findByCodigo", query = "SELECT c FROM Categoria c WHERE c.codigo = :codigo") })
 public class Categoria implements Serializable {
+
+    private static final long serialVersionUID = 6039884288877004883L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,109 +45,83 @@ public class Categoria implements Serializable {
     private Collection<Marca> marcas;
 
     @ManyToMany(mappedBy = "categorias", fetch = FetchType.LAZY, targetEntity = Modelo.class)
-    private Collection<Modelo> modelos;
+    private final Collection<Modelo> modelos = Sets.newHashSet();
 
-    /**
-     * @return the id
-     */
+    public Categoria() {
+
+    }
+
+    public Categoria(String codigo, String nombre) {
+        this.codigo = codigo;
+        this.nombre = nombre;
+    }
+
     public Integer getId() {
         return id;
     }
 
-    /**
-     * @return the codigo
-     */
     public String getCodigo() {
         return codigo;
     }
 
-    /**
-     * @return the nombre
-     */
     public String getNombre() {
         return nombre;
     }
 
-    /**
-     * @return the marcas
-     */
     public Collection<Marca> getMarcas() {
         return marcas;
     }
 
-    /**
-     * @param id the id to set
-     */
     public void setId(Integer id) {
         this.id = id;
     }
 
-    /**
-     * @param codigo the codigo to set
-     */
     public void setCodigo(String codigo) {
         this.codigo = codigo;
     }
 
-    /**
-     * @param nombre the nombre to set
-     */
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
-    /**
-     * @param marcas the marcas to set
-     */
-    public void setMarcas(Collection<Marca> marcas) {
-        this.marcas = marcas;
-    }
-
-
     public void addMarca(Marca marca) {
         if (hasMarca(marca)) {
-            //TODO handle exception
+            return;
         }
         marcas.add(marca);
+        marca.addCategoria(this);
     }
 
     public void removeMarca(Marca marca) {
         if (!hasMarca(marca)) {
-            //TODO handle exception
+            return;
         }
         marcas.remove(marca);
+        marca.removeCategoria(this);
     }
 
     public boolean hasMarca(Marca marca) {
         return marcas.contains(marca);
     }
 
-    /**
-     * @return the modelos
-     */
     public Collection<Modelo> getModelos() {
-        return modelos;
-    }
-
-    /**
-     * @param modelos the modelos to set
-     */
-    public void setModelos(Collection<Modelo> modelos) {
-        this.modelos = modelos;
+        return Sets.newHashSet(modelos);
     }
 
     public void addModelo(Modelo modelo) {
         if (hasModelo(modelo)) {
-            //TODO handle exception
+            return;
         }
         modelos.add(modelo);
+        modelo.addCategoria(this);
     }
 
     public void removeModelo(Modelo modelo) {
         if (!hasModelo(modelo)) {
-            //TODO handle exception
+            return;
         }
         modelos.remove(modelo);
+        modelo.removeCategoria(this);
     }
 
     public boolean hasModelo(Modelo modelo) {

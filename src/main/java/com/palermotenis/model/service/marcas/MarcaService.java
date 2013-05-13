@@ -19,4 +19,6 @@ public interface MarcaService {
 
     Marca getMarcaById(Integer marcaId);
 
+    Marca getMarcaByNombre(String nombre);
+
 }

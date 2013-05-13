@@ -10,7 +10,7 @@ import com.google.common.collect.ImmutableMap;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.service.productos.ProductoService;
 
-public class Latest extends JsonActionSupport {
+public class Latest extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -9117974645418468534L;
 

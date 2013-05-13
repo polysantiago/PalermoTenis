@@ -249,6 +249,18 @@
     </bean>
 
     <tx:annotation-driven transaction-manager="jtaTransactionManager" />
+    
+    <tx:advice id="txAdvice" transaction-manager="jtaTransactionManager">
+    	<tx:attributes>
+    		<tx:method name="get*" no-rollback-for="javax.persistence.NoResultException,javax.persistence.EntityNotFoundException" read-only="true"/>
+    		<tx:method name="*"/>
+    	</tx:attributes>
+    </tx:advice>
+    
+    <!--  aop:config>
+		<aop:pointcut id="businessServiceInterfacePointcut" expression="execution(public * com.palermotenis..service.impl.*.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="businessServiceInterfacePointcut" />
+	</aop:config-->
 
 	<bean id="flyway" class="com.googlecode.flyway.core.Flyway" init-method="migrate">
     	<property name="dataSource" ref="dataSource" />

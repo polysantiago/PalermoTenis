@@ -17,6 +17,8 @@ import com.palermotenis.model.beans.atributos.AtributoMultipleValores;
 import com.palermotenis.model.beans.atributos.AtributoSimple;
 import com.palermotenis.model.beans.atributos.AtributoTipado;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoSimple;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoTipado;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.productos.tipos.ClasificableState;
@@ -79,7 +81,7 @@ public class AtributoServiceImpl implements AtributoService {
 
     @Override
     public void persistAtributoSimple(Producto producto, Integer tipoAtributoId, String valor) {
-        TipoAtributo tipoAtributo = getTipoAtributo(tipoAtributoId);
+        TipoAtributoSimple tipoAtributo = (TipoAtributoSimple) getTipoAtributo(tipoAtributoId);
 
         AtributoSimple atributoSimple = new AtributoSimple(tipoAtributo, producto);
 
@@ -104,7 +106,7 @@ public class AtributoServiceImpl implements AtributoService {
 
     private void persistAtributoTipado(AtributoTipado atributoTipado, Producto producto, Integer tipoAtributoId,
             Integer valorPosibleId) {
-        TipoAtributo tipoAtributo = getTipoAtributo(tipoAtributoId);
+        TipoAtributoTipado tipoAtributo = (TipoAtributoTipado) getTipoAtributo(tipoAtributoId);
         ValorPosible valorPosible = getValorPosible(valorPosibleId);
 
         atributoTipado.setProducto(producto);
@@ -220,18 +222,18 @@ public class AtributoServiceImpl implements AtributoService {
     }
 
     @Override
-    public AtributoSimple getAtributoSimple(Producto producto, TipoAtributo tipoAtributo) {
+    public AtributoSimple getAtributoSimple(Producto producto, TipoAtributoSimple tipoAtributo) {
         Map<String, Object> args = buildProductoAndTipoAtributoArgs(producto, tipoAtributo);
         return atributoSimpleDao.findBy("Producto,Tipo", args);
     }
 
     @Override
-    public AtributoTipado getAtributoTipado(Producto producto, TipoAtributo tipoAtributo) {
+    public AtributoTipado getAtributoTipado(Producto producto, TipoAtributoSimple tipoAtributo) {
         Map<String, Object> args = buildProductoAndTipoAtributoArgs(producto, tipoAtributo);
         return atributoTipadoDao.findBy("Producto,Tipo", args);
     }
 
-    private Map<String, Object> buildProductoAndTipoAtributoArgs(Producto producto, TipoAtributo tipoAtributo) {
+    private Map<String, Object> buildProductoAndTipoAtributoArgs(Producto producto, TipoAtributoSimple tipoAtributo) {
         Map<String, Object> args = new ImmutableMap.Builder<String, Object>()
             .put("producto", producto)
             .put("tipoAtributo", tipoAtributo)

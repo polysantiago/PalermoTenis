@@ -1,18 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.model.beans.productos.tipos;
 
-import com.palermotenis.model.beans.Modelo;
-import com.palermotenis.model.beans.productos.Producto;
-import com.palermotenis.model.beans.atributos.tipos.TipoAtributoTipado;
-import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
-import com.palermotenis.model.beans.atributos.tipos.TipoAtributoClasificatorio;
-import com.palermotenis.model.beans.atributos.tipos.TipoAtributoMultipleValores;
-import com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion;
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,24 +16,32 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
 import org.hibernate.annotations.Where;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- *
- * @author Poly
- */
+import com.palermotenis.model.beans.Modelo;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoClasificatorio;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoMultipleValores;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoSimple;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoTipado;
+import com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion;
+import com.palermotenis.model.beans.productos.Producto;
+
 @Entity
 @Table(name = "tipo_productos", catalog = "palermotenis", schema = "")
-@NamedQueries({
-    @NamedQuery(name = "TipoProducto.findAll", query = "SELECT t FROM TipoProducto t ORDER BY t.nombre"),
-    @NamedQuery(name = "TipoProducto.findChildless",
-                query = "select distinct t from TipoProducto as t "
-                        + "join t.productos p "
-                        + "where p.activo = 1 order by t.nombre")
-})
+@NamedQueries(
+    {
+            @NamedQuery(name = "TipoProducto.findAll", query = "SELECT t FROM TipoProducto t ORDER BY t.nombre"),
+            @NamedQuery(name = "TipoProducto.findByNombre",
+                    query = "SELECT t FROM TipoProducto t WHERE t.nombre = :nombre"),
+            @NamedQuery(name = "TipoProducto.findChildless", query = "select distinct t from TipoProducto as t "
+                    + "join t.productos p " + "where p.activo = 1 order by t.nombre") })
 @Transactional
 public class TipoProducto implements Serializable {
+
+    private static final long serialVersionUID = 7674647568570434408L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -78,7 +76,7 @@ public class TipoProducto implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "tipoProducto", updatable = false)
     @Where(clause = "Tipo='S'")
-    private Collection<TipoAtributo> tiposAtributosSimples;
+    private Collection<TipoAtributoSimple> tiposAtributosSimples;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "tipoProducto", updatable = false)
@@ -89,7 +87,7 @@ public class TipoProducto implements Serializable {
     @JoinColumn(name = "tipoProducto", updatable = false)
     @Where(clause = "Tipo='M'")
     private Collection<TipoAtributoMultipleValores> tiposAtributosMultiplesValores;
-    
+
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "tipoProducto", updatable = false)
     @Where(clause = "Tipo='C'")
@@ -125,21 +123,24 @@ public class TipoProducto implements Serializable {
     }
 
     /**
-     * @param id the id to set
+     * @param id
+     *            the id to set
      */
     public void setId(Integer id) {
         this.id = id;
     }
 
     /**
-     * @param nombre the nombre to set
+     * @param nombre
+     *            the nombre to set
      */
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
     /**
-     * @param productos the productos to set
+     * @param productos
+     *            the productos to set
      */
     public void setProductos(Collection<Producto> productos) {
         this.productos = productos;
@@ -153,7 +154,8 @@ public class TipoProducto implements Serializable {
     }
 
     /**
-     * @param tiposAtributos the tiposAtributos to set
+     * @param tiposAtributos
+     *            the tiposAtributos to set
      */
     public void setTiposAtributos(Collection<TipoAtributo> tiposAtributos) {
         this.tiposAtributos = tiposAtributos;
@@ -167,7 +169,8 @@ public class TipoProducto implements Serializable {
     }
 
     /**
-     * @param modelos the modelos to set
+     * @param modelos
+     *            the modelos to set
      */
     public void setModelos(Collection<Modelo> modelos) {
         this.modelos = modelos;
@@ -185,7 +188,8 @@ public class TipoProducto implements Serializable {
     }
 
     /**
-     * @param tiposPresentacion the tiposPresentacion to set
+     * @param tiposPresentacion
+     *            the tiposPresentacion to set
      */
     public void setTiposPresentacion(Collection<TipoPresentacion> tiposPresentacion) {
         this.tiposPresentacion = tiposPresentacion;
@@ -216,7 +220,7 @@ public class TipoProducto implements Serializable {
         }
     }
 
-    public Collection<TipoAtributo> getTipoAtributoSimples() {
+    public Collection<TipoAtributoSimple> getTipoAtributoSimples() {
         return tiposAtributosSimples;
     }
 
@@ -248,7 +252,8 @@ public class TipoProducto implements Serializable {
     }
 
     /**
-     * @param presentable the presentable to set
+     * @param presentable
+     *            the presentable to set
      */
     public void setPresentable(Boolean presentable) {
         this.presentable = presentable;
@@ -257,8 +262,7 @@ public class TipoProducto implements Serializable {
     public boolean isClasificable() {
         if (tiposAtributosClasificatorios == null) {
             return false;
-        } else {
-            return !tiposAtributosClasificatorios.isEmpty();
         }
+        return !tiposAtributosClasificatorios.isEmpty();
     }
 }

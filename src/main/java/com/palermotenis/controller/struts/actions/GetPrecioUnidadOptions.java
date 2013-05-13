@@ -11,7 +11,7 @@ import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.service.monedas.MonedaService;
 import com.palermotenis.model.service.pagos.PagoService;
 
-public class GetPrecioUnidadOptions extends JsonActionSupport {
+public class GetPrecioUnidadOptions extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -5154325699304286629L;
 

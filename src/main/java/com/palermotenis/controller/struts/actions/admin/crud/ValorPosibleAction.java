@@ -5,11 +5,11 @@ import java.util.Collection;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.model.beans.valores.ValorPosible;
 import com.palermotenis.model.service.valores.ValorService;
 
-public class ValorPosibleAction extends JsonActionSupport {
+public class ValorPosibleAction extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -7754759545053197071L;
 

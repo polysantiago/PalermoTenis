@@ -2,6 +2,9 @@ package com.palermotenis.model.service.marcas.impl;
 
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +18,8 @@ import com.palermotenis.model.dao.marca.MarcaDao;
 import com.palermotenis.model.service.marcas.MarcaService;
 
 @Service("marcaService")
-@Transactional(propagation = Propagation.REQUIRED)
+@Transactional(propagation = Propagation.REQUIRED, noRollbackFor =
+    { NoResultException.class, EntityNotFoundException.class })
 public class MarcaServiceImpl implements MarcaService {
 
     @Autowired
@@ -24,8 +28,7 @@ public class MarcaServiceImpl implements MarcaService {
     @Override
     public void createNewMarca(String nombre) {
         Assert.notNull(nombre);
-        Marca marca = new Marca();
-        marca.setNombre(nombre);
+        Marca marca = new Marca(nombre);
         marcaDao.create(marca);
     }
 
@@ -60,6 +63,11 @@ public class MarcaServiceImpl implements MarcaService {
     @Override
     public Marca getMarcaById(Integer marcaId) {
         return marcaDao.find(marcaId);
+    }
+
+    @Override
+    public Marca getMarcaByNombre(String nombre) {
+        return marcaDao.findBy("Nombre", "nombre", nombre);
     }
 
 }

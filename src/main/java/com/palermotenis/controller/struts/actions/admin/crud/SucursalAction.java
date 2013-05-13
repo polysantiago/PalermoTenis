@@ -11,11 +11,11 @@ import net.sf.json.processors.JsonBeanProcessor;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.model.beans.Sucursal;
 import com.palermotenis.model.service.sucursales.SucursalService;
 
-public class SucursalAction extends JsonActionSupport {
+public class SucursalAction extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -6943240819837303040L;
 

@@ -20,7 +20,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.palermotenis.controller.carrito.Carrito;
 import com.palermotenis.controller.carrito.Item;
-import com.palermotenis.controller.struts.actions.JsonActionSupport;
+import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
@@ -33,7 +33,7 @@ import com.palermotenis.util.SecurityUtil;
  * 
  * @author Poly
  */
-public class CarritoAction extends JsonActionSupport {
+public class CarritoAction extends InputStreamActionSupport {
 
     private static final String EDIT = "edit";
 
