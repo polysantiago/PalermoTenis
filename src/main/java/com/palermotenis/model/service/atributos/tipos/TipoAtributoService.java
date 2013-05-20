@@ -4,16 +4,29 @@ import java.util.List;
 
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributoClasificatorio;
+import com.palermotenis.model.beans.atributos.tipos.clasif.TipoAtributoClasif;
 import com.palermotenis.model.beans.valores.ValorPosible;
 
 public interface TipoAtributoService {
 
-    List<TipoAtributoClasificatorio> getAllTiposAtributosClasificatorios();
+    void createNewTipoAtributo(Integer tipoProductoId, String nombre, String clase, Integer unidadId, Character metadata);
+
+    void updateTipoAtributo(Integer tipoAtributoId, String nombre);
+
+    void updateTipoAtributo(Integer tipoAtributoId, Integer unidadId, String clase, Character metadata);
+
+    void deleteTipoAtributo(Integer tipoAtributoId);
+
+    void clearValoresPosibles(ValorPosible valorPosible);
 
     TipoAtributo getTipoAtributoByNombre(String nombre);
 
     TipoAtributo getTipoAtributoById(Integer tipoAtributoId);
 
-    void clearValoresPosibles(ValorPosible valorPosible);
+    List<TipoAtributo> getTiposAtributosByTipoProducto(Integer tipoProductoId);
+
+    List<TipoAtributoClasificatorio> getAllTiposAtributosClasificatorios();
+
+    List<TipoAtributoClasif> getTipoAtributoClasificatorioMetadata();
 
 }

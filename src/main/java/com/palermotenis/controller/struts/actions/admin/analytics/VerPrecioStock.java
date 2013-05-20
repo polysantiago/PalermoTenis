@@ -1,99 +1,91 @@
 package com.palermotenis.controller.struts.actions.admin.analytics;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.number.CurrencyFormatter;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.opensymphony.xwork2.ActionSupport;
+import com.google.common.collect.Lists;
+import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.precios.Precio;
-import com.palermotenis.model.beans.precios.PrecioPresentacion;
-import com.palermotenis.model.beans.precios.PrecioUnidad;
-import com.palermotenis.model.beans.precios.pks.PrecioPresentacionPK;
-import com.palermotenis.model.beans.precios.pks.PrecioProductoPK;
+import com.palermotenis.model.beans.precios.pks.PrecioPK;
+import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
-import com.palermotenis.model.dao.Dao;
-import com.palermotenis.util.StringUtility;
+import com.palermotenis.model.service.precios.impl.PrecioService;
+import com.palermotenis.model.service.stock.StockService;
 
-/**
- * 
- * @author poly
- */
-public class VerPrecioStock extends ActionSupport {
+public class VerPrecioStock extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -1023046494395874487L;
     private static final Locale LOCALE_ES_AR = new Locale("es", "AR");
 
     private Integer id;
-    private InputStream inputStream;
+
+    private final List<Map<String, Object>> rows = Lists.newArrayList();
 
     @Autowired
-    private Dao<Stock, Integer> stockDao;
+    private StockService stockService;
 
     @Autowired
-    private Dao<PrecioUnidad, PrecioProductoPK> precioUnidadDao;
-
-    @Autowired
-    private Dao<PrecioPresentacion, PrecioPresentacionPK> precioPresentacionDao;
+    private PrecioService precioService;
 
     @Autowired
     private CurrencyFormatter currencyFormatter;
 
     @Override
     public String execute() {
-        Stock stock = stockDao.find(id);
-        JSONObject rootObj = new JSONObject();
-        JSONArray rowsArr = new JSONArray();
-
+        Stock stock = stockService.getStockById(id);
         Producto producto = stock.getProducto();
+        Presentacion presentacion = stock.getPresentacion();
+
         List<? extends Precio> precios = null;
 
         if (producto.isPresentable()) {
-            precios = precioPresentacionDao.queryBy("Producto,Presentacion", new ImmutableMap.Builder<String, Object>()
-                .put("producto", producto)
-                .put("presentacion", stock.getPresentacion())
-                .build());
+            precios = precioService.getPrecios(producto.getId(), presentacion.getId());
         } else {
-            precios = precioUnidadDao.queryBy("Producto",
-                new ImmutableMap.Builder<String, Object>().put("producto", producto).build());
+            precios = precioService.getPrecios(producto.getId(), null);
         }
 
         int precioId = 0;
         for (Precio precio : precios) {
-            JSONObject row = new JSONObject();
-            row.element("id", ++precioId);
-            JSONArray cellArr = new JSONArray();
+            PrecioPK pk = precio.getId();
 
-            cellArr.add(precio.getId().getPago().getNombre());
-            cellArr.add(precio.getId().getCuotas());
-            cellArr.add(precio.getId().getMoneda().getCodigo());
-            cellArr.add(precio.getValor() != null ? currencyFormatter.print(precio.getValor(), LOCALE_ES_AR) : "");
-            cellArr.add(precio.isEnOferta() ? "Sí" : "No");
-            cellArr.add(precio.isEnOferta() && precio.getValorOferta() != null ? currencyFormatter.print(
-                precio.getValorOferta(), LOCALE_ES_AR) : "");
-            row.element("cell", cellArr);
-            rowsArr.add(row);
+            List<Object> cell = new ImmutableList.Builder<Object>()
+                .add(pk.getPago().getNombre())
+                .add(pk.getCuotas())
+                .add(pk.getMoneda().getCodigo())
+                .add(precio.getValor() != null ? format(precio.getValor()) : StringUtils.EMPTY)
+                .add(precio.isEnOferta() ? "Sí" : "No")
+                .add(
+                    precio.isEnOferta() && precio.getValorOferta() != null ? format(precio.getValorOferta())
+                            : StringUtils.EMPTY)
+                .build();
+
+            Map<String, Object> row = new ImmutableMap.Builder<String, Object>()
+                .put("id", ++precioId)
+                .put("cell", cell)
+                .build();
+            rows.add(row);
         }
-
-        rootObj.element("rows", rowsArr);
-
-        inputStream = StringUtility.getInputString(rootObj.toString());
-
         return SUCCESS;
     }
 
-    public InputStream getInputStream() {
-        return inputStream;
+    private String format(Double value) {
+        return currencyFormatter.print(value, LOCALE_ES_AR);
     }
 
     public void setId(Integer id) {
         this.id = id;
     }
+
+    public List<Map<String, Object>> getRows() {
+        return rows;
+    }
+
 }

@@ -7,11 +7,22 @@ import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.pedidos.PedidoProducto;
 import com.palermotenis.model.beans.precios.Precio;
-import com.palermotenis.model.beans.precios.PrecioPresentacion;
+import com.palermotenis.model.beans.precios.pks.PrecioPK;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
 
 public interface PrecioService {
+
+    void create(Integer productoId, Integer pagoId, Integer monedaId, Integer presentacionId, Double valor,
+            Double valorOferta, Integer cuotas, boolean enOferta);
+
+    void update(Integer productoId, Integer pagoId, Integer monedaId, Integer presentacionId, Double valor,
+            Double valorOferta, Integer cuotas, boolean enOferta, Integer newPagoId, Integer newMonedaId,
+            Integer newPresentacionId, Integer newCuotas);
+
+    void destroy(Integer productoId, Integer pagoId, Integer monedaId, Integer presentacionId, Integer cuotas);
+
+    void moveOffer(Integer productoId, Integer productoOrden, Integer productoRgtId, Integer productoRgtOrden);
 
     double calculatePrecioUnitarioPesos(Precio precio);
 
@@ -39,5 +50,7 @@ public interface PrecioService {
 
     boolean hasPrecio(Producto producto);
 
-    List<PrecioPresentacion> getPrecios(Integer productoId, Integer presentacionId);
+    Precio getPrecioById(PrecioPK precioPk);
+
+    List<? extends Precio> getPrecios(Integer productoId, Integer presentacionId);
 }

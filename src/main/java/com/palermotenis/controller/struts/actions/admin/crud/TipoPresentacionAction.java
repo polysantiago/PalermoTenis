@@ -1,133 +1,92 @@
-/*
- * To change this template, choose Tools | Templates and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions.admin.crud;
 
-import java.util.Collection;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONSerializer;
-import net.sf.json.JsonConfig;
+import java.util.List;
 
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.ImmutableMap;
 import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion;
-import com.palermotenis.model.beans.productos.tipos.TipoProducto;
-import com.palermotenis.model.dao.Dao;
+import com.palermotenis.model.service.presentaciones.tipos.TipoPresentacionService;
 
-/**
- * 
- * @author Poly
- */
 public class TipoPresentacionAction extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -6672132861920246917L;
-    private final String SHOW = "show";
 
     private Integer tipoPresentacionId;
     private Integer tipoProductoId;
 
     private String nombre;
 
-    private Collection<TipoPresentacion> tiposPresentacion;
+    private List<TipoPresentacion> tiposPresentacion;
 
     @Autowired
-    private Dao<TipoPresentacion, Integer> tipoPresentacionDao;
-
-    @Autowired
-    private Dao<TipoProducto, Integer> tipoProductoDao;
+    private TipoPresentacionService tipoPresentacionService;
 
     public String show() {
-        TipoProducto tipoProducto = tipoProductoDao.find(tipoProductoId);
-        tiposPresentacion = tipoPresentacionDao.queryBy("TipoProducto",
-            new ImmutableMap.Builder<String, Object>().put("tipoProducto", tipoProducto).build());
+        tiposPresentacion = getByTipoProducto();
         return SHOW;
     }
 
     public String list() {
-        writeResponse((JSONArray) JSONSerializer.toJSON(tipoPresentacionDao.findAll(), buildJsonConfig()));
+        tiposPresentacion = getAll();
         return JSON;
     }
 
     public String listByTipoProducto() {
-        TipoProducto tipoProducto = tipoProductoDao.find(tipoProductoId);
-        tiposPresentacion = tipoPresentacionDao.queryBy("TipoProducto",
-            new ImmutableMap.Builder<String, Object>().put("tipoProducto", tipoProducto).build());
-        writeResponse((JSONArray) JSONSerializer.toJSON(tiposPresentacion, buildJsonConfig()));
+        tiposPresentacion = getByTipoProducto();
         return JSON;
-    }
-
-    private JsonConfig buildJsonConfig() {
-        JsonConfig config = new JsonConfig();
-        config.setExcludes(new String[]
-            { "tipoProducto", "presentaciones", "presentacionesByProd" });
-        return config;
     }
 
     public String create() {
-        TipoProducto tipoProducto = tipoProductoDao.find(tipoProductoId);
-        TipoPresentacion tipoPresentacion = new TipoPresentacion(nombre, tipoProducto);
-        tipoPresentacionDao.create(tipoPresentacion);
-
+        tipoPresentacionService.createNewTipoPresentacion(tipoProductoId, nombre);
         success();
-        return JSON;
+        return STREAM;
     }
 
     public String edit() {
         try {
-            TipoPresentacion tipoPresentacion = tipoPresentacionDao.find(tipoPresentacionId);
-            tipoPresentacion.setNombre(nombre);
-            tipoPresentacionDao.edit(tipoPresentacion);
+            tipoPresentacionService.updateTipoPresentacion(tipoPresentacionId, nombre);
             success();
         } catch (HibernateException ex) {
             failure(ex);
         } catch (Exception ex) {
             failure(ex);
         }
-        return JSON;
+        return STREAM;
     }
 
     public String destroy() {
         try {
-            tipoPresentacionDao.destroy(tipoPresentacionDao.find(tipoPresentacionId));
+            tipoPresentacionService.deleteTipoPresentacion(tipoPresentacionId);
             success();
         } catch (HibernateException ex) {
             failure(ex);
         }
-        return JSON;
+        return STREAM;
     }
 
-    /**
-     * @param tipoPresentacionId
-     *            the tipoPresentacionId to set
-     */
+    private List<TipoPresentacion> getByTipoProducto() {
+        return tipoPresentacionService.getTiposPresentacionByTipoProducto(tipoProductoId);
+    }
+
+    private List<TipoPresentacion> getAll() {
+        return tipoPresentacionService.getAllTiposPresentacion();
+    }
+
     public void setTipoPresentacionId(Integer tipoPresentacionId) {
         this.tipoPresentacionId = tipoPresentacionId;
     }
 
-    /**
-     * @param tipoProductoId
-     *            the tipoProductoId to set
-     */
     public void setTipoProductoId(Integer tipoProductoId) {
         this.tipoProductoId = tipoProductoId;
     }
 
-    /**
-     * @param nombre
-     *            the nombre to set
-     */
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
-    /**
-     * @return the tiposPresentacion
-     */
-    public Collection<TipoPresentacion> getTiposPresentacion() {
+    public List<TipoPresentacion> getTiposPresentacion() {
         return tiposPresentacion;
     }
 

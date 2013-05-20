@@ -6,30 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.model.beans.productos.Producto;
-import com.palermotenis.model.dao.Dao;
+import com.palermotenis.model.service.productos.ProductoService;
 
-/**
- * 
- * @author poly
- */
 public class GetProductosRelacionados extends ActionSupport {
 
     private static final long serialVersionUID = -2681006745098644600L;
 
     private Integer productoId;
-    private List<Producto> productos;
 
     @Autowired
-    private Dao<Producto, Integer> productoDao;
-
-    @Override
-    public String execute() {
-        productos = productoDao.query("ProductosRelacionados", "producto", productoDao.find(productoId));
-        return SUCCESS;
-    }
+    private ProductoService productoService;
 
     public List<Producto> getProductos() {
-        return productos;
+        return productoService.getProductosRelacionados(productoId);
     }
 
     public void setProductoId(Integer productoId) {

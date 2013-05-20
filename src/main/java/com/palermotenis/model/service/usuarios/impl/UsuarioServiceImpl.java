@@ -1,7 +1,10 @@
 package com.palermotenis.model.service.usuarios.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,12 +24,15 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     @Autowired
     private UsuarioDao usuarioDao;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public void create(Usuario usuario) throws PreexistingEntityException, Exception {
         try {
             usuarioDao.create(usuario);
         } catch (Exception ex) {
-            if (findUsuario(usuario.getUsuario()) != null) {
+            if (getUsuarioByLoginame(usuario.getUsuario()) != null) {
                 throw new PreexistingEntityException("Usuario " + usuario + " already exists.", ex);
             }
             throw ex;
@@ -34,7 +40,14 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     }
 
     @Override
-    public Usuario findUsuario(String usuario) {
+    public void update(Usuario usuario, String username, String password) {
+        usuario.setUsuario(username);
+        usuario.setPassword(passwordEncoder.encodePassword(password, null));
+        usuarioDao.edit(usuario);
+    }
+
+    @Override
+    public Usuario getUsuarioByLoginame(String usuario) {
         return usuarioDao.find(usuario);
     }
 
@@ -46,4 +59,10 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
         }
         return usuario;
     }
+
+    @Override
+    public List<Usuario> getUsuariosByUsername(String username) {
+        return usuarioDao.getUsuariosByUsername(username);
+    }
+
 }

@@ -114,7 +114,7 @@ public class ListarModelosTest extends BaseSpringStrutsTestCase<ListarModelos> {
     }
 
     private String buildExpectedActiveResult(Integer marcaId, Integer tipoProductoId) {
-        List<Modelo> modelos = modeloService.getModelosByMarcaAndActiveTipoProducto(marcaId, tipoProductoId);
+        List<Modelo> modelos = modeloService.getModelosWithRootActiveProductos(marcaId, tipoProductoId);
 
         JsonConfig jsonConfig = new JsonConfig();
         jsonConfig.registerJsonBeanProcessor(Modelo.class, new JsonBeanProcessor() {

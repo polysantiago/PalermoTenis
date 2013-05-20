@@ -5,6 +5,7 @@ package com.palermotenis.controller.struts.actions.clientes;
 
 import java.util.List;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,6 @@ import com.palermotenis.model.beans.newsletter.Suscriptor;
 import com.palermotenis.model.beans.usuarios.Usuario;
 import com.palermotenis.model.dao.Dao;
 import com.palermotenis.model.dao.usuario.UsuarioDao;
-import com.palermotenis.util.StringUtility;
 
 /**
  * 
@@ -71,7 +71,7 @@ public class Registrar extends ActionSupport {
         try {
             clienteDao.create(cliente); // crear cliente
             if (isSuscriptor()) {
-                Suscriptor sus = new Suscriptor(email, StringUtility.buildRandomString(), true);
+                Suscriptor sus = new Suscriptor(email, RandomStringUtils.randomAlphanumeric(10), true);
                 suscriptorDao.create(sus); // crear suscriptor
             }
         } catch (HibernateException ex) {

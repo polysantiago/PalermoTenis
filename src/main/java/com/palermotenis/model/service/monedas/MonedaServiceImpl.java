@@ -20,8 +20,44 @@ public class MonedaServiceImpl implements MonedaService {
     private MonedaDao monedaDao;
 
     @Override
-    public Moneda findByCodigo(String codigo) throws NoResultException {
+    public void createMoneda(Integer contrarioId, String nombre, String simbolo, String codigo) {
+        Moneda contrario = getMonedaById(contrarioId);
+
+        Moneda moneda = new Moneda(simbolo, codigo, nombre, contrario);
+
+        monedaDao.create(moneda);
+    }
+
+    @Override
+    public void updateMoneda(Integer monedaId, Integer contrarioId, String nombre, String simbolo, String codigo) {
+        Moneda moneda = getMonedaById(monedaId);
+        Moneda contrario = getMonedaById(contrarioId);
+
+        moneda.setNombre(nombre);
+        moneda.setSimbolo(simbolo);
+        moneda.setCodigo(codigo);
+
+        if (!contrario.equals(moneda.getContrario())) {
+            moneda.setContrario(contrario);
+        }
+
+        monedaDao.edit(moneda);
+    }
+
+    @Override
+    public void deleteMoneda(Integer monedaId) {
+        Moneda moneda = getMonedaById(monedaId);
+        monedaDao.destroy(moneda);
+    }
+
+    @Override
+    public Moneda getMonedaByCodigo(String codigo) throws NoResultException {
         return monedaDao.findBy("Codigo", "codigo", codigo);
+    }
+
+    @Override
+    public Moneda getMonedaById(Integer monedaId) {
+        return monedaDao.find(monedaId);
     }
 
     @Override

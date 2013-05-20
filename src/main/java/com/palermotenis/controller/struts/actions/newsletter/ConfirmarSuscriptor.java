@@ -1,19 +1,11 @@
-/*
- * To change this template, choose Tools | Templates and open the template in the editor.
- */
-
 package com.palermotenis.controller.struts.actions.newsletter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.model.beans.newsletter.Suscriptor;
-import com.palermotenis.model.dao.Dao;
+import com.palermotenis.controller.struts.actions.newsletter.exceptions.InvalidTokenException;
+import com.palermotenis.model.service.newsletter.SuscriptorService;
 
-/**
- * 
- * @author Poly
- */
 public class ConfirmarSuscriptor extends ActionSupport {
 
     private static final long serialVersionUID = -1618035149132038538L;
@@ -23,19 +15,13 @@ public class ConfirmarSuscriptor extends ActionSupport {
     private String rstr;
 
     @Autowired
-    private Dao<Suscriptor, Integer> suscriptorDao;
+    private SuscriptorService suscriptorService;
 
     @Override
     public String execute() {
         try {
-            Suscriptor s = suscriptorDao.find(spk);
-            if (s.getRandomStr().equals(rstr)) {
-                s.setActivo(true);
-                suscriptorDao.edit(s);
-            } else {
-                return ERROR;
-            }
-        } catch (Exception ex) {
+            suscriptorService.confirm(spk, rstr);
+        } catch (InvalidTokenException ex) {
             return ERROR;
         }
         return SUCCESS;

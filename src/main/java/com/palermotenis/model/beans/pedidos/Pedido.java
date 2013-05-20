@@ -1,15 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.model.beans.pedidos;
 
-import com.palermotenis.model.beans.Pago;
-import com.palermotenis.model.beans.clientes.Cliente;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -27,20 +22,20 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-/**
- *
- * @author Poly
- */
+import com.palermotenis.model.beans.Pago;
+import com.palermotenis.model.beans.clientes.Cliente;
+
 @Entity
 @Table(name = "pedidos")
-@NamedQueries({
-    @NamedQuery(name = "Pedido.findAll", query = "SELECT p FROM Pedido p"),
-    @NamedQuery(name = "Pedido.findByNombre", query = "SELECT p FROM Pedido p WHERE p.cliente.nombre = :nombre"),
-    @NamedQuery(name = "Pedido.findByEmail", query = "SELECT p FROM Pedido p WHERE p.cliente.email = :email"),
-    @NamedQuery(name = "Pedido.findById", query = "SELECT p FROM Pedido p WHERE p.id = :id"),
-    @NamedQuery(name = "Pedido.findByTotal", query = "SELECT p FROM Pedido p WHERE p.total = :total"),
-    @NamedQuery(name = "Pedido.findByProducto", query = "SELECT p FROM Pedido p JOIN p.pedidosProductos pp WHERE pp.id.stock.producto = :producto")
-})
+@NamedQueries(
+    {
+            @NamedQuery(name = "Pedido.findAll", query = "SELECT p FROM Pedido p"),
+            @NamedQuery(name = "Pedido.findByNombre", query = "SELECT p FROM Pedido p WHERE p.cliente.nombre = :nombre"),
+            @NamedQuery(name = "Pedido.findByEmail", query = "SELECT p FROM Pedido p WHERE p.cliente.email = :email"),
+            @NamedQuery(name = "Pedido.findById", query = "SELECT p FROM Pedido p WHERE p.id = :id"),
+            @NamedQuery(name = "Pedido.findByTotal", query = "SELECT p FROM Pedido p WHERE p.total = :total"),
+            @NamedQuery(name = "Pedido.findByProducto",
+                    query = "SELECT p FROM Pedido p JOIN p.pedidosProductos pp WHERE pp.id.stock.producto = :producto") })
 public class Pedido implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -49,7 +44,7 @@ public class Pedido implements Serializable {
     @Basic(optional = false)
     @Column(name = "ID")
     private Integer id;
-    
+
     @Basic(optional = false)
     @Column(name = "Total")
     private double total;
@@ -117,20 +112,20 @@ public class Pedido implements Serializable {
 
     public void addPedidoProducto(PedidoProducto pedidoProducto) {
         if (hasPedidoProducto(pedidoProducto)) {
-            //TODO handle exception
+            return;
         }
         pedidosProductos.add(pedidoProducto);
     }
 
     public void removePedidoProducto(PedidoProducto pedidoProducto) {
         if (!hasPedidoProducto(pedidoProducto)) {
-            //TODO handle exception
+            return;
         }
         pedidosProductos.remove(pedidoProducto);
     }
 
     public boolean hasPedidoProducto(PedidoProducto pedidoProducto) {
-        if(pedidosProductos == null){
+        if (pedidosProductos == null) {
             pedidosProductos = new ArrayList<PedidoProducto>();
             return false;
         }
@@ -145,7 +140,8 @@ public class Pedido implements Serializable {
     }
 
     /**
-     * @param pedidosProductos the pedidosProductos to set
+     * @param pedidosProductos
+     *            the pedidosProductos to set
      */
     public void setPedidosProductos(Collection<PedidoProducto> pedidosProductos) {
         this.pedidosProductos = pedidosProductos;
@@ -159,7 +155,8 @@ public class Pedido implements Serializable {
     }
 
     /**
-     * @param fecha the fecha to set
+     * @param fecha
+     *            the fecha to set
      */
     public void setFecha(Date fecha) {
         this.fecha = fecha;
@@ -173,7 +170,8 @@ public class Pedido implements Serializable {
     }
 
     /**
-     * @param cuotas the cuotas to set
+     * @param cuotas
+     *            the cuotas to set
      */
     public void setCuotas(int cuotas) {
         this.cuotas = cuotas;

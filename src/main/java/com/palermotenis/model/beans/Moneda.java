@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates and open the template in the editor.
- */
-
 package com.palermotenis.model.beans;
 
 import java.io.Serializable;
@@ -27,10 +23,6 @@ import javax.persistence.Transient;
 
 import com.palermotenis.model.beans.geograficos.Pais;
 
-/**
- * 
- * @author Poly
- */
 @Entity
 @Table(name = "monedas")
 @NamedQueries(
@@ -67,6 +59,7 @@ public class Moneda implements Serializable {
 
     @Transient
     private transient Locale locale;
+
     @Transient
     private transient NumberFormat formatter;
 
@@ -86,6 +79,13 @@ public class Moneda implements Serializable {
         this.simbolo = simbolo;
         this.codigo = codigo;
         this.nombre = nombre;
+    }
+
+    public Moneda(String simbolo, String codigo, String nombre, Moneda contrario) {
+        this.simbolo = simbolo;
+        this.codigo = codigo;
+        this.nombre = nombre;
+        this.contrario = contrario;
     }
 
     public Integer getId() {

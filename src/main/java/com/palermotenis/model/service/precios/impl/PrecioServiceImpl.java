@@ -1,20 +1,23 @@
 package com.palermotenis.model.service.precios.impl;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriTemplate;
 
+import com.google.common.collect.ImmutableMap;
 import com.palermotenis.model.beans.Moneda;
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.beans.Stock;
@@ -22,10 +25,16 @@ import com.palermotenis.model.beans.pedidos.Pedido;
 import com.palermotenis.model.beans.pedidos.PedidoProducto;
 import com.palermotenis.model.beans.precios.Precio;
 import com.palermotenis.model.beans.precios.PrecioPresentacion;
+import com.palermotenis.model.beans.precios.PrecioUnidad;
+import com.palermotenis.model.beans.precios.pks.PrecioPK;
+import com.palermotenis.model.beans.precios.pks.PrecioPresentacionPK;
+import com.palermotenis.model.beans.precios.pks.PrecioProductoPK;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
+import com.palermotenis.model.dao.precios.PrecioDao;
 import com.palermotenis.model.dao.precios.PrecioPresentacionDao;
 import com.palermotenis.model.dao.precios.PrecioUnidadDao;
+import com.palermotenis.model.service.monedas.MonedaService;
 import com.palermotenis.model.service.pagos.PagoService;
 import com.palermotenis.model.service.presentaciones.PresentacionService;
 import com.palermotenis.model.service.productos.ProductoService;
@@ -38,6 +47,9 @@ public class PrecioServiceImpl implements PrecioService {
 
     @Autowired
     private CurrencyConvertor currencyConvertor;
+
+    @Autowired
+    private PrecioDao precioDao;
 
     @Autowired
     private PrecioUnidadDao precioUnidadDao;
@@ -53,6 +65,115 @@ public class PrecioServiceImpl implements PrecioService {
 
     @Autowired
     private PagoService pagoService;
+
+    @Autowired
+    private MonedaService monedaService;
+
+    @Override
+    @Transactional
+    public void create(Integer productoId, Integer pagoId, Integer monedaId, Integer presentacionId, Double valor,
+            Double valorOferta, Integer cuotas, boolean enOferta) {
+        Producto producto = getProducto(productoId);
+        Pago pago = getPago(pagoId);
+        Moneda moneda = getMoneda(monedaId);
+
+        if (cuotas == null) {
+            cuotas = 1;
+        }
+
+        PrecioPK pk = createPK(producto, pago, moneda, presentacionId, cuotas);
+        if (getPrecio(pk) != null) {
+            throw new RuntimeException("Ya existe un precio con esas características");
+        }
+        Precio precio = createPrecio(pk, valor, enOferta, valorOferta);
+        precioDao.create(precio);
+        producto.addPrecio(precio);
+    }
+
+    @Override
+    @Transactional
+    public void update(Integer productoId, Integer pagoId, Integer monedaId, Integer presentacionId, Double valor,
+            Double valorOferta, Integer cuotas, boolean enOferta, Integer newPagoId, Integer newMonedaId,
+            Integer newPresentacionId, Integer newCuotas) {
+        Producto producto = getProducto(productoId);
+
+        if (newCuotas == null) {
+            newCuotas = 1;
+        }
+
+        Pago pago = getPago(pagoId);
+        Moneda moneda = getMoneda(monedaId);
+
+        Pago newPago = getPago(newPagoId);
+        Moneda newMoneda = getMoneda(newMonedaId);
+
+        PrecioPK pk = createPK(producto, pago, moneda, presentacionId, cuotas);
+        PrecioPK newPk = createPK(producto, newPago, newMoneda, newPresentacionId, newCuotas);
+
+        Precio precio = getPrecio(pk);
+        if (pk.equals(newPk)) {
+            updateNonPkValues(valor, valorOferta, enOferta, producto, precio);
+            precioDao.edit(precio);
+        } else {
+            if (getPrecio(newPk) != null) {
+                throw new RuntimeException("Ya existe un precio con esas características");
+            }
+            precioDao.destroy(precio);
+            precioDao.create(createPrecio(newPk, valor, enOferta, valorOferta));
+        }
+    }
+
+    private Precio getPrecio(PrecioPK pk) {
+        return precioDao.find(pk);
+    }
+
+    private void updateNonPkValues(Double valor, Double valorOferta, boolean enOferta, Producto producto, Precio precio) {
+        precio.setValor(valor);
+        precio.setEnOferta(enOferta);
+        if (enOferta && precio.getOrden() == 0) {
+            precio.setOrden(producto.getId());
+        }
+        precio.setValorOferta(valorOferta);
+        if (precio.getOrden() == null) {
+            precio.setOrden(producto.getId());
+        }
+    }
+
+    @Override
+    @Transactional
+    public void destroy(Integer productoId, Integer pagoId, Integer monedaId, Integer presentacionId, Integer cuotas) {
+        Producto producto = getProducto(productoId);
+        Pago pago = getPago(pagoId);
+        Moneda moneda = getMoneda(monedaId);
+
+        Precio precio = getPrecio(createPK(producto, pago, moneda, presentacionId, cuotas));
+        precioDao.destroy(precio);
+    }
+
+    private PrecioPK createPK(Producto producto, Pago pago, Moneda moneda, Integer presentacionId, Integer cuotas) {
+        if (presentacionId != null) {
+            Presentacion presentacion = getPresentacion(presentacionId);
+            return new PrecioPresentacionPK(producto, moneda, pago, presentacion, cuotas);
+        }
+        return new PrecioProductoPK(producto, moneda, pago, cuotas);
+    }
+
+    private Precio createPrecio(PrecioPK pk, Double valor, boolean enOferta, Double valorOferta) {
+        Precio precio = pk.getProducto().isPresentable() ? new PrecioPresentacion((PrecioPresentacionPK) pk, valor)
+                : new PrecioUnidad((PrecioProductoPK) pk, valor);
+        precio.setEnOferta(enOferta);
+        if (enOferta) {
+            precio.setOrden(pk.getProducto().getId());
+        }
+        precio.setValorOferta(valorOferta);
+        return precio;
+    }
+
+    @Override
+    @Transactional
+    public void moveOffer(Integer productoId, Integer productoOrden, Integer productoRgtId, Integer productoRgtOrden) {
+        precioDao.moveOffer(productoId, productoOrden, productoRgtId, productoRgtOrden);
+    }
 
     @Override
     public double calculatePrecioUnitarioPesos(Precio precio) {
@@ -88,33 +209,27 @@ public class PrecioServiceImpl implements PrecioService {
     public double calculateCotizacion(String from, String to) {
         double cotizacion = 1.00;
 
+        String url = "http://quote.yahoo.com/d/quotes.txt?s={from}{to}=X&f=l1&e=.csv";
+        UriTemplate uriTemplate = new UriTemplate(url);
+        URI expanded = uriTemplate.expand(new ImmutableMap.Builder<String, Object>()
+            .put("from", from)
+            .put("to", to)
+            .build());
+
+        ClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         try {
-            logger.info("Intentando con el servicio de conversión de Yahoo...");
-            String yahooURL = "http://quote.yahoo.com/d/quotes.txt?s=" + from + to + "=X&f=l1&e=.csv";
-            URL url = new URL(yahooURL);
-            HttpURLConnection m_con = (HttpURLConnection) url.openConnection();
-            m_con.setDoOutput(true);
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(m_con.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                cotizacion = Double.parseDouble(line);
-            }
-            reader.close();
-            m_con.disconnect();
-
-            logger.info("Se ha convertido la moneda gracias al servicio de conversión de Yahoo");
-        } catch (MalformedURLException mex) {
-            logger.error(mex);
-        } catch (IOException ioex) {
-            logger.warn("No se pudo acceder al servicio de conversión de Yahoo", ioex);
+            ClientHttpResponse clientHttpResponse = factory.createRequest(expanded, HttpMethod.GET).execute();
+            String result = IOUtils.toString(clientHttpResponse.getBody());
+            return Double.valueOf(result);
+        } catch (IOException e) {
+            logger.error(e);
             try {
-                logger.info("Intentando con el web service para convertir moneda...");
-                cotizacion = currencyConvertor.ConversionRate(from, to);
+                return currencyConvertor.ConversionRate(from, to);
             } catch (Exception ex) {
-                logger.error("No se pudo utilizar el WS para convertir la moneda", ex);
+                logger.error(ex);
             }
         }
+
         return cotizacion;
     }
 
@@ -198,15 +313,24 @@ public class PrecioServiceImpl implements PrecioService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public boolean hasPrecio(Integer productoId) {
-        Producto producto = productoService.getProductById(productoId);
+        Producto producto = getProducto(productoId);
         return hasPrecio(producto);
     }
 
     @Override
-    public List<PrecioPresentacion> getPrecios(Integer productoId, Integer presentacionId) {
-        Producto producto = productoService.getProductById(productoId);
-        Presentacion presentacion = presentacionService.getPresentacionById(presentacionId);
-        return precioPresentacionDao.getPrecios(producto, presentacion);
+    public Precio getPrecioById(PrecioPK precioPk) {
+        return getPrecio(precioPk);
+    }
+
+    @Override
+    public List<? extends Precio> getPrecios(Integer productoId, Integer presentacionId) {
+        Producto producto = getProducto(productoId);
+
+        if (presentacionId != null) {
+            Presentacion presentacion = getPresentacion(presentacionId);
+            return precioPresentacionDao.getPrecios(producto, presentacion);
+        }
+        return precioUnidadDao.getPrecios(producto);
     }
 
     private double calculateCotizacion(Moneda moneda) {
@@ -233,6 +357,22 @@ public class PrecioServiceImpl implements PrecioService {
         }
         logger.warn("Producto: " + producto.getModelo().getNombre() + " no tiene Precio! Creando Precio vacío...");
         return null;
+    }
+
+    private Producto getProducto(Integer productoId) {
+        return productoService.getProductById(productoId);
+    }
+
+    private Moneda getMoneda(Integer monedaId) {
+        return monedaService.getMonedaById(monedaId);
+    }
+
+    private Pago getPago(Integer pagoId) {
+        return pagoService.getPagoById(pagoId);
+    }
+
+    private Presentacion getPresentacion(Integer presentacionId) {
+        return presentacionService.getPresentacionById(presentacionId);
     }
 
 }

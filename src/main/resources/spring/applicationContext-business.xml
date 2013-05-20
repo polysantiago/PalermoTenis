@@ -19,8 +19,10 @@
 	
 	<context:component-scan base-package="com.palermotenis.model.service,com.palermotenis.model.dao,com.palermotenis.controller.struts.actions" />
 
+	<context:property-placeholder location="classpath:/palermotenis.properties" />
+
     <!-- Web Services -->
-    <bean class="com.palermotenis.model.ws.MyJaxRpcPortProxyFactoryBean" id="currencyConvertor">
+    <bean id="currencyConvertor" class="com.palermotenis.model.ws.MyJaxRpcPortProxyFactoryBean">
         <property name="serviceInterface">
             <value>com.palermotenis.model.ws.CurrencyConvertor</value>
         </property>
@@ -43,12 +45,13 @@
             <value>false</value>
         </property>
     </bean>
+    <!-- Web Services END -->
 
     <!-- Currency Formatter -->
     <bean id="currencyFormatter" class="org.springframework.format.number.CurrencyFormatter" />
 
-    <!-- DAO's -->
-    <import resource="/applicationContext-daos.xml" />
+	<!-- Password Encoder -->
+	<bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder" />
 
     <!-- Exporters -->
     <bean id="excelExporter" class="com.palermotenis.export.ExcelExporter" />
@@ -58,105 +61,11 @@
         <property name="corePoolSize" value="5" />
     </bean>
     <!-- END tasks -->
-
-    <!-- XStream -->
-    <!--<bean id="xstreamMarshaller" class="com.palermotenis.xstream.XStreamMarshaller">
-        <property name="aliases">
-            <props>
-                <prop key="modelo">com.palermotenis.model.beans.Modelo</prop>
-                <prop key="stock">com.palermotenis.model.beans.Stock</prop>
-                <prop key="costo">com.palermotenis.model.beans.compras.Costo</prop>
-                <prop key="presentacion">com.palermotenis.model.beans.presentaciones.Presentacion</prop>
-                <prop key="tipo-producto">com.palermotenis.model.beans.productos.tipos.TipoProducto</prop>
-                <prop key="valor-clasificatorio">com.palermotenis.model.beans.valores.ValorClasificatorio</prop>
-                <prop key="tipo-atributo">com.palermotenis.model.beans.atributos.tipos.TipoAtributoClasificatorio</prop>
-            </props>
-        </property>
-        <property name="marshallingStrategy">
-            <bean class="com.palermotenis.xstream.XStreamMarshallingStrategy">
-                <constructor-arg>
-                    <util:constant static-field="com.palermotenis.xstream.XStreamMarshallingStrategy.RELATIVE" />
-                </constructor-arg>
-            </bean>
-        </property>
-        <property name="converters">
-            <list>
-                <bean class="com.palermotenis.xstream.HibernateProxyConverter">
-                    <constructor-arg index="0">
-                        <util:property-path path="xstreamMarshaller.mapper" />
-                    </constructor-arg>
-                    <constructor-arg index="1">
-                        <bean class="com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider" />
-                    </constructor-arg>
-                    <constructor-arg index="2">
-                        <util:property-path path="xstreamMarshaller.converterLookup" />
-                    </constructor-arg>
-                </bean>
-            </list>
-        </property>
-        <property name="omittedFields">
-            <map>
-                <entry key="com.palermotenis.model.beans.Modelo">
-                    <value>left,right,orden,tipoProducto,deportes</value>
-                </entry>
-                <entry key="com.palermotenis.model.beans.productos.tipos.TipoProducto">
-                    <value>productos,modelos,presentable,tiposAtributos,tiposAtributosSimples,tiposAtributosTipados,tiposAtributosMultiplesValores,tiposAtributosClasificatorios,tiposPresentacion</value>
-                </entry>
-                <entry key="com.palermotenis.model.beans.Marca">
-                    <value>imagen,tamanio,modelos,contentType,deportes</value>
-                </entry>
-                <entry key="com.palermotenis.model.beans.productos.Producto">
-                    <value>modelo,descripcion,activo,presentaciones,tipoProducto,atributos,atributosSimples,atributosTipados,atributosMultiplesValores,atributosClasificatorios</value>
-                </entry>
-                <entry key="com.palermotenis.model.beans.Stock">
-                    <value>id,producto,pedidos</value>
-                </entry>
-                <entry key="com.palermotenis.model.beans.imagenes.Imagen">
-                    <value>id,tipo,ancho,alto,nombre,categoria,imagenesEscaladas,modelo</value>
-                </entry>
-                <entry key="com.palermotenis.model.beans.valores.ValorClasificatorio">
-                    <value>stocks</value>
-                </entry>
-                <entry key="com.palermotenis.model.beans.valores.ValorPosible">
-                    <value>id,orden,atributos</value>
-                </entry>
-                <entry key="com.palermotenis.model.beans.valores.Valor">
-                    <value>unidad</value>
-                </entry>
-                <entry key="com.palermotenis.model.beans.atributos.tipos.TipoAtributoTipado">
-                    <value>tipo,valoresPosibles</value>
-                </entry>
-                <entry key="com.palermotenis.model.beans.atributos.tipos.TipoAtributo">
-                    <value>id,tipoProducto,atributos</value>
-                </entry>
-                <entry key="com.palermotenis.model.beans.Unidad">
-                    <value>id,tipoAtributoCollection</value>
-                </entry>
-                <entry key="com.palermotenis.model.beans.presentaciones.Presentacion">
-                    <value>productos,precios,stocks</value>
-                </entry>
-                <entry key="com.palermotenis.model.beans.presentaciones.tipos.TipoPresentacion">
-                    <value>id,tipoProducto,presentaciones,presentacionesByProd</value>
-                </entry>
-                <entry key="com.palermotenis.model.beans.precios.pks.PrecioProductoPK">
-                    <value>producto,orden</value>
-                </entry>
-                <entry key="com.palermotenis.model.beans.precios.pks.PrecioPresentacionPK">
-                    <value>producto,orden</value>
-                </entry>
-                <entry key="com.palermotenis.model.beans.Moneda">
-                    <value>contrario,paises</value>
-                </entry>
-                <entry key="com.palermotenis.model.beans.compras.Costo">
-                    <value>id,producto,proveedor,moneda</value>
-                </entry>
-                <entry key="com.palermotenis.model.beans.Sucursal">
-                    <value>stocks</value>
-                </entry>
-            </map>
-        </property>
-    </bean>-->
-    <!-- END XStream -->
+    
+    <!-- Carrito -->
+    <bean class="com.palermotenis.controller.carrito.CarritoImpl" id="carrito" scope="session">
+        <aop:scoped-proxy/>
+    </bean>
 
     <bean class="org.springframework.web.context.support.ServletContextAttributeExporter">
         <property name="attributes">
@@ -168,17 +77,17 @@
 
     <!-- Mail -->
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-        <property name="host" value="mail.palermotenis.com.ar" />
-        <property name="protocol" value="smtp" />
-        <property name="port" value="25" />
-        <property name="username" value="noreply@palermotenis.com.ar" />
-        <property name="password" value="La2Hb8Fd" />
+        <property name="host" value="${com.palermotenis.mail.host}" />
+        <property name="protocol" value="${com.palermotenis.mail.protocol}" />
+        <property name="port" value="${com.palermotenis.mail.port}" />
+        <property name="username" value="${com.palermotenis.mail.username}" />
+        <property name="password" value="${com.palermotenis.mail.password}" />
         <property name="javaMailProperties">
             <props>
-                <prop key="mail.smtp.starttls.enable">false</prop>
-                <prop key="mail.smtp.auth">true</prop>
-                <prop key="mail.smtp.debug">true</prop>
-                <prop key="mail.mime.charset">ISO-8859-1</prop>
+                <prop key="mail.smtp.starttls.enable">${com.palermotenis.mail.smtp.starttls.enable}</prop>
+                <prop key="mail.smtp.auth">${com.palermotenis.mail.smtp.auth}</prop>
+                <prop key="mail.smtp.debug">${com.palermotenis.mail.smtp.debug}</prop>
+                <prop key="mail.mime.charset">${com.palermotenis.mail.mime.charset}</prop>
             </props>
         </property>
     </bean>
@@ -225,9 +134,9 @@
 
     <bean class="com.mchange.v2.c3p0.ComboPooledDataSource" id="dataSource" destroy-method="close">
         <property name="driverClass" value="org.gjt.mm.mysql.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/palermotenis"/>
-        <property name="user" value="root"/>
-        <property name="password" value="policapo"/>
+        <property name="jdbcUrl" value="${com.palermotenis.datasource.jdbcUrl}"/>
+        <property name="user" value="${com.palermotenis.datasource.user}"/>
+        <property name="password" value="${com.palermotenis.datasource.password}"/>
         <property name="acquireIncrement" value="5" />
         <property name="acquireRetryAttempts" value="50" />
         <property name="acquireRetryDelay" value="1000" />
@@ -256,11 +165,6 @@
     		<tx:method name="*"/>
     	</tx:attributes>
     </tx:advice>
-    
-    <!--  aop:config>
-		<aop:pointcut id="businessServiceInterfacePointcut" expression="execution(public * com.palermotenis..service.impl.*.*(..))" />
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="businessServiceInterfacePointcut" />
-	</aop:config-->
 
 	<bean id="flyway" class="com.googlecode.flyway.core.Flyway" init-method="migrate">
     	<property name="dataSource" ref="dataSource" />

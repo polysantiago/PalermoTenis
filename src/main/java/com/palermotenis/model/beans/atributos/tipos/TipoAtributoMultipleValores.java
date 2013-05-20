@@ -1,10 +1,14 @@
 package com.palermotenis.model.beans.atributos.tipos;
 
+import javax.annotation.Nullable;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-import com.palermotenis.model.beans.atributos.AtributoSimple;
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
+import com.palermotenis.model.beans.atributos.Atributo;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 
 @Entity
@@ -30,11 +34,13 @@ public class TipoAtributoMultipleValores extends TipoAtributoTipado {
     }
 
     public String getValores() {
-        StringBuilder valor = new StringBuilder();
-        for (AtributoSimple a : getAtributos()) {
-            valor.append(a.getValor().getNombre()).append(", ");
-        }
-        valor.delete(valor.lastIndexOf(", "), valor.length() - 1);
-        return valor.toString();
+        return Joiner.on(", ").join(Lists.transform(getAtributos(), new Function<Atributo, String>() {
+            @Override
+            @Nullable
+            public String apply(@Nullable Atributo atributo) {
+                return atributo.getValor().getNombre();
+            }
+
+        }));
     }
 }

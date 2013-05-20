@@ -15,6 +15,7 @@ import com.palermotenis.commandline.setup.PagoMasterData;
 import com.palermotenis.commandline.setup.PaisMasterData;
 import com.palermotenis.commandline.setup.ProvinciaMasterData;
 import com.palermotenis.commandline.setup.RolMasterData;
+import com.palermotenis.commandline.setup.SucursalMasterData;
 import com.palermotenis.commandline.setup.TipoAtributoClasificatorioMetadataMasterData;
 import com.palermotenis.commandline.setup.TipoImagenMasterData;
 import com.palermotenis.commandline.setup.UnidadMasterData;
@@ -26,6 +27,7 @@ import com.palermotenis.model.dao.idiomas.IdiomaDao;
 import com.palermotenis.model.dao.imagenes.TipoImagenDao;
 import com.palermotenis.model.dao.monedas.MonedaDao;
 import com.palermotenis.model.dao.pagos.PagoDao;
+import com.palermotenis.model.dao.sucursales.SucursalDao;
 import com.palermotenis.model.dao.unidades.UnidadDao;
 import com.palermotenis.model.service.authorities.RolService;
 import com.palermotenis.model.service.geograficos.GeographicService;
@@ -85,11 +87,15 @@ public class CreateOrUpdateMasterData extends AbstractCommandLine {
     @Autowired
     private ImagenService imagenService;
 
+    @Autowired
+    private SucursalDao sucursalDao;
+
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     protected int runWithin(ApplicationContext springContext) {
         List<MasterData> masterDataList = new ImmutableList.Builder<MasterData>()
             .add(new RolMasterData(rolService, rolDao))
+            .add(new SucursalMasterData(sucursalDao))
             .add(new UnidadMasterData(unidadService, unidadDao))
             .add(new TipoImagenMasterData(tipoImagenDao, imagenService))
             .add(new TipoAtributoClasificatorioMetadataMasterData(tipoAtributoClasificatorioMetadataDao))

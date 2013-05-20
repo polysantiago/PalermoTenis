@@ -13,7 +13,11 @@ public interface ModeloDao extends Dao<Modelo, Integer> {
 
     List<Modelo> getModelosByMarcaAndTipoProducto(Marca marca, TipoProducto tipoProducto);
 
-    List<Modelo> getModelosByMarcaAndActiveTipoProducto(Marca marca, TipoProducto tipoProducto);
+    List<Modelo> getModelosWithRootActiveProductos(Marca marca, TipoProducto tipoProducto);
+
+    List<Modelo> getModelosWithLeafActiveProductos(Marca marca, TipoProducto tipoProducto);
+
+    List<Modelo> getModelosByPadre(Modelo padre);
 
     List<Modelo> getModelosByActiveParent(Modelo parent);
 

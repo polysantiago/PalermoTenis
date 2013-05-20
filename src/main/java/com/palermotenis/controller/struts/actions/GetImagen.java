@@ -1,72 +1,55 @@
 package com.palermotenis.controller.struts.actions;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-
-import javax.servlet.ServletContext;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.results.ImageCapable;
-import com.palermotenis.model.beans.Modelo;
 import com.palermotenis.model.beans.imagenes.Imagen;
 import com.palermotenis.model.beans.imagenes.ImagenEscalada;
-import com.palermotenis.model.beans.imagenes.tipos.TipoImagen;
-import com.palermotenis.model.dao.Dao;
-import com.palermotenis.util.imagen.ImagenUtil;
+import com.palermotenis.model.service.imagenes.ImagenService;
 
-/**
- *
- * @author Poly
- */
-public class GetImagen extends ActionSupport implements ImageCapable{
+public class GetImagen extends ActionSupport implements ImageCapable {
 
-	private static final long serialVersionUID = 368332131271534228L;
-	
-	private String hash;
+    private static final String IMAGENES_LIST = "imagenesList";
+
+    private static final String IMAGEN_RESULT = "imagenResult";
+
+    private static final long serialVersionUID = 368332131271534228L;
+
+    private String hash;
     private Character tipoImagenId;
     private ImagenEscalada imagenEscalada;
     private Integer modeloId;
-    private Collection<Imagen> imagenes;
-    private ServletContext servletContext;
-    
+    private List<Imagen> imagenes;
+
     @Autowired
-    private Dao<Imagen, Integer> imagenDao;
-    
-    @Autowired
-    private Dao<TipoImagen, Character> tipoImagenDao;
-    
-    @Autowired
-    private Dao<Modelo, Integer> modeloDao;
+    private ImagenService imagenService;
 
     @Override
     public String execute() throws IOException {
-
-        Imagen imagen = imagenDao.findBy("HashKey", "hashKey", hash);
-
-        TipoImagen tipoImagen = tipoImagenDao.find(tipoImagenId);
-        File file = new File(servletContext.getRealPath(ImagenUtil.MODELOS_FOLDER), hash + ".jpg");
-        imagenEscalada = ImagenUtil.getImagenEscalada(file, imagen, tipoImagen);
-
-        return "imagenResult";
+        imagenEscalada = imagenService.getImagenEscalada(hash, tipoImagenId);
+        return IMAGEN_RESULT;
     }
 
-    public String doList(){
-        Modelo modelo = modeloDao.find(modeloId);
-        imagenes = modelo.getImagenes();
-        return "imagenesList";
+    public String doList() {
+        imagenes = imagenService.getImagenesByModelo(modeloId);
+        return IMAGENES_LIST;
     }
 
+    @Override
     public byte[] getImageInBytes() {
         return getImagenEscalada().getImagen();
     }
 
+    @Override
     public String getContentType() {
         return getImagenEscalada().getContentType();
     }
 
+    @Override
     public int getContentLength() {
         return (int) getImagenEscalada().getTamanio();
     }
@@ -75,35 +58,19 @@ public class GetImagen extends ActionSupport implements ImageCapable{
         this.hash = hash;
     }
 
-    /**
-     * @param tipoImagen the tipoImagen to set
-     */
     public void setTipoImagenId(Character tipoImagenId) {
         this.tipoImagenId = tipoImagenId;
     }
-    
-    /**
-     * @return the imagenes
-     */
-    public Collection<Imagen> getImagenes() {
+
+    public List<Imagen> getImagenes() {
         return imagenes;
     }
 
-    /**
-     * @return the imagenEscalada
-     */
     public ImagenEscalada getImagenEscalada() {
         return imagenEscalada;
     }
 
-    /**
-     * @param modeloId the modeloId to set
-     */
     public void setModeloId(Integer modeloId) {
         this.modeloId = modeloId;
-    }
-
-    public void setServletContext(ServletContext servletContext) {
-        this.servletContext = servletContext;
     }
 }

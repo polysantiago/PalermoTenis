@@ -196,7 +196,15 @@ public abstract class AbstractHibernateDao<T, PK extends Serializable> implement
     }
 
     private int queryInt(Query query) {
-        return ((Integer) query.getSingleResult()).intValue();
+        Object queryResult = query.getSingleResult();
+        if (queryResult != null) {
+            if (queryResult instanceof Integer) {
+                return ((Integer) queryResult).intValue();
+            } else if (queryResult instanceof Long) {
+                return (int) ((Long) queryResult).longValue();
+            }
+        }
+        return 0;
     }
 
     private Query create(String queryName, Map<String, Object> queryArgs, boolean all, int maxResults, int firstResult) {

@@ -2,12 +2,11 @@ package com.palermotenis.controller.struts.actions.admin.crud;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.model.beans.usuarios.Usuario;
-import com.palermotenis.model.dao.usuario.UsuarioDao;
+import com.palermotenis.model.service.usuarios.UsuarioService;
 
 public class MiUsuarioAction extends ActionSupport {
 
@@ -20,19 +19,11 @@ public class MiUsuarioAction extends ActionSupport {
     private String rptContrasenia;
 
     @Autowired
-    private UsuarioDao usuarioDao;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private UsuarioService usuarioService;
 
     public String edit() {
         try {
-            getUsuario().setUsuario(username);
-            getUsuario().setPassword(passwordEncoder.encodePassword(contrasenia, null));
-            usuarioDao.edit(getUsuario());
-            // } catch (NonexistentEntityException ex) {
-            // logger.error("No existe el usuario", ex);
-            // return ERROR;
+            usuarioService.update(getUsuario(), username, contrasenia);
         } catch (Exception ex) {
             logger.error("Error - ", ex);
             return ERROR;
@@ -42,7 +33,7 @@ public class MiUsuarioAction extends ActionSupport {
 
     @Override
     public void validate() {
-        if (!getUsuario().getUsername().equals(username) && !usuarioDao.getUsuariosByUsername(username).isEmpty()) {
+        if (!getUsuario().getUsername().equals(username) && !usuarioService.getUsuariosByUsername(username).isEmpty()) {
             addFieldError("username", "Este nombre de usuario ya está registrado");
         }
     }

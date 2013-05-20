@@ -85,7 +85,7 @@ public class ListarModelos extends InputStreamActionSupport {
     }
 
     private List<Modelo> getActiveModelos() {
-        return modeloService.getModelosByMarcaAndActiveTipoProducto(idMarca, idTipoProducto);
+        return modeloService.getModelosWithRootActiveProductos(idMarca, idTipoProducto);
     }
 
     private List<Modelo> getHijos(Modelo modelo) {

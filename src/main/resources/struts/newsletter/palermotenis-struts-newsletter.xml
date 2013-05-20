@@ -4,13 +4,17 @@
 "http://struts.apache.org/dtds/struts-2.0.dtd">
 
 <struts>
-    <package name="newsletter_operations" namespace="/newsletter" extends="struts-default">
+    <package name="newsletter_operations" namespace="/newsletter" extends="struts-default,json-default">
+        
         <action name="AgregarSuscriptor" class="com.palermotenis.controller.struts.actions.newsletter.AgregarSuscriptor">
-            <result name="json" type="stream">
-                <param name="contentType">application/json;charset=ISO-8859-1</param>
-                <param name="inputName">inputStream</param>
+            <result type="json">
+                <param name="root">resultsMap</param>
+            </result>
+            <result name="error" type="json">
+                <param name="root">resultsMap</param>
             </result>
         </action>
+        
         <action name="ConfirmarSuscriptor" class="com.palermotenis.controller.struts.actions.newsletter.ConfirmarSuscriptor">
             <result>ConfirmarSuscriptorOk.jsp</result>
             <result name="error">ConfirmarSuscriptorError.jsp</result>
@@ -24,6 +28,7 @@
             <result name="error">QuitarSuscriptorError.jsp</result>
             <result name="input">Desuscripcion.jsp</result>
         </action>
+    
     </package>
 
     <package name="newsletter_admin_operations" namespace="/admin/newsletter" extends="struts-default">

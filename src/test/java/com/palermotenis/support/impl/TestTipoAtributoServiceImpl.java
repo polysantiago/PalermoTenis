@@ -9,7 +9,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoClasificatorio;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoMultipleValores;
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributoSimple;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoTipado;
 import com.palermotenis.model.dao.atributos.tipos.TipoAtributoDao;
 import com.palermotenis.model.service.atributos.tipos.TipoAtributoService;
 import com.palermotenis.support.TestTipoAtributoService;
@@ -52,28 +55,28 @@ public class TestTipoAtributoServiceImpl implements TestTipoAtributoService {
     }
 
     @Override
-    public TipoAtributo getTipoAtributoSimple() {
-        return getByNombre(TIPO_ATRIBUTO_SIMPLE);
+    public TipoAtributoSimple getTipoAtributoSimple() {
+        return (TipoAtributoSimple) getByNombre(TIPO_ATRIBUTO_SIMPLE);
     }
 
     @Override
-    public TipoAtributo getTipoAtributoClasificatorio() {
-        return getByNombre(TIPO_ATRIBUTO_CLASIFICATORIO);
+    public TipoAtributoClasificatorio getTipoAtributoClasificatorio() {
+        return (TipoAtributoClasificatorio) getByNombre(TIPO_ATRIBUTO_CLASIFICATORIO);
     }
 
     @Override
-    public TipoAtributo getTipoAtributoPresentableAndClasificable() {
-        return getByNombre(TIPO_ATRIBUTO_PRESENTABLE_CLASIFICATORIO);
+    public TipoAtributoClasificatorio getTipoAtributoPresentableAndClasificable() {
+        return (TipoAtributoClasificatorio) getByNombre(TIPO_ATRIBUTO_PRESENTABLE_CLASIFICATORIO);
     }
 
     @Override
-    public TipoAtributo getTipoAtributoTipado() {
-        return getByNombre(TIPO_ATRIBUTO_TIPADO);
+    public TipoAtributoTipado getTipoAtributoTipado() {
+        return (TipoAtributoTipado) getByNombre(TIPO_ATRIBUTO_TIPADO);
     }
 
     @Override
-    public TipoAtributo getTipoAtributoMultipleValores() {
-        return getByNombre(TIPO_ATRIBUTO_MULTIPLE_VALORES);
+    public TipoAtributoMultipleValores getTipoAtributoMultipleValores() {
+        return (TipoAtributoMultipleValores) getByNombre(TIPO_ATRIBUTO_MULTIPLE_VALORES);
     }
 
     private TipoAtributo getByNombre(String nombre) {

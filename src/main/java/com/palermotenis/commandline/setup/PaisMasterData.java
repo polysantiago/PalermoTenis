@@ -71,7 +71,7 @@ public class PaisMasterData implements MasterData {
     }
 
     private Moneda getMoneda(String codigo) {
-        return monedaService.findByCodigo(codigo);
+        return monedaService.getMonedaByCodigo(codigo);
     }
 
 }

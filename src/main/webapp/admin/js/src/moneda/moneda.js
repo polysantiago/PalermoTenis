@@ -6,13 +6,13 @@ function fieldsAreValid(monedaObj){
         error("Por favor, selecciona una moneda contraria");
         return false;
     } else if(!monedaObj.simbolo || monedaObj.simbolo == ""){
-        error("El campo simbolo no puede estar vacÃ­o");
+        error("El campo simbolo no puede estar vacío");
         return false;
     } else if(!monedaObj.codigo || monedaObj.codigo == ""){
-        error("El campo codigo no puede estar vacÃ­o");
+        error("El campo codigo no puede estar vacío");
         return false;
     } else if(!monedaObj.nombre || monedaObj.nombre == ""){
-        error("El campo nombre no puede estar vacÃ­o");
+        error("El campo nombre no puede estar vacío");
         return false;
     }
     return true;

@@ -3,13 +3,8 @@ package com.palermotenis.controller.carrito;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.palermotenis.model.beans.Pago;
 import com.palermotenis.model.beans.Stock;
-import com.palermotenis.model.beans.precios.Precio;
-import com.palermotenis.model.service.pagos.PagoService;
-import com.palermotenis.model.service.precios.impl.PrecioService;
 
 public class CarritoImpl implements Carrito {
 
@@ -19,37 +14,20 @@ public class CarritoImpl implements Carrito {
     private Pago pago;
     private int cuotas;
 
-    @Autowired
-    private transient PagoService pagoService;
-
-    @Autowired
-    private transient PrecioService precioService;
-
     @Override
     public void agregar(int cantidad, Stock stock) {
-        if (!contenido.containsKey(stock)) {
+        if (!hasStock(stock)) {
             Item item = new Item(cantidad);
             contenido.put(stock, item);
         } else {
-            Item i = contenido.get(stock);
-            i.setCantidad(i.getCantidad() + cantidad);
+            Item item = get(stock);
+            item.setCantidad(item.getCantidad() + cantidad);
         }
-        setPrecio(stock);
     }
 
     @Override
-    public void setCantidad(int cantidad, Stock stock) {
-        if (cantidad <= 0) {
-            contenido.remove(stock);
-            return;
-        }
-        if (!contenido.containsKey(stock)) {
-            agregar(cantidad, stock);
-        } else {
-            Item i = contenido.get(stock);
-            i.setCantidad(cantidad);
-            setPrecio(stock);
-        }
+    public Item get(Stock stock) {
+        return contenido.get(stock);
     }
 
     @Override
@@ -64,24 +42,10 @@ public class CarritoImpl implements Carrito {
 
     @Override
     public int getCantidad(Stock stock) {
-        if (!contenido.containsKey(stock)) {
+        if (!hasStock(stock)) {
             return 0;
         }
         return contenido.get(stock).getCantidad();
-    }
-
-    private void setPrecio(Stock stock) {
-        if (!contenido.containsKey(stock)) {
-            return;
-        } else {
-            if (pago == null) {
-                pago = pagoService.getEfectivo();
-            }
-            Item item = contenido.get(stock);
-            Precio precio = precioService.estimarPrecio(stock, pago, cuotas);
-            item.setPrecioUnitario(precioService.calculatePrecioUnitarioPesos(precio));
-            item.setSubtotal(precioService.calculateSubtotalPesos(precio, item.getCantidad()));
-        }
     }
 
     @Override
@@ -107,12 +71,6 @@ public class CarritoImpl implements Carrito {
         contenido.clear();
     }
 
-    private void updatePrecios() {
-        for (Stock s : contenido.keySet()) {
-            setPrecio(s);
-        }
-    }
-
     @Override
     public Pago getPago() {
         return pago;
@@ -120,12 +78,7 @@ public class CarritoImpl implements Carrito {
 
     @Override
     public void setPago(Pago pago) {
-        if (this.pago == null) {
-            this.pago = pago;
-        } else if (!this.pago.equals(pago)) {
-            this.pago = pago;
-            updatePrecios();
-        }
+        this.pago = pago;
     }
 
     @Override
@@ -135,10 +88,12 @@ public class CarritoImpl implements Carrito {
 
     @Override
     public void setCuotas(int cuotas) {
-        if (this.cuotas != cuotas) {
-            this.cuotas = cuotas;
-            updatePrecios();
-        }
+        this.cuotas = cuotas;
+    }
+
+    @Override
+    public boolean hasStock(Stock stock) {
+        return contenido.containsKey(stock);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.palermotenis.model.service.stock;
 
 import java.util.List;
+import java.util.Map;
 
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.Sucursal;
@@ -48,6 +49,18 @@ public interface StockService {
     List<Stock> getStocksByNombre(String nombre, int maxResults);
 
     List<Stock> getActiveStocksByNombre(String nombre, int maxResults);
+
+    List<Stock> getAllStocks(int maxResults, int firstResult, Map<String, Boolean> orderBy);
+
+    List<Stock> getStocksByModelo(Integer modeloId, int maxResults, int firstResult, Map<String, Boolean> orderBy);
+
+    List<Stock> getStocksByTipoProducto(Integer tipoProductoId);
+
+    List<Stock> getStocksByTipoProducto(Integer tipoProductoId, int maxResults, int firstResult,
+            Map<String, Boolean> orderBy);
+
+    List<Stock> getStocksByTipoProductoAndMarca(Integer tipoProductoId, Integer marcaId, int maxResults,
+            int firstResult, Map<String, Boolean> orderBy);
 
     int getSumOfStockByProducto(Integer productoId);
 

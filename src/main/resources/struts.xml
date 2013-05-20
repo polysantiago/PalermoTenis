@@ -28,10 +28,6 @@
             <result>/index.jsp</result>
         </action>
 
-        <action name="Test" class="com.palermotenis.controller.struts.actions.Test">
-            <result>/Envios.jsp</result>
-        </action>
-
         <action name="ListarTipoProductos" class="com.palermotenis.controller.struts.actions.ListarTipoProductos">
           	<result type="json">
                 <param name="root">resultList</param>
@@ -164,12 +160,6 @@
             </result>
         </action>
 
-        <action name="ValidarCampos" class="com.palermotenis.controller.struts.actions.ValidarCampos">
-            <result type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
-                <param name="inputName">inputStream</param>
-            </result>
-        </action>
         <action name="GetCiudades" class="com.palermotenis.controller.struts.actions.GetCiudades">
             <result type="stream">
                 <param name="contentType">text/plain;charset=ISO-8859-1</param>
@@ -179,7 +169,7 @@
 
         <action name="GetProductosAutoCompleteList_*" method="{1}" class="com.palermotenis.controller.struts.actions.GetProductosAutoCompleteList">
             <result type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
+                <param name="contentType">text/plain;charset=ISO-8859-1</param>
                 <param name="inputName">inputStream</param>
             </result>
         </action>

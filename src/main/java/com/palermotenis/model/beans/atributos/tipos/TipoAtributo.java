@@ -1,6 +1,7 @@
 package com.palermotenis.model.beans.atributos.tipos;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -18,11 +19,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 
 import com.palermotenis.model.beans.Unidad;
+import com.palermotenis.model.beans.atributos.Atributo;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 
 @Entity
@@ -47,14 +50,6 @@ public abstract class TipoAtributo implements Serializable {
     @Column(name = "ID")
     private Integer id;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     @Column(name = "nombre")
     private String nombre;
 
@@ -69,6 +64,26 @@ public abstract class TipoAtributo implements Serializable {
     @JoinColumn(name = "tipoProducto", referencedColumnName = "ID")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private TipoProducto tipoProducto;
+
+    @OneToMany(mappedBy = "tipoAtributo", fetch = FetchType.LAZY)
+    private List<Atributo> atributos;
+
+    public TipoAtributo() {
+    }
+
+    public TipoAtributo(String nombre, Class<?> clase, TipoProducto tipoProducto) {
+        this.nombre = nombre;
+        this.clase = clase;
+        this.tipoProducto = tipoProducto;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getNombre() {
         return nombre;
@@ -100,6 +115,14 @@ public abstract class TipoAtributo implements Serializable {
 
     public void setTipoProducto(TipoProducto tipoProducto) {
         this.tipoProducto = tipoProducto;
+    }
+
+    public List<Atributo> getAtributos() {
+        return atributos;
+    }
+
+    public void setAtributos(List<Atributo> atributos) {
+        this.atributos = atributos;
     }
 
 }

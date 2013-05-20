@@ -1,6 +1,8 @@
 package com.palermotenis.model.service.stock;
 
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,15 +10,21 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.ImmutableMap;
+import com.palermotenis.model.beans.Marca;
+import com.palermotenis.model.beans.Modelo;
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.Sucursal;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
+import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.beans.valores.ValorClasificatorio;
 import com.palermotenis.model.dao.stock.StockDao;
 import com.palermotenis.model.service.atributos.AtributoService;
+import com.palermotenis.model.service.marcas.MarcaService;
+import com.palermotenis.model.service.modelos.ModeloService;
 import com.palermotenis.model.service.presentaciones.PresentacionService;
 import com.palermotenis.model.service.productos.ProductoService;
+import com.palermotenis.model.service.productos.tipos.TipoProductoService;
 import com.palermotenis.model.service.valores.ValorService;
 
 @Service("stockService")
@@ -37,6 +45,15 @@ public class StockServiceImpl implements StockService {
 
     @Autowired
     private PresentacionService presentacionService;
+
+    @Autowired
+    private ModeloService modeloService;
+
+    @Autowired
+    private TipoProductoService tipoProductoService;
+
+    @Autowired
+    private MarcaService marcaService;
 
     @Override
     public void createNewStock(Integer productoId, Integer cantidad) {
@@ -81,6 +98,7 @@ public class StockServiceImpl implements StockService {
             stock.setValorClasificatorio(valorClasificatorio);
         }
         stockDao.create(stock);
+        producto.addStock(stock);
     }
 
     @Override
@@ -171,6 +189,54 @@ public class StockServiceImpl implements StockService {
         return stockDao.queryBy("Nombre-Active", new ImmutableMap.Builder<String, Object>()
             .put("nombre", nombre)
             .build(), maxResults, 0);
+    }
+
+    @Override
+    public List<Stock> getAllStocks(int maxResults, int firstResult, Map<String, Boolean> orderBy) {
+        try {
+            return stockDao.getAllStocks(maxResults, firstResult, orderBy);
+        } catch (SQLException e) {
+            throw new RuntimeException("Bad query", e);
+        }
+    }
+
+    @Override
+    public List<Stock> getStocksByModelo(Integer modeloId, int maxResults, int firstResult, Map<String, Boolean> orderBy) {
+        Modelo modelo = modeloService.getModeloById(modeloId);
+        try {
+            return stockDao.getStocksByModelo(modelo, maxResults, firstResult, orderBy);
+        } catch (SQLException e) {
+            throw new RuntimeException("Bad query", e);
+        }
+    }
+
+    @Override
+    public List<Stock> getStocksByTipoProducto(Integer tipoProductoId) {
+        TipoProducto tipoProducto = tipoProductoService.getTipoProductoById(tipoProductoId);
+        return stockDao.queryBy("TipoProducto", "tipoProducto", tipoProducto);
+    }
+
+    @Override
+    public List<Stock> getStocksByTipoProducto(Integer tipoProductoId, int maxResults, int firstResult,
+            Map<String, Boolean> orderBy) {
+        TipoProducto tipoProducto = tipoProductoService.getTipoProductoById(tipoProductoId);
+        try {
+            return stockDao.getStocksByTipoProducto(tipoProducto, maxResults, firstResult, orderBy);
+        } catch (SQLException e) {
+            throw new RuntimeException("Bad query", e);
+        }
+    }
+
+    @Override
+    public List<Stock> getStocksByTipoProductoAndMarca(Integer tipoProductoId, Integer marcaId, int maxResults,
+            int firstResult, Map<String, Boolean> orderBy) {
+        TipoProducto tipoProducto = tipoProductoService.getTipoProductoById(tipoProductoId);
+        Marca marca = marcaService.getMarcaById(marcaId);
+        try {
+            return stockDao.getStocksByTipoProductoAndMarca(tipoProducto, marca, firstResult, maxResults, orderBy);
+        } catch (SQLException e) {
+            throw new RuntimeException("Bad query", e);
+        }
     }
 
     private Producto getProducto(Integer productoId) {

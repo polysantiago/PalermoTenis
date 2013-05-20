@@ -1,8 +1,8 @@
 package com.palermotenis.model.beans.productos;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -27,10 +27,12 @@ import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.OrderBy;
 import org.hibernate.annotations.Where;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.palermotenis.model.beans.Modelo;
 import com.palermotenis.model.beans.Stock;
+import com.palermotenis.model.beans.atributos.Atributo;
 import com.palermotenis.model.beans.atributos.AtributoClasificatorio;
 import com.palermotenis.model.beans.atributos.AtributoMultipleValores;
 import com.palermotenis.model.beans.atributos.AtributoSimple;
@@ -51,6 +53,7 @@ import com.palermotenis.model.exceptions.IllegalValueException;
 @NamedQueries(
     {
             @NamedQuery(name = "Producto.findAll", query = "SELECT p FROM Producto p"),
+            @NamedQuery(name = "Producto.findByModelo", query = "SELECT p FROM Producto p WHERE p.modelo = :modelo"),
             @NamedQuery(name = "Producto.findByTipoProducto",
                     query = "SELECT p FROM Producto p WHERE p.tipoProducto = :tipoProducto"),
             @NamedQuery(name = "Producto.findOfertas", query = "SELECT DISTINCT p FROM Producto p "
@@ -58,7 +61,7 @@ import com.palermotenis.model.exceptions.IllegalValueException;
                     + "WHERE pr.enOferta = 1 OR pc.enOferta = 1 AND s.stock > 0"),
             @NamedQuery(name = "Producto.findCountByTipoAndMarca", query = "SELECT t, m, "
                     + "(SELECT COUNT(*) FROM Producto p WHERE p.tipoProducto = t AND p.modelo.marca = m) "
-                    + "FROM TipoProducto t, Marca m " + "ORDER BY t.nombre, m.nombre"),
+                    + "FROM TipoProducto t, Marca m ORDER BY t.nombre, m.nombre"),
             @NamedQuery(
                     name = "Producto.findProductosRelacionados",
                     query = "SELECT DISTINCT pp.id.stock.producto "
@@ -93,24 +96,25 @@ public class Producto implements Serializable {
     private Modelo modelo;
 
     @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private Collection<AtributoSimple> atributos;
+    private List<Atributo> atributos;
 
     @OrderBy(clause = "valor")
     @OneToMany(mappedBy = "id.producto", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private Collection<PrecioUnidad> preciosUnidad;
+    private List<PrecioUnidad> preciosUnidad = Lists.newArrayList();
 
     @OrderBy(clause = "valor")
     @OneToMany(mappedBy = "id.producto", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private Collection<PrecioPresentacion> preciosCantidad;
+    private List<PrecioPresentacion> preciosCantidad = Lists.newArrayList();
 
     @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private Collection<Stock> stocks;
+    private List<Stock> stocks = Lists.newArrayList();
 
     @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Collection<Costo> costos;
 
     @Formula(value = "(SELECT SUM(s.stock) FROM stock s WHERE s.producto = ID)")
-    private Integer stock;
+    @Basic(fetch = FetchType.LAZY)
+    private Integer stockSum;
 
     @OrderBy(clause = "valor")
     @ManyToMany(cascade = CascadeType.PERSIST, mappedBy = "productos", targetEntity = Presentacion.class)
@@ -123,13 +127,13 @@ public class Producto implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "Producto", updatable = false)
     @Where(clause = "(SELECT t.tipo FROM tipo_atributos t WHERE t.ID = TipoAtributo) = 'S'")
-    private Collection<AtributoSimple> atributosSimples;
+    private List<AtributoSimple> atributosSimples;
 
     @OrderBy(clause = "tipoatribu1_.nombre")
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "Producto", updatable = false)
     @Where(clause = "(SELECT t.tipo FROM tipo_atributos t WHERE t.ID = TipoAtributo) = 'T'")
-    private Collection<AtributoTipado> atributosTipados;
+    private List<AtributoTipado> atributosTipados;
 
     @OrderBy(clause = "tipoatribu1_.nombre")
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
@@ -137,12 +141,12 @@ public class Producto implements Serializable {
     @Where(
             clause = "(SELECT t.tipo FROM tipo_atributos t WHERE t.ID = TipoAtributo) = 'C' "
                     + "AND (SELECT s.stock FROM stock s WHERE s.ValorClasificatorio = ValorPosible AND s.Producto = Producto) > 0")
-    private Collection<AtributoClasificatorio> atributosClasificatorios;
+    private List<AtributoClasificatorio> atributosClasificatorios;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "Producto", updatable = false)
     @Where(clause = "(SELECT t.tipo FROM tipo_atributos t WHERE t.ID = TipoAtributo) = 'M'")
-    private Collection<AtributoMultipleValores> atributosMultiplesValores;
+    private List<AtributoMultipleValores> atributosMultiplesValores;
 
     public Producto() {
     }
@@ -166,17 +170,10 @@ public class Producto implements Serializable {
         this.id = id;
     }
 
-    /**
-     * @return the descripcion
-     */
     public String getDescripcion() {
         return descripcion;
     }
 
-    /**
-     * @param descripcion
-     *            the descripcion to set
-     */
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
@@ -240,83 +237,74 @@ public class Producto implements Serializable {
         this.presentaciones = presentaciones;
     }
 
-    /**
-     * @return the precios
-     */
     public Collection<? extends Precio> getPrecios() {
-        if (preciosUnidad != null && !preciosUnidad.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(preciosUnidad)) {
             return preciosUnidad;
-        } else {
-            return preciosCantidad;
         }
+        return preciosCantidad;
     }
 
-    public void addPrecio(PrecioUnidad precio) {
+    public void addPrecio(Precio precio) {
         if (hasPrecio(precio)) {
-            // TODO handle exception
+            return;
         }
-        preciosUnidad.add(precio);
+        if (precio instanceof PrecioUnidad) {
+            preciosUnidad.add((PrecioUnidad) precio);
+        } else if (precio instanceof PrecioPresentacion) {
+            preciosCantidad.add((PrecioPresentacion) precio);
+        }
+        precio.getId().setProducto(this);
     }
 
-    public void removePrecio(PrecioUnidad precio) {
+    public void removePrecio(Precio precio) {
         if (!hasPrecio(precio)) {
-            // TODO handle exception
+            return;
         }
-        preciosUnidad.remove(precio);
+        if (precio instanceof PrecioUnidad) {
+            preciosUnidad.remove(precio);
+        } else if (precio instanceof PrecioPresentacion) {
+            preciosCantidad.remove(precio);
+        }
     }
 
-    public final boolean hasPrecio(PrecioUnidad precio) {
-        return preciosUnidad.contains(precio);
+    public final boolean hasPrecio(Precio precio) {
+        return preciosUnidad.contains(precio) || preciosCantidad.contains(precio);
     }
 
     public Collection<PrecioUnidad> getPreciosUnidad() {
         return preciosUnidad;
     }
 
-    public void setPreciosUnidad(Collection<PrecioUnidad> preciosUnidad) {
+    public void setPreciosUnidad(List<PrecioUnidad> preciosUnidad) {
         this.preciosUnidad = preciosUnidad;
     }
 
-    /**
-     * @return the preciosCantidad
-     */
     public Collection<PrecioPresentacion> getPreciosCantidad() {
         return preciosCantidad;
     }
 
-    /**
-     * @param preciosCantidad
-     *            the preciosCantidad to set
-     */
-    public void setPreciosCantidad(Collection<PrecioPresentacion> preciosCantidad) {
+    public void setPreciosCantidad(List<PrecioPresentacion> preciosCantidad) {
         this.preciosCantidad = preciosCantidad;
     }
 
-    /**
-     * @return the costos
-     */
     public Collection<Costo> getCostos() {
         return costos;
     }
 
-    /**
-     * @param costos
-     *            the costos to set
-     */
     public void setCostos(Collection<Costo> costos) {
         this.costos = costos;
     }
 
     public void addCosto(Costo costo) {
         if (hasCosto(costo)) {
-            // TODO handle exception
+            return;
         }
         costos.add(costo);
     }
 
     public void removeCosto(Costo costo) {
         if (!hasCosto(costo)) {
-            // TODO handle exception
+            return;
         }
         costos.remove(costo);
     }
@@ -325,48 +313,64 @@ public class Producto implements Serializable {
         return costos.contains(costo);
     }
 
-    /**
-     * @return the stocks
-     */
-    public Collection<Stock> getStocks() {
+    public List<Stock> getStocks() {
         return stocks;
     }
 
-    /**
-     * @param stocks
-     *            the stocks to set
-     */
-    public void setStocks(Collection<Stock> stocks) {
+    public void setStocks(List<Stock> stocks) {
         this.stocks = stocks;
     }
 
     public boolean hasStock() {
-        return (stock > 0);
+        return getStockSum() > 0;
+    }
+
+    public Integer getStockSum() {
+        return stockSum;
+    }
+
+    public void setStockSum(Integer stockSum) {
+        this.stockSum = stockSum;
+    }
+
+    public void addStock(Stock stock) {
+        if (stocks.contains(stock)) {
+            return;
+        }
+        stocks.add(stock);
+        stock.setProducto(this);
+    }
+
+    public void removeStock(Stock stock) {
+        if (!stocks.contains(stock)) {
+            return;
+        }
+        stocks.remove(stock);
+        stock.setProducto(null);
     }
 
     public boolean hasPedidos() {
-        if (stocks == null || stocks.isEmpty()) {
-            return false;
-        } else {
-            for (Stock s : stocks) {
-                if (s.hasPedidos()) {
-                    return true;
-                }
-            }
+        if (CollectionUtils.isEmpty(stocks)) {
             return false;
         }
+        for (Stock stock : stocks) {
+            if (stock.hasPedidos()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void addPrecioCantidad(PrecioPresentacion precio) {
         if (hasPrecioCantidad(precio)) {
-            // TODO handle exception
+            return;
         }
         preciosCantidad.add(precio);
     }
 
     public void removePrecioCantidad(PrecioPresentacion precio) {
         if (!hasPrecioCantidad(precio)) {
-            // TODO handle exception
+            return;
         }
         preciosCantidad.remove(precio);
     }
@@ -378,14 +382,13 @@ public class Producto implements Serializable {
     public boolean hasPreciosCantidad() {
         if (preciosCantidad == null) {
             return false;
-        } else {
-            return !preciosCantidad.isEmpty();
         }
+        return !preciosCantidad.isEmpty();
     }
 
     public void addAtributo(AtributoSimple atributo) throws IllegalValueException {
         if (atributos == null) {
-            atributos = new ArrayList<AtributoSimple>();
+            atributos = Lists.newArrayList();
         } else if (hasAtributo(atributo)) {
             throw new IllegalValueException("El producto ya contiente este atributo");
         }
@@ -402,9 +405,8 @@ public class Producto implements Serializable {
     public boolean hasAtributos() {
         if (atributos == null) {
             return false;
-        } else {
-            return !atributos.isEmpty();
         }
+        return !atributos.isEmpty();
     }
 
     public boolean hasAtributo(AtributoSimple atributo) {
@@ -412,41 +414,39 @@ public class Producto implements Serializable {
     }
 
     public boolean isPresentable() {
-        if (presentaciones == null) {
-            return false;
-        } else {
-            return !presentaciones.isEmpty();
-        }
-
+        return CollectionUtils.isNotEmpty(presentaciones);
     }
 
-    public Collection<AtributoSimple> getAtributos() {
-        Collection<AtributoSimple> allAtributosSimples = getAtributosSimples();
-        Collection<AtributoTipado> allAtributosTipados = getAtributosTipados();
+    public boolean isClasificable() {
+        return tipoProducto.isClasificable();
+    }
+
+    public List<Atributo> getAtributos() {
+        List<AtributoSimple> allAtributosSimples = getAtributosSimples();
+        List<AtributoTipado> allAtributosTipados = getAtributosTipados();
         if (allAtributosSimples != null && allAtributosTipados != null) {
-            allAtributosSimples.addAll(getAtributosTipados());
-            return allAtributosSimples;
+            List<Atributo> allAtributos = Lists.newArrayList();
+            Iterables.addAll(allAtributos, getAtributosSimples());
+            Iterables.addAll(allAtributos, getAtributosTipados());
+            return allAtributos;
         } else {
             return atributos;
         }
     }
 
-    public Collection<AtributoSimple> getAtributosSimples() {
+    public List<AtributoSimple> getAtributosSimples() {
         return atributosSimples;
     }
 
-    /**
-     * @return the atributosTipados
-     */
-    public Collection<AtributoTipado> getAtributosTipados() {
+    public List<AtributoTipado> getAtributosTipados() {
         return atributosTipados;
     }
 
-    public Collection<AtributoClasificatorio> getAtributosClasificatorios() {
+    public List<AtributoClasificatorio> getAtributosClasificatorios() {
         return atributosClasificatorios;
     }
 
-    public Collection<AtributoMultipleValores> getAtributosMultiplesValores() {
+    public List<AtributoMultipleValores> getAtributosMultiplesValores() {
         return atributosMultiplesValores;
     }
 

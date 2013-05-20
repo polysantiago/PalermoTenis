@@ -149,6 +149,12 @@ public class ModeloServiceImpl implements ModeloService {
     }
 
     @Override
+    public List<Modelo> getModelosByPadre(Integer padreId) {
+        Modelo padre = getModeloById(padreId);
+        return modeloDao.getModelosByPadre(padre);
+    }
+
+    @Override
     public List<Modelo> getModelosByActiveParent(Modelo parent) {
         return modeloDao.getModelosByActiveParent(parent);
     }
@@ -161,10 +167,17 @@ public class ModeloServiceImpl implements ModeloService {
     }
 
     @Override
-    public List<Modelo> getModelosByMarcaAndActiveTipoProducto(int marcaId, int tipoProductoId) {
+    public List<Modelo> getModelosWithRootActiveProductos(int marcaId, int tipoProductoId) {
         Marca marca = getMarca(marcaId);
         TipoProducto tipoProducto = getTipoProducto(tipoProductoId);
-        return modeloDao.getModelosByMarcaAndActiveTipoProducto(marca, tipoProducto);
+        return modeloDao.getModelosWithRootActiveProductos(marca, tipoProducto);
+    }
+
+    @Override
+    public List<Modelo> getModelosWithLeafActiveProductos(int marcaId, int tipoProductoId) {
+        Marca marca = getMarca(marcaId);
+        TipoProducto tipoProducto = getTipoProducto(tipoProductoId);
+        return modeloDao.getModelosWithLeafActiveProductos(marca, tipoProducto);
     }
 
     private TipoProducto getTipoProducto(int tipoProductoId) {

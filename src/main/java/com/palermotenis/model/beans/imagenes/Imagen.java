@@ -1,12 +1,11 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 package com.palermotenis.model.beans.imagenes;
 
-import com.palermotenis.model.beans.Modelo;
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,26 +20,31 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 
+import com.palermotenis.model.beans.Modelo;
+
 /**
- *
+ * 
  * @author Poly
  */
 @Entity
 @Table(name = "imagenes")
-@NamedQueries({
-    @NamedQuery(name = "Imagen.findAll", query = "SELECT i FROM Imagen i"),
-    @NamedQuery(name = "Imagen.findById", query = "SELECT i FROM Imagen i WHERE i.id = :id"),
-    @NamedQuery(name = "Imagen.findByHashKey", query = "SELECT i FROM Imagen i WHERE i.hashKey = :hashKey"),
-    @NamedQuery(name = "Imagen.findByTipo", query = "SELECT i FROM Imagen i WHERE i.tipo = :tipo"),
-    @NamedQuery(name = "Imagen.findByTamanio", query = "SELECT i FROM Imagen i WHERE i.tamanio = :tamanio"),
-    @NamedQuery(name = "Imagen.findByNombre", query = "SELECT i FROM Imagen i WHERE i.nombre = :nombre"),
-    @NamedQuery(name = "Imagen.findByCategoria", query = "SELECT i FROM Imagen i WHERE i.categoria = :categoria")
+@NamedQueries(
+    {
+            @NamedQuery(name = "Imagen.findAll", query = "SELECT i FROM Imagen i"),
+            @NamedQuery(name = "Imagen.findById", query = "SELECT i FROM Imagen i WHERE i.id = :id"),
+            @NamedQuery(name = "Imagen.findByHashKey", query = "SELECT i FROM Imagen i WHERE i.hashKey = :hashKey"),
+            @NamedQuery(name = "Imagen.findByTipo", query = "SELECT i FROM Imagen i WHERE i.tipo = :tipo"),
+            @NamedQuery(name = "Imagen.findByTamanio", query = "SELECT i FROM Imagen i WHERE i.tamanio = :tamanio"),
+            @NamedQuery(name = "Imagen.findByNombre", query = "SELECT i FROM Imagen i WHERE i.nombre = :nombre"),
+            @NamedQuery(name = "Imagen.findByCategoria",
+                    query = "SELECT i FROM Imagen i WHERE i.categoria = :categoria")
 
-})
+    })
 @Immutable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
 public class Imagen implements Serializable {
@@ -87,7 +91,6 @@ public class Imagen implements Serializable {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Modelo modelo;
 
-
     public Imagen() {
     }
 
@@ -101,6 +104,14 @@ public class Imagen implements Serializable {
         this.tamanio = tamanio;
         this.nombre = nombre;
         this.categoria = categoria;
+    }
+
+    public Imagen(String tipo, long tamanio, String nombre, String categoria, Modelo modelo) {
+        this.tipo = tipo;
+        this.tamanio = tamanio;
+        this.nombre = nombre;
+        this.categoria = categoria;
+        this.modelo = modelo;
     }
 
     public Integer getId() {
@@ -143,7 +154,8 @@ public class Imagen implements Serializable {
     }
 
     /**
-     * @param ancho the ancho to set
+     * @param ancho
+     *            the ancho to set
      */
     public void setAncho(int ancho) {
         this.ancho = ancho;
@@ -157,7 +169,8 @@ public class Imagen implements Serializable {
     }
 
     /**
-     * @param alto the alto to set
+     * @param alto
+     *            the alto to set
      */
     public void setAlto(int alto) {
         this.alto = alto;
@@ -187,7 +200,8 @@ public class Imagen implements Serializable {
     }
 
     /**
-     * @param modelo the modelo to set
+     * @param modelo
+     *            the modelo to set
      */
     public void setModelo(Modelo modelo) {
         this.modelo = modelo;
@@ -201,12 +215,12 @@ public class Imagen implements Serializable {
     }
 
     /**
-     * @param imagenesEscaladas the imagenesEscaladas to set
+     * @param imagenesEscaladas
+     *            the imagenesEscaladas to set
      */
     public void setImagenesEscaladas(Collection<ImagenEscalada> imagenesEscaladas) {
         this.imagenesEscaladas = imagenesEscaladas;
     }
-
 
     @Override
     public int hashCode() {

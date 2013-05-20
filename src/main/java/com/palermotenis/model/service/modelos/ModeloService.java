@@ -32,7 +32,11 @@ public interface ModeloService {
 
     List<Modelo> getModelosByMarcaAndTipoProducto(int marcaId, int tipoProductoId);
 
-    List<Modelo> getModelosByMarcaAndActiveTipoProducto(int marcaId, int tipoProductoId);
+    List<Modelo> getModelosWithRootActiveProductos(int marcaId, int tipoProductoId);
+
+    List<Modelo> getModelosWithLeafActiveProductos(int marcaId, int tipoProductoId);
+
+    List<Modelo> getModelosByPadre(Integer padreId);
 
     List<Modelo> getModelosByActiveParent(Modelo parent);
 

@@ -34,7 +34,7 @@ public class MonedaMasterData implements MasterData {
         for (Moneda moneda : ALL_MONEDAS) {
             Moneda dbInstance = null;
             try {
-                dbInstance = monedaService.findByCodigo(moneda.getCodigo());
+                dbInstance = getMoneda(moneda);
                 dbInstance.setSimbolo(moneda.getSimbolo());
                 dbInstance.setNombre(moneda.getNombre());
                 monedaDao.edit(dbInstance);
@@ -42,13 +42,19 @@ public class MonedaMasterData implements MasterData {
                 monedaDao.create(moneda);
             }
         }
+
         setContrario(PESOS, DOLARS);
         setContrario(DOLARS, PESOS);
     }
 
     private void setContrario(Moneda moneda, Moneda contrario) {
-        moneda.setContrario(contrario);
+        moneda = getMoneda(moneda);
+        moneda.setContrario(getMoneda(contrario));
         monedaDao.edit(moneda);
+    }
+
+    private Moneda getMoneda(Moneda moneda) {
+        return monedaService.getMonedaByCodigo(moneda.getCodigo());
     }
 
 }

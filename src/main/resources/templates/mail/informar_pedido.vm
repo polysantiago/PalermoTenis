@@ -1,0 +1,6 @@
+Nº de cliente : ${cliente.id} 
+Nombre del cliente : ${cliente.nombre} 
+Teléfono : ${cliente.telefono}
+Nº de pedido : ${pedido.id}
+Detalle : ${detalle}
+Total : $formatter.print($pedido.total,$locale)

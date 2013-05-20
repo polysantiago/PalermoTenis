@@ -60,6 +60,4 @@ public abstract class Precio implements Serializable {
 
     public abstract PrecioPK getId();
 
-    public abstract void setId(PrecioPK id);
-
 }

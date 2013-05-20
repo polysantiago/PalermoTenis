@@ -4,7 +4,7 @@
 "http://struts.apache.org/dtds/struts-2.0.dtd">
 
 <struts>
-    <package name="admin_analytics" namespace="/admin/estadisticas" extends="struts-default">
+    <package name="admin_analytics" namespace="/admin/estadisticas" extends="struts-default,json-default">
         <action name="Stock">
             <result>Stock.jsp</result>
         </action>
@@ -16,17 +16,13 @@
         </action>
 
         <action name="VerStock2" class="com.palermotenis.controller.struts.actions.admin.analytics.VerStock2">
-            <result type="stream">
-                <param name="contentType">application/json,text/javascript;charset=ISO-8859-1</param>
-                <param name="inputName">inputStream</param>
+            <result type="json">
+                <param name="root">resultsMap</param>
             </result>
         </action>
 
         <action name="VerPrecioStock" class="com.palermotenis.controller.struts.actions.admin.analytics.VerPrecioStock">
-            <result type="stream">
-                <param name="contentType">application/json,text/javascript;charset=ISO-8859-1</param>
-                <param name="inputName">inputStream</param>
-            </result>
+            <result type="json" />
         </action>
 
         <action name="Exportar_*" method="{1}" class="com.palermotenis.controller.struts.actions.admin.analytics.Exportar">

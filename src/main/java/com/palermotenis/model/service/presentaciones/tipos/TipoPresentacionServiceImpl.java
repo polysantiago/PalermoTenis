@@ -1,6 +1,6 @@
 package com.palermotenis.model.service.presentaciones.tipos;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,12 +23,37 @@ public class TipoPresentacionServiceImpl implements TipoPresentacionService {
     private TipoProductoService tipoProductoService;
 
     @Override
+    public void createNewTipoPresentacion(Integer tipoProductoId, String nombre) {
+        TipoProducto tipoProducto = tipoProductoService.getTipoProductoById(tipoProductoId);
+        TipoPresentacion tipoPresentacion = new TipoPresentacion(nombre, tipoProducto);
+        tipoPresentacionDao.create(tipoPresentacion);
+    }
+
+    @Override
+    public void updateTipoPresentacion(Integer tipoPresentacionId, String nombre) {
+        TipoPresentacion tipoPresentacion = getTipoPresentacionById(tipoPresentacionId);
+        tipoPresentacion.setNombre(nombre);
+        tipoPresentacionDao.edit(tipoPresentacion);
+    }
+
+    @Override
+    public void deleteTipoPresentacion(Integer tipoPresentacionId) {
+        TipoPresentacion tipoPresentacion = getTipoPresentacionById(tipoPresentacionId);
+        tipoPresentacionDao.destroy(tipoPresentacion);
+    }
+
+    @Override
     public TipoPresentacion getTipoPresentacionById(Integer tipoPresentacionId) {
         return tipoPresentacionDao.find(tipoPresentacionId);
     }
 
     @Override
-    public Collection<TipoPresentacion> getTiposPresentacionByTipoProducto(Integer tipoProductoId) {
+    public List<TipoPresentacion> getAllTiposPresentacion() {
+        return tipoPresentacionDao.findAll();
+    }
+
+    @Override
+    public List<TipoPresentacion> getTiposPresentacionByTipoProducto(Integer tipoProductoId) {
         TipoProducto tipoProducto = tipoProductoService.getTipoProductoById(tipoProductoId);
         return tipoPresentacionDao.queryBy("TipoProducto", "tipoProducto", tipoProducto);
     }

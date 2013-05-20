@@ -5,7 +5,7 @@
 
 <struts>
 
-    <package name="crud_operations" namespace="/admin/crud" extends="struts-default">
+    <package name="crud_operations" namespace="/admin/crud" extends="struts-default,json-default">
 
         <result-types>
             <result-type name="bytesResult" class="com.palermotenis.controller.results.BytesResult" />
@@ -31,26 +31,47 @@
             </result>
         </action>
 
-        <action name="MonedaAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.MonedaAction">
+        <action name="MonedaAction_*" method="{1}" class="com.palermotenis.controller.struts.actions.admin.crud.MonedaAction">
             <result name="show">/admin/objetos/Moneda/Moneda.jsp</result>
-            <result name="json" type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
+            <result name="json" type="json">
+            	<param name="root">monedas</param>
+            	<param name="excludeProperties">
+            		^\[\d+\]\.nombre,
+            		^\[\d+\]\.contrario,
+            		^\[\d+\]\.paises,
+            		^\[\d+\]\.locale,
+            		^\[\d+\]\.formatter
+            	</param>
+            </result>
+            <result name="stream" type="stream">
+                <param name="contentType">text/plain;charset=ISO-8859-1</param>
                 <param name="inputName">inputStream</param>
             </result>
         </action>
 
         <action name="PagoAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.PagoAction">
             <result name="show">/admin/objetos/Pago/Pago.jsp</result>
-            <result name="json" type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
+            <result name="json" type="json">
+            	<param name="root">pagos</param>
+            </result>
+            <result name="strean" type="stream">
+                <param name="contentType">text/plain;charset=ISO-8859-1</param>
                 <param name="inputName">inputStream</param>
             </result>
         </action>
 
         <action name="TipoPresentacionAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.TipoPresentacionAction">
             <result name="show">/admin/objetos/TipoPresentacion/TipoPresentacion.jsp</result>
-            <result name="json" type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
+            <result name="json" type="json">
+            	<param name="root">tiposPresentacion</param>
+            	<param name="excludeProperties">
+            		^\[\d+\]\.tipoProducto,
+            		^\[\d+\]\.presentaciones,
+            		^\[\d+\]\.presentacionesByProd
+            	</param> 
+            </result>
+            <result name="stream" type="stream">
+                <param name="contentType">text/plain;charset=ISO-8859-1</param>
                 <param name="inputName">inputStream</param>
             </result>
         </action>
@@ -98,8 +119,12 @@
 
         <action name="UnidadAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.UnidadAction">
             <result name="show">/admin/objetos/Unidad/Unidad.jsp</result>
-            <result name="json" type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
+            <result name="json" type="json">
+            	<param name="root">unidades</param>
+            	<param name="excludeProperties">^\[\d+\]\.tipoAtributoCollection</param>
+            </result>
+            <result name="stream" type="stream">
+                <param name="contentType">text/plain;charset=ISO-8859-1</param>
                 <param name="inputName">inputStream</param>
             </result>
         </action>
@@ -128,23 +153,29 @@
 
         <action name="CostoAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.CostoAction">
             <result name="show">/admin/objetos/Costo/Costo.jsp</result>
-            <result name="json" type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
+            <result name="stream" type="stream">
+                <param name="contentType">text/plain;charset=ISO-8859-1</param>
                 <param name="inputName">inputStream</param>
             </result>
         </action>
 
         <action name="PrecioAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.PrecioAction">
-            <result name="json" type="json">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
+            <result name="stream" type="stream">
+                <param name="contentType">text/plain;charset=ISO-8859-1</param>
                 <param name="inputName">inputStream</param>
             </result>
         </action>
 
         <action name="ProveedorAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.admin.crud.ProveedorAction">
             <result name="show">/admin/objetos/Proveedor/Proveedor.jsp</result>
-            <result name="json" type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
+            <result name="json" type="json">
+            	<param name="root">proveedores</param>
+            	<param name="excludeProperties">
+            		^\[\d+\]\.costos
+            	</param>
+            </result>
+            <result name="stream" type="stream">
+                <param name="contentType">text/plain;charset=ISO-8859-1</param>
                 <param name="inputName">inputStream</param>
             </result>
         </action>

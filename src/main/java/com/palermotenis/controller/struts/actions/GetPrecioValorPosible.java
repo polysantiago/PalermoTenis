@@ -1,13 +1,13 @@
 package com.palermotenis.controller.struts.actions;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.model.beans.precios.PrecioPresentacion;
+import com.palermotenis.model.beans.precios.Precio;
 import com.palermotenis.model.service.precios.impl.PrecioService;
 
 public class GetPrecioValorPosible extends ActionSupport {
@@ -18,7 +18,7 @@ public class GetPrecioValorPosible extends ActionSupport {
 
     private Integer productoId;
     private Integer presentacionId;
-    private Collection<PrecioPresentacion> precios;
+    private List<? extends Precio> precios;
 
     @Autowired
     private PrecioService precioService;
@@ -33,11 +33,11 @@ public class GetPrecioValorPosible extends ActionSupport {
         return SUCCESS;
     }
 
-    public Collection<PrecioPresentacion> getPrecios() {
+    public List<? extends Precio> getPrecios() {
         return precios;
     }
 
-    public void setPrecios(Collection<PrecioPresentacion> precios) {
+    public void setPrecios(List<? extends Precio> precios) {
         this.precios = precios;
     }
 

@@ -1,40 +1,36 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.controller.struts.actions.admin.analytics;
 
-import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.export.ExcelExporter;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- *
- * @author Poly
- */
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.opensymphony.xwork2.ActionSupport;
+import com.palermotenis.model.services.exporters.ExcelExporterService;
+
 public class Exportar extends ActionSupport {
 
-    private static String EXCEL = "excel";
+    private static final String[] HEADERS = new String[]
+        { "Sucursal", "Marca", "Producto", "Valor Clasificatorio", "Presentación", "Stock", "Pago", "Moneda", "Precio",
+                "En Oferta", "Oferta" };
+
+    private static final long serialVersionUID = 8843428628791493785L;
+
+    private static final String EXCEL = "excel";
     private InputStream inputStream;
-    private ExcelExporter excelExporter;
+
+    @Autowired
+    private ExcelExporterService excelExporterService;
 
     public String toExcel() {
-        excelExporter.setHeaders(new String[]{"Sucursal", "Marca", "Producto", "Valor Clasificatorio", "Presentación", "Stock", "Pago", "Moneda", "Precio", "En Oferta", "Oferta"});
-        ByteArrayOutputStream out = (ByteArrayOutputStream) excelExporter.export();
-        inputStream = new ByteArrayInputStream(out.toByteArray());
+        inputStream = new ByteArrayInputStream(excelExporterService.export(HEADERS).toByteArray());
         return EXCEL;
     }
 
     public InputStream getInputStream() {
         return inputStream;
-    }
-
-    public void setExcelExporter(ExcelExporter excelExporter) {
-        this.excelExporter = excelExporter;
     }
 
     public String getDate() {

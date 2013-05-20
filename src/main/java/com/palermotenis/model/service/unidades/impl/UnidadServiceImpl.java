@@ -21,6 +21,26 @@ public class UnidadServiceImpl implements UnidadService {
     private UnidadDao unidadDao;
 
     @Override
+    public void createNewUnidad(String nombre, String descripcion) {
+        Unidad unidad = new Unidad(nombre, descripcion);
+        unidadDao.create(unidad);
+    }
+
+    @Override
+    public void updateUnidad(Integer unidadId, String nombre, String descripcion) {
+        Unidad unidad = getUnidadById(unidadId);
+        unidad.setNombre(nombre);
+        unidad.setDescripcion(descripcion);
+        unidadDao.edit(unidad);
+    }
+
+    @Override
+    public void deleteUnidad(Integer unidadId) {
+        Unidad unidad = getUnidadById(unidadId);
+        unidadDao.destroy(unidad);
+    }
+
+    @Override
     public Unidad getUnidadByNombre(String nombre) throws NoResultException {
         return unidadDao.findBy("Nombre", "nombre", nombre);
     }
@@ -28,6 +48,11 @@ public class UnidadServiceImpl implements UnidadService {
     @Override
     public List<Unidad> getAllUnidades() {
         return unidadDao.findAll();
+    }
+
+    @Override
+    public Unidad getUnidadById(Integer unidadId) {
+        return unidadDao.find(unidadId);
     }
 
 }

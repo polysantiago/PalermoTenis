@@ -4,11 +4,11 @@ import java.io.InputStream;
 
 import net.sf.json.JSON;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.controller.results.GZIPCapable;
-import com.palermotenis.util.StringUtility;
 
 public class InputStreamActionSupport extends ActionSupport implements GZIPCapable {
 
@@ -17,6 +17,7 @@ public class InputStreamActionSupport extends ActionSupport implements GZIPCapab
     private final Logger logger = Logger.getLogger(getClass());
 
     protected static final String JSON = "json";
+    protected static final String STREAM = "stream";
     protected static final String SHOW = "show";
     protected static final String OK = "OK";
 
@@ -31,7 +32,7 @@ public class InputStreamActionSupport extends ActionSupport implements GZIPCapab
     }
 
     protected void writeResponse(String response) {
-        inputStream = StringUtility.getInputString(response);
+        inputStream = IOUtils.toInputStream(response);
     }
 
     protected void failure(Exception ex) {

@@ -1,24 +1,21 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.model.beans.precios.pks;
 
-import com.palermotenis.model.beans.productos.Producto;
-import com.palermotenis.model.beans.*;
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-/**
- *
- * @author Poly
- */
+import com.palermotenis.model.beans.Moneda;
+import com.palermotenis.model.beans.Pago;
+import com.palermotenis.model.beans.productos.Producto;
+
 @Embeddable
-public class PrecioProductoPK implements Serializable, PrecioPK  {
+public class PrecioProductoPK implements PrecioPK, Serializable {
+
+    private static final long serialVersionUID = -9105357608720688088L;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Producto")
@@ -36,101 +33,105 @@ public class PrecioProductoPK implements Serializable, PrecioPK  {
     public PrecioProductoPK() {
     }
 
-    public PrecioProductoPK(Moneda moneda, Pago pago, Producto producto, Integer cuotas) {
-        setMoneda(moneda);
-        setPago(pago);
+    public PrecioProductoPK(Producto producto, Moneda moneda, Pago pago, Integer cuotas) {
         this.producto = producto;
+        this.moneda = moneda;
+        this.pago = pago;
         this.cuotas = cuotas;
     }
 
-    /**
-     * @return the producto
-     */
+    @Override
     public Producto getProducto() {
         return producto;
     }
 
-    /**
-     * @param producto the producto to set
-     */
+    @Override
     public void setProducto(Producto producto) {
         this.producto = producto;
     }
 
-
-    /**
-     * @return the moneda
-     */
+    @Override
     public Moneda getMoneda() {
         return moneda;
     }
 
-    /**
-     * @param moneda the moneda to set
-     */
+    @Override
     public void setMoneda(Moneda moneda) {
         this.moneda = moneda;
     }
 
-    /**
-     * @return the pago
-     */
+    @Override
     public Pago getPago() {
         return pago;
     }
 
-    /**
-     * @param pago the pago to set
-     */
+    @Override
     public void setPago(Pago pago) {
         this.pago = pago;
     }
 
-    /**
-     * @return the cuotas
-     */
+    @Override
     public Integer getCuotas() {
         return cuotas;
     }
 
-    /**
-     * @param cuotas the cuotas to set
-     */
+    @Override
     public void setCuotas(Integer cuotas) {
         this.cuotas = cuotas;
     }
 
     @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((cuotas == null) ? 0 : cuotas.hashCode());
+        result = prime * result + ((moneda == null) ? 0 : moneda.hashCode());
+        result = prime * result + ((pago == null) ? 0 : pago.hashCode());
+        result = prime * result + ((producto == null) ? 0 : producto.hashCode());
+        return result;
+    }
+
+    @Override
     public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
         if (obj == null) {
             return false;
         }
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final PrecioProductoPK other = (PrecioProductoPK) obj;
-        if (this.moneda != other.moneda && (this.moneda == null || !this.moneda.equals(other.moneda))) {
+        PrecioProductoPK other = (PrecioProductoPK) obj;
+        if (cuotas == null) {
+            if (other.cuotas != null) {
+                return false;
+            }
+        } else if (!cuotas.equals(other.cuotas)) {
             return false;
         }
-        if (this.pago != other.pago && (this.pago == null || !this.pago.equals(other.pago))) {
+        if (moneda == null) {
+            if (other.moneda != null) {
+                return false;
+            }
+        } else if (!moneda.equals(other.moneda)) {
             return false;
         }
-        if (this.producto != other.getProducto() && (this.producto == null || !this.producto.equals(other.getProducto()))) {
+        if (pago == null) {
+            if (other.pago != null) {
+                return false;
+            }
+        } else if (!pago.equals(other.pago)) {
             return false;
         }
-        if (this.cuotas != other.cuotas && (this.cuotas == null || !this.cuotas.equals(other.cuotas))) {
+        if (producto == null) {
+            if (other.producto != null) {
+                return false;
+            }
+        } else if (!producto.equals(other.producto)) {
             return false;
         }
         return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 97 * hash + (this.moneda != null ? this.moneda.hashCode() : 0);
-        hash = 97 * hash + (this.pago != null ? this.pago.hashCode() : 0);
-        hash = 97 * hash + (this.producto != null ? this.producto.hashCode() : 0);
-        return hash;
     }
 
 }

@@ -77,6 +77,12 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
+    public List<Producto> getProductosRelacionados(Integer productoId) {
+        Producto producto = getProductById(productoId);
+        return productoDao.getProductosRelacionados(producto);
+    }
+
+    @Override
     public void createNewProducto(int modeloId, int tipoProductoId, String descripcion,
             Collection<Integer> categoriasIds, Map<Integer, String> atributosSimples,
             Map<Integer, Integer> atributosTipados, Map<Integer, Collection<String>> atributosMultiples) {
@@ -243,13 +249,19 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public void delete(Producto producto) {
+    public void deleteProducto(Producto producto) {
         productoDao.destroy(producto);
     }
 
     @Override
     public Producto getProductById(Integer productoId) {
         return productoDao.find(productoId);
+    }
+
+    @Override
+    public Producto getProductoByModelo(Integer modeloId) {
+        Modelo modelo = modeloService.getModeloById(modeloId);
+        return productoDao.getProductoByModelo(modelo);
     }
 
 }

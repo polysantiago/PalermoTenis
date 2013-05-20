@@ -1,41 +1,23 @@
 package com.palermotenis.controller.struts.actions.admin.crud;
 
-import java.io.InputStream;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
-import com.palermotenis.model.beans.Unidad;
-import com.palermotenis.model.beans.atributos.AtributoSimple;
-import com.palermotenis.model.beans.atributos.tipos.TipoAtributoSimple;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
 import com.palermotenis.model.beans.atributos.tipos.clasif.TipoAtributoClasif;
-import com.palermotenis.model.beans.productos.tipos.TipoProducto;
-import com.palermotenis.model.dao.Dao;
+import com.palermotenis.model.service.atributos.tipos.TipoAtributoService;
 
-/**
- * 
- * @author Poly
- */
 public class TipoAtributoAction extends InputStreamActionSupport {
 
     private static final long serialVersionUID = -2783725459788707738L;
 
-    private final String SHOW = "show";
-
-    private EntityManager entityManager;
-    private Collection<TipoAtributoSimple> tiposAtributo;
+    private List<TipoAtributo> tiposAtributo;
     private Collection<TipoAtributoClasif> clasificaciones;
     private Integer tipoProductoId;
     private Integer tipoAtributoId;
@@ -43,72 +25,28 @@ public class TipoAtributoAction extends InputStreamActionSupport {
     private String clase;
     private String nombre;
     private Character clasif;
-    private InputStream inputStream;
-    private final Map<String, String> clasesMap = new HashMap<String, String>();
-    private PlatformTransactionManager transactionManager;
+    private final Map<String, String> clasesMap = Maps.newLinkedHashMap();
 
     @Autowired
-    private Dao<TipoAtributoSimple, Integer> tipoAtributoDao;
-
-    @Autowired
-    private Dao<TipoAtributoClasif, Character> tipoAtributoClasifDao;
-
-    @Autowired
-    private Dao<TipoProducto, Integer> tipoProductoDao;
-
-    @Autowired
-    private Dao<Unidad, Integer> unidadDao;
+    private TipoAtributoService tipoAtributoService;
 
     public String show() {
-        TipoProducto tipoProducto = tipoProductoDao.find(tipoProductoId);
-        Map<String, Object> args = new ImmutableMap.Builder<String, Object>().put("tipoProducto", tipoProducto).build();
+        tiposAtributo = tipoAtributoService.getTiposAtributosByTipoProducto(tipoProductoId);
 
-        tiposAtributo = tipoAtributoDao.queryBy("TipoProducto", args);
+        clasesMap.put("java.lang.String", "Texto");
+        clasesMap.put("java.lang.Integer", "Entero");
+        clasesMap.put("java.lang.Double", "Decimal");
+        clasesMap.put("java.lang.Boolean", "Binario");
 
-        getClasesMap().put("java.lang.String", "Texto");
-        getClasesMap().put("java.lang.Integer", "Entero");
-        getClasesMap().put("java.lang.Double", "Decimal");
-        getClasesMap().put("java.lang.Boolean", "Binario");
-
-        clasificaciones = tipoAtributoClasifDao.findAll();
+        clasificaciones = tipoAtributoService.getTipoAtributoClasificatorioMetadata();
 
         return SHOW;
     }
 
     public String create() {
         try {
-            final TipoAtributoSimple tipoAtributo = new TipoAtributoSimple();
-            tipoAtributo.setTipoProducto(tipoProductoDao.find(tipoProductoId));
-            tipoAtributo.setNombre(nombre);
-            tipoAtributo.setClase(Class.forName(clase));
-
-            Unidad unidad = null;
-            if (unidadId != null) {
-                unidad = unidadDao.find(unidadId);
-            }
-
-            tipoAtributo.setUnidad(unidad);
-            tipoAtributoDao.create(tipoAtributo);
-
-            TransactionTemplate tt = new TransactionTemplate(transactionManager);
-            tt.execute(new TransactionCallbackWithoutResult() {
-
-                @Override
-                protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    String query = "UPDATE TipoAtributo t SET t.class = :clazz WHERE t = :tipoAtributo";
-                    entityManager
-                        .createQuery(query)
-                        .setParameter("clazz", clasif)
-                        .setParameter("tipoAtributo", tipoAtributo)
-                        .executeUpdate();
-                }
-            });
-
+            tipoAtributoService.createNewTipoAtributo(tipoProductoId, nombre, clase, unidadId, clasif);
             success();
-        } catch (HibernateException ex) {
-            failure(ex);
-        } catch (ClassNotFoundException ex) {
-            failure(ex);
         } catch (Exception ex) {
             failure(ex);
         }
@@ -117,13 +55,8 @@ public class TipoAtributoAction extends InputStreamActionSupport {
 
     public String editName() {
         try {
-            TipoAtributoSimple tipoAtributo = tipoAtributoDao.find(tipoAtributoId);
-            tipoAtributo.setNombre(nombre);
-            tipoAtributoDao.edit(tipoAtributo);
-
+            tipoAtributoService.updateTipoAtributo(tipoAtributoId, nombre);
             success();
-        } catch (HibernateException ex) {
-            failure(ex);
         } catch (Exception ex) {
             failure(ex);
         }
@@ -132,36 +65,8 @@ public class TipoAtributoAction extends InputStreamActionSupport {
 
     public String edit() {
         try {
-            TipoAtributoSimple tipoAtributo = tipoAtributoDao.find(tipoAtributoId);
-            Unidad unidad = null;
-
-            if (unidadId != null) {
-                unidad = unidadDao.find(unidadId);
-            }
-
-            if (tipoAtributo.getClase() == Double.class && clase.equals("java.lang.Integer")) {
-                for (AtributoSimple a : tipoAtributo.getAtributos()) {
-                    if (a.getValor() != null && a.getValor().getUnidad() != null) {
-                        int i = (int) ((Double) a.getValor().getUnidad()).doubleValue();
-                        a.getValor().setUnidad(Integer.valueOf(i));
-                    }
-                }
-            }
-
-            tipoAtributo.setUnidad(unidad);
-            tipoAtributo.setClase(Class.forName(clase));
-
-            entityManager
-                .createQuery("UPDATE TipoAtributo t SET t.class = :clazz WHERE t = :tipoAtributo")
-                .setParameter("clazz", clasif)
-                .setParameter("tipoAtributo", tipoAtributo)
-                .executeUpdate();
-
+            tipoAtributoService.updateTipoAtributo(tipoAtributoId, unidadId, clase, clasif);
             success();
-        } catch (HibernateException ex) {
-            failure(ex);
-        } catch (ClassNotFoundException ex) {
-            failure(ex);
         } catch (Exception ex) {
             failure(ex);
         }
@@ -170,7 +75,7 @@ public class TipoAtributoAction extends InputStreamActionSupport {
 
     public String destroy() {
         try {
-            tipoAtributoDao.destroy(tipoAtributoDao.find(tipoAtributoId));
+            tipoAtributoService.deleteTipoAtributo(tipoAtributoId);
             success();
         } catch (HibernateException ex) {
             failure(ex);
@@ -178,87 +83,40 @@ public class TipoAtributoAction extends InputStreamActionSupport {
         return JSON;
     }
 
-    /**
-     * @return the tiposAtributo
-     */
-    public Collection<TipoAtributoSimple> getTiposAtributo() {
+    public List<TipoAtributo> getTiposAtributo() {
         return tiposAtributo;
     }
 
-    /**
-     * @return the clasesMap
-     */
     public Map<String, String> getClasesMap() {
         return clasesMap;
     }
 
-    /**
-     * @param tipoProductoId
-     *            the tipoProductoId to set
-     */
     public void setTipoProductoId(Integer tipoProductoId) {
         this.tipoProductoId = tipoProductoId;
     }
 
-    /**
-     * @param tipoAtributoId
-     *            the tipoAtributoId to set
-     */
     public void setTipoAtributoId(Integer tipoAtributoId) {
         this.tipoAtributoId = tipoAtributoId;
     }
 
-    /**
-     * @param nombre
-     *            the nombre to set
-     */
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
-    /**
-     * @return the inputStream
-     */
-    @Override
-    public InputStream getInputStream() {
-        return inputStream;
-    }
-
-    /**
-     * @param unidadId
-     *            the unidadId to set
-     */
     public void setUnidadId(Integer unidadId) {
         this.unidadId = unidadId;
     }
 
-    /**
-     * @param clase
-     *            the clase to set
-     */
     public void setClase(String clase) {
         this.clase = clase;
     }
 
-    /**
-     * @param clasif
-     *            the clasif to set
-     */
     public void setClasif(Character clasif) {
         this.clasif = clasif;
     }
 
     public Collection<TipoAtributoClasif> getClasificaciones() {
         return clasificaciones;
-    }
-
-    @PersistenceContext
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
-
-    public void setJtaTransactionManager(PlatformTransactionManager transactionManager) {
-        this.transactionManager = transactionManager;
     }
 
 }

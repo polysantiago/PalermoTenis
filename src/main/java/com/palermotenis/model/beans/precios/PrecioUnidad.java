@@ -11,9 +11,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Target;
-
-import com.palermotenis.model.beans.precios.pks.PrecioPK;
 import com.palermotenis.model.beans.precios.pks.PrecioProductoPK;
 
 @Entity
@@ -34,28 +31,26 @@ public class PrecioUnidad extends Precio implements Serializable {
     private static final long serialVersionUID = -378500339584024050L;
 
     @EmbeddedId
-    @Target(PrecioProductoPK.class)
-    protected PrecioPK id;
+    private PrecioProductoPK id;
 
     public PrecioUnidad() {
     }
 
-    public PrecioUnidad(PrecioPK id) {
+    public PrecioUnidad(PrecioProductoPK id) {
         this.id = id;
     }
 
-    public PrecioUnidad(PrecioPK id, Double valor) {
+    public PrecioUnidad(PrecioProductoPK id, Double valor) {
         this.id = id;
         setValor(valor);
     }
 
     @Override
-    public PrecioPK getId() {
+    public PrecioProductoPK getId() {
         return id;
     }
 
-    @Override
-    public void setId(PrecioPK id) {
+    public void setId(PrecioProductoPK id) {
         this.id = id;
     }
 

@@ -5,7 +5,8 @@
 
 package com.palermotenis.jobs;
 
-import com.palermotenis.export.ExcelExporter;
+import com.palermotenis.model.services.exporters.impl.ExcelExporterServiceImpl;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -23,7 +24,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
  */
 public class EnviarListadoStockJob {
 
-    private ExcelExporter excelExporter;
+    private ExcelExporterServiceImpl excelExporter;
     private JavaMailSender mailSender;
     private static final Logger logger = Logger.getLogger(EnviarListadoStockJob.class);
     private static final String DATE_NOW =  new SimpleDateFormat("dd/MM/yyyy").format(new Date());
@@ -56,7 +57,7 @@ public class EnviarListadoStockJob {
         }
     }
 
-    public void setExcelExporter(ExcelExporter excelExporter) {
+    public void setExcelExporter(ExcelExporterServiceImpl excelExporter) {
         this.excelExporter = excelExporter;
     }
 

@@ -8,10 +8,6 @@ import com.palermotenis.model.beans.productos.Producto;
 
 public interface ProductoService {
 
-    List<Producto> getProductosOnSale();
-
-    List<Producto> getLatest8Ofertas();
-
     void createNewProducto(int modeloId, int tipoProductoId, String descripcion, Collection<Integer> categoriasIds,
             Map<Integer, String> atributosSimples, Map<Integer, Integer> atributosTipados,
             Map<Integer, Collection<String>> atributosMultiples);
@@ -20,8 +16,16 @@ public interface ProductoService {
             Collection<Integer> categoriasIds, Map<Integer, String> atributosSimples,
             Map<Integer, Integer> atributosTipados, Map<Integer, Collection<String>> atributosMultiples);
 
+    void deleteProducto(Producto producto);
+
     Producto getProductById(Integer productoId);
 
-    void delete(Producto producto);
+    Producto getProductoByModelo(Integer modeloId);
+
+    List<Producto> getProductosOnSale();
+
+    List<Producto> getLatest8Ofertas();
+
+    List<Producto> getProductosRelacionados(Integer productoId);
 
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -44,20 +45,20 @@ import com.palermotenis.model.beans.productos.tipos.TipoProducto;
             @NamedQuery(name = "Modelo.findByPadre", query = "SELECT m FROM Modelo m WHERE m.padre = :padre"),
             @NamedQuery(name = "Modelo.findMaxRight", query = "SELECT MAX(m.right) FROM Modelo m"),
             @NamedQuery(name = "Modelo.findByPadre-Active", query = "SELECT m FROM Modelo m LEFT JOIN m.producto p "
-                    + "WHERE m.padre = :padre " + "AND (p = null OR (p.activo = 1 AND p.stock > 0))"),
+                    + "WHERE m.padre = :padre " + "AND (p = null OR (p.activo = 1 AND p.stockSum > 0))"),
             @NamedQuery(name = "Modelo.findByTipoProducto", query = "SELECT DISTINCT m FROM Modelo AS m "
-                    + "WHERE m.padre = null " + "AND m.tipoProducto = :tipoProducto " + "ORDER BY m.nombre"),
+                    + "WHERE m.padre = null " + "AND m.tipoProducto = :tipoProducto ORDER BY m.nombre"),
             @NamedQuery(name = "Modelo.findByMarca,TipoProducto", query = "SELECT DISTINCT m FROM Modelo AS m "
                     + "WHERE  m.marca = :marca AND m.padre = null " + "AND m.tipoProducto = :tipoProducto "
                     + "ORDER BY m.left"),
             @NamedQuery(name = "Modelo.findByMarca,TipoProducto-Active",
                     query = "SELECT DISTINCT m FROM Modelo m LEFT JOIN m.producto p "
                             + "WHERE  m.marca = :marca AND m.padre = null "
-                            + "AND m.tipoProducto = :tipoProducto AND (p = null OR (p.activo = 1 AND p.stock > 0)) "
+                            + "AND m.tipoProducto = :tipoProducto AND (p = null OR (p.activo = 1 AND p.stockSum > 0)) "
                             + "ORDER BY m.orden"),
             @NamedQuery(name = "Modelo.findByMarca,TipoProducto-Leafs", query = "SELECT DISTINCT m FROM Modelo AS m "
-                    + "JOIN m.producto p " + "WHERE  m.marca = :marca " + "AND m.tipoProducto = :tipoProducto "
-                    + "AND (m.right - m.left) = 1 AND p.activo = 1 " + "AND p.stock > 0 " + "ORDER BY m.orden"),
+                    + "JOIN m.producto p WHERE m.marca = :marca AND m.tipoProducto = :tipoProducto "
+                    + "AND (m.right - m.left) = 1 AND p.activo = 1 AND p.stockSum > 0 ORDER BY m.orden"),
             @NamedQuery(
                     name = "Modelo.editTree",
                     query = "UPDATE Modelo m "
@@ -111,11 +112,11 @@ public class Modelo implements Serializable, Comparable<Modelo> {
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "categorias_modelos", joinColumns = @JoinColumn(name = "modelo"),
             inverseJoinColumns = @JoinColumn(name = "categoria"))
-    private final Collection<Categoria> categorias = Sets.newHashSet();
+    private final Set<Categoria> categorias = Sets.newHashSet();
 
     @Fetch(FetchMode.SUBSELECT)
     @OneToMany(mappedBy = "modelo", cascade = CascadeType.REMOVE)
-    private Collection<Imagen> imagenes;
+    private List<Imagen> imagenes;
 
     @JoinColumn(name = "marca", referencedColumnName = "ID")
     @ManyToOne(optional = false)
@@ -200,11 +201,11 @@ public class Modelo implements Serializable, Comparable<Modelo> {
         this.producto = producto;
     }
 
-    public Collection<Imagen> getImagenes() {
+    public List<Imagen> getImagenes() {
         return imagenes;
     }
 
-    public void setImagenes(Collection<Imagen> imagenes) {
+    public void setImagenes(List<Imagen> imagenes) {
         this.imagenes = imagenes;
     }
 
@@ -242,7 +243,7 @@ public class Modelo implements Serializable, Comparable<Modelo> {
         return marca;
     }
 
-    public Collection<Categoria> getCategorias() {
+    public Set<Categoria> getCategorias() {
         return Sets.newHashSet(categorias);
     }
 

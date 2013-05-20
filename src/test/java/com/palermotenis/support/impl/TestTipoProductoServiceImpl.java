@@ -13,7 +13,7 @@ import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.service.productos.tipos.TipoProductoService;
 import com.palermotenis.support.TestTipoProductoService;
 
-@Service("testTipoProducto")
+@Service("testTipoProductoService")
 @Transactional(propagation = Propagation.REQUIRED, readOnly = true, noRollbackFor =
     { NoResultException.class, EntityNotFoundException.class })
 public class TestTipoProductoServiceImpl implements TestTipoProductoService {

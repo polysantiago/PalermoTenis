@@ -1,10 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.palermotenis.model.beans.pedidos;
 
 import java.io.Serializable;
+
 import javax.persistence.AssociationOverride;
 import javax.persistence.AssociationOverrides;
 import javax.persistence.Basic;
@@ -16,26 +13,23 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-/**
- *
- * @author Poly
- */
 @Entity
 @Table(name = "pedidos_productos")
-@NamedQueries({
-    @NamedQuery(name = "PedidoProducto.findByPedido", query = "SELECT p FROM PedidoProducto p WHERE p.id.pedido = :pedido"),
-    @NamedQuery(name = "PedidoProducto.findByProducto", query = "SELECT p FROM PedidoProducto p WHERE p.id.stock.producto = :producto")
-})
-@AssociationOverrides({
-    @AssociationOverride(name = "id.stock", joinColumns = @JoinColumn(name = "stock")),
-    @AssociationOverride(name = "id.pedido", joinColumns = @JoinColumn(name = "pedido"))
-})
+@NamedQueries(
+    {
+            @NamedQuery(name = "PedidoProducto.findByPedido",
+                    query = "SELECT p FROM PedidoProducto p WHERE p.id.pedido = :pedido"),
+            @NamedQuery(name = "PedidoProducto.findByProducto",
+                    query = "SELECT p FROM PedidoProducto p WHERE p.id.stock.producto = :producto") })
+@AssociationOverrides(
+    { @AssociationOverride(name = "id.stock", joinColumns = @JoinColumn(name = "stock")),
+            @AssociationOverride(name = "id.pedido", joinColumns = @JoinColumn(name = "pedido")) })
 public class PedidoProducto implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected PedidoProductoPK id;
-    
+
     @Basic(optional = false)
     @Column(name = "Cantidad")
     private int cantidad;
@@ -54,6 +48,12 @@ public class PedidoProducto implements Serializable {
     public PedidoProducto(PedidoProductoPK id, int cantidad) {
         this.id = id;
         this.cantidad = cantidad;
+    }
+
+    public PedidoProducto(PedidoProductoPK id, int cantidad, double subtotal) {
+        this.id = id;
+        this.cantidad = cantidad;
+        this.subtotal = subtotal;
     }
 
     public PedidoProductoPK getId() {
@@ -80,7 +80,8 @@ public class PedidoProducto implements Serializable {
     }
 
     /**
-     * @param subtotal the subtotal to set
+     * @param subtotal
+     *            the subtotal to set
      */
     public void setSubtotal(double subtotal) {
         this.subtotal = subtotal;

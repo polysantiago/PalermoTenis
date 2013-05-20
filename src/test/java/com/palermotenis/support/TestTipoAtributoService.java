@@ -1,6 +1,10 @@
 package com.palermotenis.support;
 
 import com.palermotenis.model.beans.atributos.tipos.TipoAtributo;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoClasificatorio;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoMultipleValores;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoSimple;
+import com.palermotenis.model.beans.atributos.tipos.TipoAtributoTipado;
 
 public interface TestTipoAtributoService extends TestService<TipoAtributo> {
 
@@ -10,14 +14,14 @@ public interface TestTipoAtributoService extends TestService<TipoAtributo> {
     String TIPO_ATRIBUTO_TIPADO = "TipoAtributo_Tipado";
     String TIPO_ATRIBUTO_SIMPLE = "TipoAtributo_Simple";
 
-    TipoAtributo getTipoAtributoSimple();
+    TipoAtributoSimple getTipoAtributoSimple();
 
-    TipoAtributo getTipoAtributoClasificatorio();
+    TipoAtributoClasificatorio getTipoAtributoClasificatorio();
 
-    TipoAtributo getTipoAtributoPresentableAndClasificable();
+    TipoAtributoClasificatorio getTipoAtributoPresentableAndClasificable();
 
-    TipoAtributo getTipoAtributoTipado();
+    TipoAtributoTipado getTipoAtributoTipado();
 
-    TipoAtributo getTipoAtributoMultipleValores();
+    TipoAtributoMultipleValores getTipoAtributoMultipleValores();
 
 }

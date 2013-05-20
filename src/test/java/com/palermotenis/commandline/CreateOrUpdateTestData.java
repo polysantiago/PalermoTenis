@@ -68,6 +68,12 @@ public class CreateOrUpdateTestData extends AbstractCommandLine {
         return EXIT_SUCCESS;
     }
 
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[]
+            { "spring/applicationContext-business.xml", "spring/test-auxiliary-services.xml" };
+    }
+
     /***********************************************************************************************
      * 
      * A P P L I C A T I O N - E N T R Y - P O I N T

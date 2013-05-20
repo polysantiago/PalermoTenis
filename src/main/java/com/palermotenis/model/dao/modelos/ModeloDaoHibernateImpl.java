@@ -38,9 +38,20 @@ public class ModeloDaoHibernateImpl extends AbstractHibernateDao<Modelo, Integer
     }
 
     @Override
-    public List<Modelo> getModelosByMarcaAndActiveTipoProducto(Marca marca, TipoProducto tipoProducto) {
+    public List<Modelo> getModelosWithRootActiveProductos(Marca marca, TipoProducto tipoProducto) {
         Map<String, Object> args = buildMarcaAndTipoProductoArgs(marca, tipoProducto);
         return queryBy("Marca,TipoProducto-Active", args);
+    }
+
+    @Override
+    public List<Modelo> getModelosWithLeafActiveProductos(Marca marca, TipoProducto tipoProducto) {
+        Map<String, Object> args = buildMarcaAndTipoProductoArgs(marca, tipoProducto);
+        return queryBy("Marca,TipoProducto-Leafs", args);
+    }
+
+    @Override
+    public List<Modelo> getModelosByPadre(Modelo padre) {
+        return queryBy("Padre", "padre", padre);
     }
 
     @Override

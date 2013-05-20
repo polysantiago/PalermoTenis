@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,7 +19,6 @@ import com.palermotenis.model.beans.ventas.StockListado;
 import com.palermotenis.model.beans.ventas.StockListadoPK;
 import com.palermotenis.model.dao.Dao;
 import com.palermotenis.model.service.precios.impl.PrecioService;
-import com.palermotenis.util.StringUtility;
 
 public class Resumen extends ActionSupport {
 
@@ -51,7 +51,7 @@ public class Resumen extends ActionSupport {
     public String execute() {
 
         double total = 0.00;
-        listado = new Listado(StringUtility.buildRandomString());
+        listado = new Listado(RandomStringUtils.randomAlphanumeric(10));
         List<StockListado> stocksListado = new ArrayList<StockListado>();
         Pago pago = pagoDao.find(pagoId);
 
@@ -77,7 +77,7 @@ public class Resumen extends ActionSupport {
         listado.setStockListados(stocksListado);
         listado.setPago(pago);
         listado.setCuotas(cuotas);
-        listado.setCodAutorizacion(StringUtility.buildRandomString());
+        listado.setCodAutorizacion(RandomStringUtils.randomAlphanumeric(10));
         listado.setCliente(clienteDao.find(clienteId));
         listado.setAutorizado(true);
 
