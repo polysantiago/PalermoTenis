@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+                             http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+  
+	<parent>
+		<groupId>com.palermotenis</groupId>
+		<artifactId>palermotenis-parent</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+  
+	<artifactId>palermotenis-command</artifactId>
+	<packaging>jar</packaging>
+	<name>PalermoTenis Command-line Project</name>
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<configuration>
+						<descriptorRefs>
+							<descriptorRef>jar-with-dependencies</descriptorRef>
+						</descriptorRefs>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.palermotenis</groupId>
+			<artifactId>palermotenis-services</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+				<dependency>
+			<groupId>com.palermotenis</groupId>
+			<artifactId>palermotenis-persist</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.palermotenis</groupId>
+			<artifactId>palermotenis-model</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+</project>
