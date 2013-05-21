@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Maps;
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.struts.actions.newsletter.exceptions.AlreadySuscribedException;
+import com.palermotenis.controller.struts.actions.exceptions.AlreadySuscribedException;
 import com.palermotenis.model.service.newsletter.SuscriptorService;
 
 public class AgregarSuscriptor extends ActionSupport {

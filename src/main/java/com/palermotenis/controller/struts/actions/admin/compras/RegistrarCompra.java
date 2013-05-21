@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates and open the template in the editor.
- */
-
 package com.palermotenis.controller.struts.actions.admin.compras;
 
 import java.util.ArrayList;
@@ -11,45 +7,39 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.google.common.collect.Lists;
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.struts.actions.admin.ventas.ConfirmarVenta;
 import com.palermotenis.model.beans.Stock;
-import com.palermotenis.model.beans.compras.Compra;
 import com.palermotenis.model.beans.compras.ProductoCompra;
 import com.palermotenis.model.beans.proveedores.Proveedor;
 import com.palermotenis.model.beans.usuarios.Usuario;
-import com.palermotenis.model.dao.Dao;
+import com.palermotenis.model.service.compras.CompraService;
+import com.palermotenis.model.service.proveedores.ProveedorService;
+import com.palermotenis.model.service.stock.StockService;
 import com.palermotenis.util.StringUtility;
 
-/**
- * 
- * @author Poly
- */
 public class RegistrarCompra extends ActionSupport {
 
     private static final long serialVersionUID = 795333396375900822L;
 
-    private static final Logger logger = Logger.getLogger(ConfirmarVenta.class);
+    private static final Logger LOGGER = Logger.getLogger(RegistrarCompra.class);
 
-    private List<String> stocks = new ArrayList<String>();
+    private List<String> stocks = Lists.newArrayList();
 
     private final Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     @Autowired
-    private Dao<Stock, Integer> stockDao;
+    private CompraService compraService;
 
     @Autowired
-    private Dao<Proveedor, Integer> proveedorDao;
+    private StockService stockService;
 
     @Autowired
-    private Dao<Compra, Integer> compraDao;
+    private ProveedorService proveedorService;
 
     @Override
     public String execute() {
-
-        Compra compra = new Compra();
         List<ProductoCompra> productosCompra = new ArrayList<ProductoCompra>();
-
         for (String str : stocks) {
             String[] s = str.split(",");
             Integer stockId = Integer.parseInt(s[0]);
@@ -57,20 +47,18 @@ public class RegistrarCompra extends ActionSupport {
             Integer proveedorId = Integer.parseInt(s[2]);
             Double costo = Double.parseDouble(s[3]);
 
-            Stock stock = stockDao.find(stockId);
-            Proveedor proveedor = proveedorDao.find(proveedorId);
+            Stock stock = stockService.getStockById(stockId);
+            Proveedor proveedor = proveedorService.getProveedorById(proveedorId);
 
-            ProductoCompra pc = new ProductoCompra(StringUtility.buildNameFromStock(stock), costo, cantidad, compra,
-                proveedor, stock);
-            productosCompra.add(pc);
+            String stockName = StringUtility.buildNameFromStock(stock);
+            ProductoCompra productoCompra = new ProductoCompra(stockName, costo, cantidad, proveedor, stock);
+            productosCompra.add(productoCompra);
         }
-        compra.setUsuario(usuario);
-        compra.setProductosCompra(productosCompra);
 
         try {
-            compraDao.create(compra);
+            compraService.registerNewPurchase(usuario, productosCompra);
         } catch (Exception e) {
-            logger.error("Error al crear la compra", e);
+            LOGGER.error("Error al crear la compra", e);
             return ERROR;
         }
 

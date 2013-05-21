@@ -49,7 +49,7 @@ import com.palermotenis.model.beans.productos.tipos.TipoProducto;
             @NamedQuery(name = "Modelo.findByTipoProducto", query = "SELECT DISTINCT m FROM Modelo AS m "
                     + "WHERE m.padre = null " + "AND m.tipoProducto = :tipoProducto ORDER BY m.nombre"),
             @NamedQuery(name = "Modelo.findByMarca,TipoProducto", query = "SELECT DISTINCT m FROM Modelo AS m "
-                    + "WHERE  m.marca = :marca AND m.padre = null " + "AND m.tipoProducto = :tipoProducto "
+                    + "WHERE m.marca = :marca AND m.padre = null AND m.tipoProducto = :tipoProducto "
                     + "ORDER BY m.left"),
             @NamedQuery(name = "Modelo.findByMarca,TipoProducto-Active",
                     query = "SELECT DISTINCT m FROM Modelo m LEFT JOIN m.producto p "

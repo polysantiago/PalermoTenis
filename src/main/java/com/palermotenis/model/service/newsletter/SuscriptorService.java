@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.persistence.NoResultException;
 
-import com.palermotenis.controller.struts.actions.newsletter.exceptions.AlreadySuscribedException;
-import com.palermotenis.controller.struts.actions.newsletter.exceptions.InvalidTokenException;
+import com.palermotenis.controller.struts.actions.exceptions.AlreadySuscribedException;
+import com.palermotenis.controller.struts.actions.exceptions.InvalidTokenException;
 import com.palermotenis.model.beans.newsletter.Suscriptor;
 
 public interface SuscriptorService {
@@ -14,7 +14,7 @@ public interface SuscriptorService {
 
     void confirm(Integer suscriptorId, String token) throws InvalidTokenException;
 
-    void createActiveSuscriptor(String email);
+    void create(String email, boolean active);
 
     void removeSuscriptor(String email) throws NoResultException;
 

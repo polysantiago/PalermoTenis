@@ -13,6 +13,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.palermotenis.controller.struts.actions.exceptions.JsonException;
 import com.palermotenis.model.beans.Modelo;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.service.modelos.ModeloService;
@@ -35,6 +36,10 @@ public class ListarModelos extends InputStreamActionSupport {
     private List<Map<String, Object>> resultList;
 
     public String listAll() {
+        if (idTipoProducto == null) {
+            throw new JsonException("invalid_parameter", new RuntimeException("idTipoProducto must not be null"));
+        }
+
         List<Modelo> modelos = isMarcaRequired() ? getModelosByMarca() : getModelos();
         Collections.sort(modelos);
         resultList = createModelosList(new BasicMapCreator(), modelos);

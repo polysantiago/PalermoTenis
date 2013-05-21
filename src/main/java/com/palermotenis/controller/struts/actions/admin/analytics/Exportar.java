@@ -8,7 +8,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.model.services.exporters.ExcelExporterService;
+import com.palermotenis.model.service.exporters.ExcelExporterService;
 
 public class Exportar extends ActionSupport {
 

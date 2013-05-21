@@ -7,7 +7,9 @@ import com.palermotenis.controller.carrito.Carrito;
 import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
 import com.palermotenis.controller.struts.actions.carrito.CarritoAction;
 import com.palermotenis.model.beans.pedidos.Pedido;
+import com.palermotenis.model.beans.usuarios.Usuario;
 import com.palermotenis.model.service.carrito.PedidoService;
+import com.palermotenis.util.security.SecurityUtil;
 
 public class EnviarPedido extends InputStreamActionSupport {
 
@@ -25,14 +27,18 @@ public class EnviarPedido extends InputStreamActionSupport {
     @Override
     public String execute() {
         try {
-            pedido = pedidoService.createNewPedido(pagoId, cuotas, carrito.getTotal());
-            pedidoService.send(pedido, carrito);
+            pedido = pedidoService.create(getUsuario().getCliente(), pagoId, cuotas, carrito.getTotal());
+            pedidoService.send(getUsuario(), pedido, carrito);
         } catch (Exception ex) {
             LOGGER.error("Error sending pedido to customer", ex);
             return ERROR;
         }
 
         return SUCCESS;
+    }
+
+    private Usuario getUsuario() {
+        return SecurityUtil.getLoggedInUser();
     }
 
     public void setPagoId(int pagoId) {

@@ -30,8 +30,9 @@ import com.palermotenis.model.beans.clientes.Cliente;
 @NamedQueries(
     {
             @NamedQuery(name = "Pedido.findAll", query = "SELECT p FROM Pedido p"),
-            @NamedQuery(name = "Pedido.findByNombre", query = "SELECT p FROM Pedido p WHERE p.cliente.nombre = :nombre"),
-            @NamedQuery(name = "Pedido.findByEmail", query = "SELECT p FROM Pedido p WHERE p.cliente.email = :email"),
+            @NamedQuery(name = "Pedido.findByNombre",
+                    query = "SELECT p FROM Pedido p WHERE p.cliente.nombre like :nombre"),
+            @NamedQuery(name = "Pedido.findByEmail", query = "SELECT p FROM Pedido p WHERE p.cliente.email like :email"),
             @NamedQuery(name = "Pedido.findById", query = "SELECT p FROM Pedido p WHERE p.id = :id"),
             @NamedQuery(name = "Pedido.findByTotal", query = "SELECT p FROM Pedido p WHERE p.total = :total"),
             @NamedQuery(name = "Pedido.findByProducto",

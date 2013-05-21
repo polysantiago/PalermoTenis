@@ -13,7 +13,7 @@ import com.palermotenis.model.beans.ventas.Listado;
 import com.palermotenis.model.beans.ventas.StockListado;
 import com.palermotenis.model.beans.ventas.StockListadoPK;
 import com.palermotenis.model.dao.Dao;
-import com.palermotenis.util.SecurityUtil;
+import com.palermotenis.model.service.security.SecurityService;
 
 /**
  * 
@@ -43,7 +43,7 @@ public class ListadoAction extends ActionSupport {
     private Dao<Stock, Integer> stockDao;
 
     @Autowired
-    private SecurityUtil securityUtil;
+    private SecurityService securityService;
 
     @Override
     public String execute() {
@@ -81,7 +81,7 @@ public class ListadoAction extends ActionSupport {
     private String actualizarPrecios() {
         listado = listadoDao.find(listadoId);
 
-        if (securityUtil.isSupervisor(SecurityUtil.getLoggedInUser())) {
+        if (securityService.isLoggedInUserSupervisor()) {
             listado.setAutorizado(true);
         } else {
             listado.setAutorizado(false);

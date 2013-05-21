@@ -4,25 +4,26 @@
 "http://struts.apache.org/dtds/struts-2.0.dtd">
 
 <struts>
-
-    <constant name="struts.enable.DynamicMethodInvocation" value="false" />
-    <constant name="struts.devMode" value="true" />
-    <constant name="struts.locale" value="en_US" />
-    <constant name="struts.convention.exclude.packages" value="org.apache.struts2.config_browser.*,com.palermotenis.controller.struts.actions.*" />
-    <constant name="struts.convention.action.suffix" value="Controller"/>
-    <constant name="struts.convention.package.locators" value="controllers"/>
-
     <package name="default" namespace="/" extends="struts-default,json-default">
         <result-types>
             <result-type name="bytesResult" class="com.palermotenis.controller.results.BytesResult" />
             <result-type name="gzipResult" class="com.palermotenis.controller.results.GZIPResult" />
+           	<result-type name="json_error" class="com.palermotenis.controller.results.JSONExceptionResult" />
         </result-types>
-
+        
         <default-action-ref name="index" />
-
+        
         <global-results>
-            <result name="error">/error.jsp</result>
+        	<result name="error">/error.jsp</result>
+        	<result name="json_error" type="json_error">
+        		<param name="statusCode">500</param>
+        	</result>
         </global-results>
+        
+        <global-exception-mappings>
+        	<exception-mapping result="json_error" exception="com.palermotenis.controller.struts.actions.exceptions.JsonException" />
+        	<exception-mapping result="error" exception="java.lang.Exception" />
+        </global-exception-mappings>
 
         <action name="index">
             <result>/index.jsp</result>

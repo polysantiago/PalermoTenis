@@ -1,14 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.palermotenis.model.beans.compras;
 
-import com.palermotenis.model.beans.usuarios.Usuario;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,18 +21,18 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-/**
- *
- * @author Poly
- */
+import com.palermotenis.model.beans.usuarios.Usuario;
+
 @Entity
 @Table(name = "compras")
-@NamedQueries({
-    @NamedQuery(name = "Compra.findAll", query = "SELECT c FROM Compra c"),
-    @NamedQuery(name = "Compra.findById", query = "SELECT c FROM Compra c WHERE c.id = :id"),
-    @NamedQuery(name = "Compra.findByFecha", query = "SELECT c FROM Compra c WHERE c.fecha = :fecha")})
+@NamedQueries(
+    { @NamedQuery(name = "Compra.findAll", query = "SELECT c FROM Compra c"),
+            @NamedQuery(name = "Compra.findById", query = "SELECT c FROM Compra c WHERE c.id = :id"),
+            @NamedQuery(name = "Compra.findByFecha", query = "SELECT c FROM Compra c WHERE c.fecha = :fecha") })
 public class Compra implements Serializable {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 4123624371096019244L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -53,7 +48,7 @@ public class Compra implements Serializable {
     @ManyToOne
     private Usuario usuario;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY, mappedBy = "compra")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "compra")
     private Collection<ProductoCompra> productosCompra;
 
     public Compra() {
@@ -66,6 +61,10 @@ public class Compra implements Serializable {
     public Compra(Integer id, Date fecha) {
         this.id = id;
         this.fecha = fecha;
+    }
+
+    public Compra(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public Integer getId() {
@@ -98,6 +97,14 @@ public class Compra implements Serializable {
 
     public void setProductosCompra(Collection<ProductoCompra> productosCompra) {
         this.productosCompra = productosCompra;
+    }
+
+    public void addProductoCompra(ProductoCompra productoCompra) {
+        if (this.productosCompra.contains(productoCompra)) {
+            return;
+        }
+        this.productosCompra.add(productoCompra);
+        productoCompra.setCompra(this);
     }
 
     @Override

@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.Resource;
@@ -31,6 +32,7 @@ public class NewsletterServiceImpl implements NewsletterService, ApplicationCont
 
     private static final Logger LOGGER = Logger.getLogger(NewsletterServiceImpl.class);
 
+    private static final String CONFIRMACION_TEMPLATE = "templates/mail/confirmacion_newsletter.vm";
     private static final String NEWSLETTER_TEMPLATE = "templates/newsletter/newsletter.vm";
 
     @Autowired
@@ -44,6 +46,24 @@ public class NewsletterServiceImpl implements NewsletterService, ApplicationCont
 
     @Autowired
     private SuscriptorService suscriptorService;
+
+    @Value("${templates.mail.newsletter.send.from}")
+    private String sendFrom;
+
+    @Value("${templates.mail.newsletter.send.replyto}")
+    private String sendReplyTo;
+
+    @Value("${templates.mail.newsletter.confirmation.from}")
+    private String confirmationFrom;
+
+    @Value("${templates.mail.newsletter.confirmation.subject}")
+    private String confirmationSubject;
+
+    @Value("${com.palermotenis.mail.mime.charset}")
+    private String encoding;
+
+    @Value("${templates.mail.domain}")
+    private String domain;
 
     private ApplicationContext applicationContext;
 
@@ -71,11 +91,11 @@ public class NewsletterServiceImpl implements NewsletterService, ApplicationCont
                 @Override
                 public void prepare(MimeMessage mimeMessage) throws Exception {
 
-                    MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
+                    MimeMessageHelper message = new MimeMessageHelper(mimeMessage, encoding);
 
                     message.setSubject(subject);
-                    message.setFrom("Newsletter PalermoTenis <newsletter@palermotenis.com.ar>");
-                    message.setReplyTo("PalermoTenis <consultas@palermotenis.com.ar>");
+                    message.setFrom(sendFrom);
+                    message.setReplyTo(sendReplyTo);
                     message.setBcc(InternetAddress.parse(to));
 
                     Resource resource = applicationContext.getResource("newsletter/Newsletter.jpg");
@@ -84,7 +104,7 @@ public class NewsletterServiceImpl implements NewsletterService, ApplicationCont
                         ImageIO.read(resource.getFile())).build();
 
                     String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, NEWSLETTER_TEMPLATE,
-                        "ISO-8859-1", model);
+                        encoding, model);
 
                     message.setText(text, true);
                 }
@@ -95,6 +115,34 @@ public class NewsletterServiceImpl implements NewsletterService, ApplicationCont
                 LOGGER.error(ex.getLocalizedMessage(), ex);
             }
         }
+    }
+
+    @Override
+    public void confirmSuscription(final Suscriptor suscriptor) {
+        MimeMessagePreparator preparator = new MimeMessagePreparator() {
+
+            @Override
+            public void prepare(MimeMessage mimeMessage) throws Exception {
+
+                MimeMessageHelper message = new MimeMessageHelper(mimeMessage, encoding);
+
+                message.setSubject(confirmationSubject);
+                message.setFrom(confirmationFrom);
+
+                message.setTo(suscriptor.getEmail());
+
+                Map<String, Object> model = new ImmutableMap.Builder<String, Object>()
+                    .put("suscriptor", suscriptor)
+                    .put("domain", domain)
+                    .build();
+
+                String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, CONFIRMACION_TEMPLATE,
+                    encoding, model);
+
+                message.setText(text, true);
+            }
+        };
+        mailSender.send(preparator);
     }
 
     @Override

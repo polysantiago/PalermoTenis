@@ -3,7 +3,7 @@ package com.palermotenis.controller.struts.actions.newsletter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.controller.struts.actions.newsletter.exceptions.InvalidTokenException;
+import com.palermotenis.controller.struts.actions.exceptions.InvalidTokenException;
 import com.palermotenis.model.service.newsletter.SuscriptorService;
 
 public class ConfirmarSuscriptor extends ActionSupport {

@@ -1,8 +1,10 @@
 package com.palermotenis.controller.struts.actions;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -19,13 +21,25 @@ import net.sf.json.processors.JsonBeanProcessor;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.opensymphony.xwork2.ActionProxy;
+import com.palermotenis.controller.struts.actions.exceptions.JsonErrorResponse;
 import com.palermotenis.infrastructre.testsupport.base.BaseSpringStrutsTestCase;
 import com.palermotenis.model.beans.Modelo;
 import com.palermotenis.model.beans.productos.Producto;
+import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.service.modelos.ModeloService;
 import com.palermotenis.model.service.productos.tipos.TipoProductoService;
+import com.palermotenis.support.TestModeloService;
+import com.palermotenis.support.TestTipoProductoService;
 
 public class ListarModelosTest extends BaseSpringStrutsTestCase<ListarModelos> {
 
@@ -39,10 +53,18 @@ public class ListarModelosTest extends BaseSpringStrutsTestCase<ListarModelos> {
     @Autowired
     private TipoProductoService tipoProductoService;
 
+    @Autowired
+    private TestTipoProductoService testTipoProductoService;
+
+    @Autowired
+    private TestModeloService testModeloService;
+
     @Test
     @Transactional
     public void testListarModelosAll() throws UnsupportedEncodingException, ServletException {
-        request.addParameter("idTipoProducto", "1");
+        TipoProducto tipoProducto = testTipoProductoService.getAny();
+
+        request.addParameter("idTipoProducto", tipoProducto.getId().toString());
 
         String expected = buildExpectedResult(getModelosByTipoProducto());
         String result = executeAction("/ListarModelos_listAll");
@@ -55,10 +77,16 @@ public class ListarModelosTest extends BaseSpringStrutsTestCase<ListarModelos> {
     @Test
     @Transactional
     public void testListarModelosByMarcaAll() throws UnsupportedEncodingException, ServletException {
-        request.addParameter("idTipoProducto", "3");
-        request.addParameter("idMarca", "1");
 
-        String expected = buildExpectedResult(getModelosByMarcaAndTipoProducto());
+        Modelo modelo = testModeloService.getAny();
+
+        Integer tipoProductoId = modelo.getTipoProducto().getId();
+        Integer marcaId = modelo.getMarca().getId();
+
+        request.addParameter("idTipoProducto", tipoProductoId.toString());
+        request.addParameter("idMarca", marcaId.toString());
+
+        String expected = buildExpectedResult(getModelosByMarcaAndTipoProducto(tipoProductoId, marcaId));
         String result = executeAction("/ListarModelos_listAll");
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -79,8 +107,29 @@ public class ListarModelosTest extends BaseSpringStrutsTestCase<ListarModelos> {
         assertEquals(expected, result);
     }
 
-    private List<Modelo> getModelosByMarcaAndTipoProducto() {
-        return modeloService.getModelosByMarcaAndTipoProducto(1, 3);
+    @Test
+    public void testListarModelosError() throws Exception {
+        ActionProxy proxy = getActionProxy("/ListarModelos_listAll");
+
+        proxy.execute();
+
+        String result = response.getContentAsString();
+
+        assertNotNull(result);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatus());
+
+        JsonErrorResponse errorResponse = new GsonBuilder()
+            .registerTypeAdapter(JsonErrorResponse.class, new JsonErrorResponseDeserializer())
+            .create()
+            .fromJson(result, JsonErrorResponse.class);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), errorResponse.getErrorCode());
+        assertEquals("invalid_parameter", errorResponse.getErrorKey());
+        assertEquals("idTipoProducto must not be null", errorResponse.getErrorMessage());
+    }
+
+    private List<Modelo> getModelosByMarcaAndTipoProducto(Integer tipoProductoId, Integer marcaId) {
+        return modeloService.getModelosByMarcaAndTipoProducto(marcaId, tipoProductoId);
     }
 
     private List<Modelo> getModelosByTipoProducto() {
@@ -194,6 +243,23 @@ public class ListarModelosTest extends BaseSpringStrutsTestCase<ListarModelos> {
     @Override
     protected String getActionName() {
         return ACTION_NAME;
+    }
+
+    private class JsonErrorResponseDeserializer implements JsonDeserializer<JsonErrorResponse> {
+
+        @Override
+        public JsonErrorResponse deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+                throws JsonParseException {
+            if (json.isJsonObject()) {
+                JsonObject jsonObject = json.getAsJsonObject();
+                JsonElement errorCode = jsonObject.get("error-code");
+                JsonElement errorKey = jsonObject.get("error-key");
+                JsonElement errorMessage = jsonObject.get("error-message");
+                return new JsonErrorResponse(errorCode.getAsInt(), errorKey.getAsString(), errorMessage.getAsString());
+            }
+            return null;
+        }
+
     }
 
 }

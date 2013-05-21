@@ -25,7 +25,7 @@ public class ClienteAction extends ActionSupport {
 
     public String create() {
         clienteService.createCliente(cliente);
-        suscriptorService.createActiveSuscriptor(cliente.getEmail());
+        suscriptorService.create(cliente.getEmail(), true);
         return CREATE;
     }
 

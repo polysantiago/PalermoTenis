@@ -16,10 +16,10 @@
     http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
     http://www.springframework.org/schema/util
     http://www.springframework.org/schema/util/spring-util-3.2.xsd">
-	
+
 	<context:component-scan base-package="com.palermotenis.model.service,com.palermotenis.model.dao,com.palermotenis.controller.struts.actions" />
 
-	<context:property-placeholder location="classpath:/palermotenis.properties" />
+	<context:property-placeholder location="classpath:palermotenis.properties,classpath:palermotenis-mail.properties" />
 
     <!-- Web Services -->
     <bean id="currencyConvertor" class="com.palermotenis.model.ws.MyJaxRpcPortProxyFactoryBean">
@@ -53,9 +53,6 @@
 	<!-- Password Encoder -->
 	<bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder" />
 
-    <!-- Exporters -->
-    <bean id="excelExporter" class="com.palermotenis.export.ExcelExporter" />
-
     <!-- Tasks -->
     <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
         <property name="corePoolSize" value="5" />
@@ -65,14 +62,6 @@
     <!-- Carrito -->
     <bean class="com.palermotenis.controller.carrito.CarritoImpl" id="carrito" scope="session">
         <aop:scoped-proxy/>
-    </bean>
-
-    <bean class="org.springframework.web.context.support.ServletContextAttributeExporter">
-        <property name="attributes">
-            <map>
-                <entry key="domain" value="www.palermotenis.com.ar"/>
-            </map>
-        </property>
     </bean>
 
     <!-- Mail -->
@@ -125,7 +114,7 @@
                 <prop key="hibernate.jdbc.use_get_generated_keys">false</prop>
                 <prop key="hibernate.connection.isolation">1</prop>
                 <prop key="hibernate.connection.release_mode">on_close</prop>
-                <prop key="hibernate.cache.provider_class">net.sf.ehcache.hibernate.SingletonEhCacheProvider</prop>
+                <prop key="hibernate.cache.provider_class">org.hibernate.cache.SingletonEhCacheProvider</prop>
                 <prop key="hibernate.cache.use_query_cache">true</prop>
                 <prop key="hibernate.cache.use_second_level_cache">true</prop>
             </props>

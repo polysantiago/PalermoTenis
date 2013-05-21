@@ -89,7 +89,7 @@ public class Usuario implements Serializable, UserDetails {
         this.password = password;
     }
 
-    public boolean getActivo() {
+    public boolean isActivo() {
         return activo;
     }
 

@@ -1,35 +1,28 @@
 package com.palermotenis.model.service.newsletter.impl;
 
 import java.util.List;
-import java.util.Map;
 
-import javax.mail.internet.MimeMessage;
 import javax.persistence.NoResultException;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.struts2.interceptor.ApplicationAware;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.velocity.VelocityEngineUtils;
 
-import com.google.common.collect.ImmutableMap;
-import com.palermotenis.controller.struts.actions.newsletter.exceptions.AlreadySuscribedException;
-import com.palermotenis.controller.struts.actions.newsletter.exceptions.InvalidTokenException;
+import com.palermotenis.controller.struts.actions.exceptions.AlreadySuscribedException;
+import com.palermotenis.controller.struts.actions.exceptions.InvalidTokenException;
 import com.palermotenis.model.beans.newsletter.Suscriptor;
 import com.palermotenis.model.dao.suscriptores.SuscriptorDao;
+import com.palermotenis.model.service.newsletter.NewsletterService;
 import com.palermotenis.model.service.newsletter.SuscriptorService;
 
 @Service("suscriptorService")
-public class SuscriptorServiceImpl implements SuscriptorService, ApplicationAware {
+public class SuscriptorServiceImpl implements SuscriptorService {
 
-    private static final String CONFIRMACION_TEMPLATE = "templates/mail/confirmacion_newsletter.vm";
     private static final String ALREADY_SUSCRIBED = "Usted ya está suscripto";
 
     @Autowired
@@ -41,7 +34,8 @@ public class SuscriptorServiceImpl implements SuscriptorService, ApplicationAwar
     @Autowired
     private VelocityEngine velocityEngine;
 
-    private Map<String, Object> application;
+    @Autowired
+    private NewsletterService newsletterService;
 
     @Override
     @Transactional
@@ -56,13 +50,12 @@ public class SuscriptorServiceImpl implements SuscriptorService, ApplicationAwar
             }
 
             if (StringUtils.isEmpty(suscriptor.getRandomStr())) { // algunos suscriptores fueron ingresados manualmente
-                suscriptor.setRandomStr(RandomStringUtils.randomAlphanumeric(10));
+                suscriptor.setRandomStr(RandomStringUtils.randomAlphanumeric(9));
             }
         } else {
-            suscriptor = new Suscriptor(email, RandomStringUtils.randomAlphanumeric(10), false);
-            suscriptorDao.create(suscriptor);
+            create(email, false);
         }
-        sendConfirmationEmail(suscriptor);
+        newsletterService.confirmSuscription(suscriptor);
     }
 
     @Override
@@ -76,38 +69,12 @@ public class SuscriptorServiceImpl implements SuscriptorService, ApplicationAwar
         suscriptorDao.edit(suscriptor);
     }
 
-    private void sendConfirmationEmail(final Suscriptor suscriptor) {
-        MimeMessagePreparator preparator = new MimeMessagePreparator() {
-
-            @Override
-            public void prepare(MimeMessage mimeMessage) throws Exception {
-
-                MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
-
-                message.setSubject("Suscripción al Newsletter de PalermoTenis.com.ar");
-                message.setTo(suscriptor.getEmail());
-                message.setFrom("Newsletter PalermoTenis.com.ar <noreply@palermotenis.com.ar>");
-
-                Map<String, Object> model = new ImmutableMap.Builder<String, Object>()
-                    .put("suscriptor", suscriptor)
-                    .put("domain", application.get("domain"))
-                    .build();
-
-                String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, CONFIRMACION_TEMPLATE,
-                    "ISO-8859-1", model);
-
-                message.setText(text, true);
-            }
-        };
-        mailSender.send(preparator);
-    }
-
     @Override
     @Transactional
-    public void createActiveSuscriptor(String email) {
+    public void create(String email, boolean active) {
         List<Suscriptor> suscriptores = getSuscriptoresByEmail(email);
         if (CollectionUtils.isEmpty(suscriptores)) {
-            Suscriptor suscriptor = new Suscriptor(email, RandomStringUtils.randomAlphanumeric(10), true);
+            Suscriptor suscriptor = new Suscriptor(email, RandomStringUtils.randomAlphanumeric(9), active);
             suscriptorDao.create(suscriptor);
         }
     }
@@ -149,11 +116,6 @@ public class SuscriptorServiceImpl implements SuscriptorService, ApplicationAwar
     @Override
     public int getSuscriptoresCount() {
         return suscriptorDao.count();
-    }
-
-    @Override
-    public void setApplication(Map<String, Object> application) {
-        this.application = application;
     }
 
 }

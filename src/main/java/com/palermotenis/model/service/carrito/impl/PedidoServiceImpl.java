@@ -1,5 +1,6 @@
 package com.palermotenis.model.service.carrito.impl;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,6 +13,7 @@ import javax.mail.internet.MimeMultipart;
 
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.number.CurrencyFormatter;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -37,14 +39,13 @@ import com.palermotenis.model.dao.pedidos.PedidoDao;
 import com.palermotenis.model.dao.pedidos.PedidoProductoDao;
 import com.palermotenis.model.service.carrito.PedidoService;
 import com.palermotenis.model.service.pagos.PagoService;
-import com.palermotenis.util.SecurityUtil;
 import com.palermotenis.util.StringUtility;
 
 @Service("pedidoService")
 public class PedidoServiceImpl implements PedidoService {
 
-    private static final String ENCODING = "ISO-8859-1";
     private static final Locale LOCALE_ES_AR = new Locale("es", "AR");
+
     private static final String PEDIDO_TEMPLATE = "templates/mail/pedido.vm";
     private static final String INFORMAR_PEDIDO_TEMPLATE = "templates/mail/informar_pedido.vm";
 
@@ -66,12 +67,33 @@ public class PedidoServiceImpl implements PedidoService {
     @Autowired
     private VelocityEngine velocityEngine;
 
+    @Value("${templates.mail.pedidos.inform.from}")
+    private String informFrom;
+
+    @Value("${templates.mail.pedidos.inform.to}")
+    private String informTo;
+
+    @Value("${templates.mail.pedidos.inform.subject}")
+    private String informSubject;
+
+    @Value("${templates.mail.pedidos.confirmation.subject}")
+    private String confirmationSubject;
+
+    @Value("${templates.mail.pedidos.confirmation.from}")
+    private String confirmationFrom;
+
+    @Value("${templates.mail.pedidos.confirmation.replyto}")
+    private String confirmationReplyTo;
+
+    @Value("${com.palermotenis.mail.mime.charset}")
+    private String encoding;
+
     @Override
     @Transactional
-    public Pedido createNewPedido(Integer pagoId, Integer cuotas, Double total) {
+    public Pedido create(Cliente cliente, Integer pagoId, Integer cuotas, Double total) {
         Pago pago = pagoService.getPagoById(pagoId);
 
-        Pedido pedido = new Pedido(getUsuario().getCliente(), pago, cuotas, total);
+        Pedido pedido = new Pedido(cliente, pago, cuotas, total);
         pedidoDao.create(pedido);
 
         return pedido;
@@ -79,7 +101,7 @@ public class PedidoServiceImpl implements PedidoService {
 
     @Override
     @Transactional
-    public void send(Pedido pedido, Carrito carrito) {
+    public void send(Usuario usuario, Pedido pedido, Carrito carrito) {
         for (Entry<Stock, Item> entry : carrito.getContenido().entrySet()) {
             Stock stock = entry.getKey();
             Item item = entry.getValue();
@@ -88,8 +110,8 @@ public class PedidoServiceImpl implements PedidoService {
         }
         pedidoDao.edit(pedido);
 
-        enviarCopiaPedido(carrito);
-        informarPedido(pedido);
+        enviarCopiaPedido(usuario, carrito);
+        informarPedido(usuario, pedido);
         carrito.vaciar();
     }
 
@@ -100,8 +122,7 @@ public class PedidoServiceImpl implements PedidoService {
         return pedidoProducto;
     }
 
-    private void enviarCopiaPedido(final Carrito carrito) {
-        final Usuario usuario = getUsuario();
+    private void enviarCopiaPedido(final Usuario usuario, final Carrito carrito) {
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
 
             @Override
@@ -109,10 +130,10 @@ public class PedidoServiceImpl implements PedidoService {
 
                 MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
 
-                message.setSubject("Confirmación del Pedido desde PalermoTenis.com.ar");
+                message.setSubject(confirmationSubject);
                 message.setTo(usuario.getCliente().getNombre() + "<" + usuario.getUsuario() + ">");
-                message.setFrom("PalermoTenis <noreply@palermotenis.com.ar>");
-                message.setReplyTo("PalermoTenis <consultas@palermotenis.com.ar>");
+                message.setFrom(confirmationFrom);
+                message.setReplyTo(confirmationReplyTo);
 
                 Map<String, Object> model = new ImmutableMap.Builder<String, Object>()
                     .put("usuario", usuario)
@@ -121,7 +142,7 @@ public class PedidoServiceImpl implements PedidoService {
                     .put("locale", LOCALE_ES_AR)
                     .build();
 
-                String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, PEDIDO_TEMPLATE, ENCODING,
+                String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, PEDIDO_TEMPLATE, encoding,
                     model);
 
                 message.setText(text, true);
@@ -130,8 +151,7 @@ public class PedidoServiceImpl implements PedidoService {
         mailSender.send(preparator);
     }
 
-    private void informarPedido(final Pedido pedido) {
-        final Usuario usuario = getUsuario();
+    private void informarPedido(final Usuario usuario, final Pedido pedido) {
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
             @Override
             public void prepare(MimeMessage mimeMessage) throws Exception {
@@ -147,11 +167,11 @@ public class PedidoServiceImpl implements PedidoService {
                         }
                     }));
 
-                mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress("pedidos@palermotenis.com.ar"));
-                mimeMessage.setFrom(new InternetAddress("PalermoTenis <noreply@palermotenis.com.ar>"));
+                mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(informTo));
+                mimeMessage.setFrom(new InternetAddress(informFrom));
                 mimeMessage.setReplyTo(InternetAddress.parse(cliente.getNombre() + "<" + usuario.getUsuario() + ">"));
                 mimeMessage.setContent(new MimeMultipart("alternative"));
-                mimeMessage.setSubject("Se ha realizado un pedido desde PalermoTenis.com.ar", ENCODING);
+                mimeMessage.setSubject(informSubject, encoding);
 
                 Map<String, Object> model = new ImmutableMap.Builder<String, Object>()
                     .put("cliente", cliente)
@@ -162,7 +182,7 @@ public class PedidoServiceImpl implements PedidoService {
                     .build();
 
                 String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, INFORMAR_PEDIDO_TEMPLATE,
-                    ENCODING, model);
+                    encoding, model);
 
                 mimeMessage.setText(text);
             }
@@ -170,8 +190,19 @@ public class PedidoServiceImpl implements PedidoService {
         mailSender.send(preparator);
     }
 
-    private Usuario getUsuario() {
-        return SecurityUtil.getLoggedInUser();
+    @Override
+    public List<Pedido> getAllPedidos() {
+        return pedidoDao.findAll();
+    }
+
+    @Override
+    public List<Pedido> getPedidosByEmail(String email) {
+        return pedidoDao.queryBy("Email", "email", email);
+    }
+
+    @Override
+    public List<Pedido> getPedidosByNombreCliente(String nombreCliente) {
+        return pedidoDao.queryBy("Nombre", "nombre", nombreCliente);
     }
 
 }

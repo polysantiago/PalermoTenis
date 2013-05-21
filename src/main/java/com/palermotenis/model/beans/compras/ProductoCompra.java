@@ -1,13 +1,11 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 
 package com.palermotenis.model.beans.compras;
 
-import com.palermotenis.model.beans.Stock;
-import com.palermotenis.model.beans.proveedores.Proveedor;
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,16 +18,21 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
+import com.palermotenis.model.beans.Stock;
+import com.palermotenis.model.beans.proveedores.Proveedor;
+
 /**
- *
+ * 
  * @author Poly
  */
 @Entity
 @Table(name = "productos_compras")
-@NamedQueries({
-    @NamedQuery(name = "ProductoCompra.findAll", query = "SELECT p FROM ProductoCompra p"),
-    @NamedQuery(name = "ProductoCompra.findById", query = "SELECT p FROM ProductoCompra p WHERE p.id = :id"),
-    @NamedQuery(name = "ProductoCompra.findByCosto", query = "SELECT p FROM ProductoCompra p WHERE p.costo = :costo")})
+@NamedQueries(
+    {
+            @NamedQuery(name = "ProductoCompra.findAll", query = "SELECT p FROM ProductoCompra p"),
+            @NamedQuery(name = "ProductoCompra.findById", query = "SELECT p FROM ProductoCompra p WHERE p.id = :id"),
+            @NamedQuery(name = "ProductoCompra.findByCosto",
+                    query = "SELECT p FROM ProductoCompra p WHERE p.costo = :costo") })
 public class ProductoCompra implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -37,7 +40,7 @@ public class ProductoCompra implements Serializable {
     @Basic(optional = false)
     @Column(name = "ID")
     private Integer id;
-    
+
     @Basic(optional = false)
     @Column(name = "Producto")
     private String producto;
@@ -51,7 +54,7 @@ public class ProductoCompra implements Serializable {
     private Integer cantidad;
 
     @JoinColumn(name = "Compra", referencedColumnName = "ID")
-    @ManyToOne(optional = false)
+    @ManyToOne
     private Compra compra;
 
     @JoinColumn(name = "Proveedor", referencedColumnName = "ID")
@@ -75,11 +78,10 @@ public class ProductoCompra implements Serializable {
         this.costo = costo;
     }
 
-    public ProductoCompra(String producto, double costo, Integer cantidad, Compra compra, Proveedor proveedor, Stock stock) {
+    public ProductoCompra(String producto, double costo, Integer cantidad, Proveedor proveedor, Stock stock) {
         this.producto = producto;
         this.costo = costo;
         this.cantidad = cantidad;
-        this.compra = compra;
         this.proveedor = proveedor;
         this.stock = stock;
     }

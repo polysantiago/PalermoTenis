@@ -2,6 +2,9 @@ package com.palermotenis.model.service.usuarios.impl;
 
 import java.util.List;
 
+import javax.persistence.NoResultException;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.palermotenis.model.beans.authorities.Rol;
 import com.palermotenis.model.beans.usuarios.Usuario;
 import com.palermotenis.model.dao.exceptions.PreexistingEntityException;
 import com.palermotenis.model.dao.usuario.UsuarioDao;
@@ -28,15 +32,21 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public void create(Usuario usuario) throws PreexistingEntityException, Exception {
-        try {
-            usuarioDao.create(usuario);
-        } catch (Exception ex) {
-            if (getUsuarioByLoginame(usuario.getUsuario()) != null) {
-                throw new PreexistingEntityException("Usuario " + usuario + " already exists.", ex);
-            }
-            throw ex;
+    public void create(Usuario usuario) throws PreexistingEntityException {
+        if (CollectionUtils.isNotEmpty(getUsuariosByUsername(usuario.getUsuario()))) {
+            throw new PreexistingEntityException("Usuario " + usuario + " already exists.");
         }
+        usuarioDao.create(usuario);
+    }
+
+    @Override
+    public Usuario createActive(String email, String password, Rol rol) throws PreexistingEntityException {
+        Usuario usuario = new Usuario(email);
+        usuario.setPassword(passwordEncoder.encodePassword(password, null));
+        usuario.setActivo(true);
+        usuario.addRol(rol);
+        create(usuario);
+        return usuario;
     }
 
     @Override
@@ -53,11 +63,11 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
-        Usuario usuario = usuarioDao.getUsuarioByUsername(username);
-        if (usuario == null) {
+        try {
+            return usuarioDao.getUsuarioByUsername(username);
+        } catch (NoResultException ex) {
             throw new UsernameNotFoundException("Username " + username + " not found");
         }
-        return usuario;
     }
 
     @Override

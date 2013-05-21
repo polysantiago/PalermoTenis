@@ -1,11 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.palermotenis.model.beans.newsletter;
 
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,20 +12,17 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-/**
- *
- * @author Poly
- */
 @Entity
 @Table(name = "suscriptores")
-@NamedQueries({
-    @NamedQuery(name = "Suscriptor.findAll", query = "SELECT s FROM Suscriptor s"),
-    @NamedQuery(name = "Suscriptor.findActive", query = "SELECT s FROM Suscriptor s WHERE s.activo = 1"),
-    @NamedQuery(name = "Suscriptor.findById", query = "SELECT s FROM Suscriptor s WHERE s.id = :id"),
-    @NamedQuery(name = "Suscriptor.findByEmail", query = "SELECT s FROM Suscriptor s WHERE s.email = :email"),
-    @NamedQuery(name = "Suscriptor.findByRandomStr", query = "SELECT s FROM Suscriptor s WHERE s.randomStr = :randomStr"),
-    @NamedQuery(name = "Suscriptor.findByActivo", query = "SELECT s FROM Suscriptor s WHERE s.activo = :activo")
-})
+@NamedQueries(
+    {
+            @NamedQuery(name = "Suscriptor.findAll", query = "SELECT s FROM Suscriptor s"),
+            @NamedQuery(name = "Suscriptor.findActive", query = "SELECT s FROM Suscriptor s WHERE s.activo = 1"),
+            @NamedQuery(name = "Suscriptor.findById", query = "SELECT s FROM Suscriptor s WHERE s.id = :id"),
+            @NamedQuery(name = "Suscriptor.findByEmail", query = "SELECT s FROM Suscriptor s WHERE s.email = :email"),
+            @NamedQuery(name = "Suscriptor.findByRandomStr",
+                    query = "SELECT s FROM Suscriptor s WHERE s.randomStr = :randomStr"),
+            @NamedQuery(name = "Suscriptor.findByActivo", query = "SELECT s FROM Suscriptor s WHERE s.activo = :activo") })
 public class Suscriptor implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -45,14 +38,13 @@ public class Suscriptor implements Serializable {
     @Basic(optional = false)
     @Column(name = "RandomStr")
     private String randomStr;
-    
+
     @Basic(optional = false)
     @Column(name = "Activo")
     private boolean activo;
 
     public Suscriptor() {
     }
-
 
     public Suscriptor(String email, String randomStr, boolean activo) {
         this.email = email;

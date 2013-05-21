@@ -1,15 +1,12 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 
 package com.palermotenis.model.beans.clientes;
 
-import com.palermotenis.model.beans.pedidos.Pedido;
-import com.palermotenis.model.beans.usuarios.Usuario;
-import com.palermotenis.model.beans.ventas.Venta;
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -24,22 +21,27 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
 import org.hibernate.annotations.Proxy;
 
+import com.palermotenis.model.beans.pedidos.Pedido;
+import com.palermotenis.model.beans.usuarios.Usuario;
+import com.palermotenis.model.beans.ventas.Venta;
+
 /**
- *
+ * 
  * @author Poly
  */
 @Entity
 @Table(name = "clientes")
-@NamedQueries({
-    @NamedQuery(name = "Cliente.findAll", query = "SELECT c FROM Cliente c"),
-    @NamedQuery(name = "Cliente.findById", query = "SELECT c FROM Cliente c WHERE c.id = :id"),
-    @NamedQuery(name = "Cliente.findByNombre", query = "SELECT c FROM Cliente c WHERE c.nombre LIKE :nombre"),
-    @NamedQuery(name = "Cliente.findByEmail", query = "SELECT c FROM Cliente c WHERE c.email LIKE :email"),
-    @NamedQuery(name = "Cliente.findByTelefono", query = "SELECT c FROM Cliente c WHERE c.telefono = :telefono")
-})
-@Proxy(lazy=false)
+@NamedQueries(
+    {
+            @NamedQuery(name = "Cliente.findAll", query = "SELECT c FROM Cliente c"),
+            @NamedQuery(name = "Cliente.findById", query = "SELECT c FROM Cliente c WHERE c.id = :id"),
+            @NamedQuery(name = "Cliente.findByNombre", query = "SELECT c FROM Cliente c WHERE c.nombre LIKE :nombre"),
+            @NamedQuery(name = "Cliente.findByEmail", query = "SELECT c FROM Cliente c WHERE c.email LIKE :email"),
+            @NamedQuery(name = "Cliente.findByTelefono", query = "SELECT c FROM Cliente c WHERE c.telefono = :telefono") })
+@Proxy(lazy = false)
 public class Cliente implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -66,7 +68,8 @@ public class Cliente implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "cliente")
     private Collection<Venta> ventas;
 
-    @OneToOne(mappedBy = "cliente", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToOne(mappedBy = "cliente", cascade =
+        { CascadeType.PERSIST, CascadeType.REMOVE })
     private Usuario usuario;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
@@ -74,9 +77,10 @@ public class Cliente implements Serializable {
 
     public Cliente() {
     }
-    
-    public Cliente(String nombre, Direccion direccion, String telefono) {
-        this.nombre = nombre;      
+
+    public Cliente(String nombre, String email, Direccion direccion, String telefono) {
+        this.nombre = nombre;
+        this.email = email;
         this.direccion = direccion;
         this.telefono = telefono;
     }
@@ -137,7 +141,8 @@ public class Cliente implements Serializable {
     }
 
     /**
-     * @param usuario the usuario to set
+     * @param usuario
+     *            the usuario to set
      */
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;

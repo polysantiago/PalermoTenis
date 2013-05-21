@@ -1,32 +1,28 @@
 package com.palermotenis.controller.struts.actions.clientes;
 
-import java.util.Collection;
+import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.ImmutableMap;
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.model.beans.clientes.Cliente;
-import com.palermotenis.model.dao.Dao;
+import com.palermotenis.model.service.clientes.ClienteService;
 
-/**
- * 
- * @author Poly
- */
 public class BuscarCliente extends ActionSupport {
 
     private static final long serialVersionUID = 4947994581192892643L;
 
     private char filter;
     private String searchVal;
-    private Collection<Cliente> clientes;
+    private List<Cliente> clientes;
 
     @Autowired
-    private Dao<Cliente, Integer> clienteDao;
+    private ClienteService clienteService;
 
     @Override
     public String execute() {
-        if (getSearchVal() == null || getSearchVal().isEmpty()) {
+        if (StringUtils.isEmpty(searchVal)) {
             buscarTodos();
         } else {
             switch (getFilter()) {
@@ -44,53 +40,34 @@ public class BuscarCliente extends ActionSupport {
     }
 
     private void buscarTodos() {
-        clientes = clienteDao.findAll();
+        clientes = clienteService.getAllClientes();
     }
 
     private void buscarXEmail() {
-        clientes = clienteDao.queryBy("Email",
-            new ImmutableMap.Builder<String, Object>().put("email", "%" + getSearchVal() + "%").build());
+        clientes = clienteService.getClientesByEmail("%" + searchVal + "%");
     }
 
     private void buscarXNombre() {
-        clientes = clienteDao.queryBy("Nombre",
-            new ImmutableMap.Builder<String, Object>().put("nombre", "%" + getSearchVal() + "%").build());
+        clientes = clienteService.getClientesByNombre("%" + searchVal + "%");
     }
 
-    /**
-     * @return the filter
-     */
     public char getFilter() {
         return filter;
     }
 
-    /**
-     * @param filter
-     *            the filter to set
-     */
     public void setFilter(char filter) {
         this.filter = filter;
     }
 
-    /**
-     * @return the searchVal
-     */
     public String getSearchVal() {
         return searchVal;
     }
 
-    /**
-     * @param searchVal
-     *            the searchVal to set
-     */
     public void setSearchVal(String searchVal) {
         this.searchVal = searchVal;
     }
 
-    /**
-     * @return the clientes
-     */
-    public Collection<Cliente> getClientes() {
+    public List<Cliente> getClientes() {
         return clientes;
     }
 }

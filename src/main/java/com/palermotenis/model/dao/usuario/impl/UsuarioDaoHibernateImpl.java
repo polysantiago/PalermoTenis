@@ -18,7 +18,7 @@ public class UsuarioDaoHibernateImpl extends AbstractHibernateDao<Usuario, Strin
 
     @Override
     public List<Usuario> getUsuariosByUsername(String username) {
-        return query("Usuario", "usuario", username);
+        return queryBy("Usuario", "usuario", username);
     }
 
 }

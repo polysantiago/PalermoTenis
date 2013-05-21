@@ -13,12 +13,8 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.model.beans.usuarios.Usuario;
 import com.palermotenis.model.beans.ventas.Listado;
 import com.palermotenis.model.dao.Dao;
-import com.palermotenis.util.SecurityUtil;
+import com.palermotenis.model.service.security.impl.SecurityServiceImpl;
 
-/**
- * 
- * @author Poly
- */
 public class Autorizar extends ActionSupport {
 
     private static final long serialVersionUID = -8940207114274196062L;
@@ -40,7 +36,7 @@ public class Autorizar extends ActionSupport {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private SecurityUtil securityUtil;
+    private SecurityServiceImpl securityUtil;
 
     @Override
     public String execute() {

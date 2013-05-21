@@ -12,13 +12,20 @@
     "http://struts.apache.org/dtds/struts-2.0.dtd">
 
 <struts>
-    <package name="ventas_operations" namespace="/admin/ventas" extends="struts-default">
+    <package name="ventas_operations" namespace="/admin/ventas" extends="struts-default,json-default">
+        
         <action name="BuscarPedido" class="com.palermotenis.controller.struts.actions.admin.ventas.BuscarPedido">
-            <result type="stream">
-                <param name="contentType">text/html;charset=ISO-8859-1</param>
-                <param name="inputName">inputStream</param>
+            <result type="json">
+                <param name="root">pedidos</param>
+                <param name="excludeProperties">
+                	^\[\d+\]\.pedidosProductos,
+                	^\[\d+\]\.cliente.pedidos,
+                	^\[\d+\]\.cliente.usuario,
+                	^\[\d+\]\.cliente.ventas
+                </param>
             </result>
         </action>
+        
         <action name="ConfirmarVenta_*" method="{1}" class="com.palermotenis.controller.struts.actions.admin.ventas.ConfirmarVenta">
             <result>ConfirmarVentaOK.jsp</result>
         </action>
