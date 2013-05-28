@@ -28,7 +28,7 @@ import com.palermotenis.model.service.atributos.tipos.TipoAtributoService;
 import com.palermotenis.model.service.categorias.CategoriaService;
 import com.palermotenis.model.service.marcas.MarcaService;
 import com.palermotenis.model.service.modelos.ModeloService;
-import com.palermotenis.model.service.precios.impl.PrecioService;
+import com.palermotenis.model.service.precios.PrecioService;
 import com.palermotenis.model.service.productos.ProductoService;
 import com.palermotenis.model.service.productos.tipos.TipoProductoService;
 import com.thoughtworks.xstream.converters.ConversionException;

@@ -4,9 +4,6 @@
 <div id="header">
     <div id="barra-sup1">
         <div id="barra-sup1-izq">
-            <script type="text/javascript">
-                AC_FL_RunContent( 'codebase','http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,28,0','width','450','height','123','src','/flash/titulo-izq','quality','high','pluginspage','http://www.adobe.com/shockwave/download/download.cgi?P1_Prod_Version=ShockwaveFlash','movie','/flash/titulo-izq' ); //end AC code
-            </script>
             <noscript>
                 <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,28,0" width="450" height="123">
                     <param name="movie" value="/flash/titulo-izq.swf" />
@@ -16,9 +13,6 @@
             </noscript>
         </div>
         <div id="barra-sup1-der">
-            <script type="text/javascript">
-                AC_FL_RunContent( 'codebase','http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,28,0','width','510','height','122','src','/flash/promos','quality','high','pluginspage','http://www.adobe.com/shockwave/download/download.cgi?P1_Prod_Version=ShockwaveFlash','movie','/flash/promos' ); //end AC code
-            </script>
             <noscript>
                 <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,28,0" width="510" height="122">
                     <param name="movie" value="/flash/promos.swf" />
@@ -29,23 +23,25 @@
         </div>
     </div>
     <div id="barra-sup2">
+    
         <div id="barra-sup2-botones">
             <a href="/" class="botones">HOME</a>
             <span class="botones">/</span>
-            <a href="/Palermo.jsp" class="botones">PALERMO TENIS</a>
+            <a href="/Palermo" class="botones">PALERMO TENIS</a>
             <sec:authorize access="isAnonymous()">
                 <span class="botones"> /</span>
-                <a href="/clientes_web/login.jsp" class="botones">INGRESAR</a>
+                <a href="/clientes_web/Login" class="botones">INGRESAR</a>
                 <span class="botones">/</span>
                 <a href="/clientes_web/Registracion" class="botones">REGISTRARSE</a>
             </sec:authorize>
             <span class="botones"> /</span>
-            <a href="/Ubicacion.jsp" class="botones">UBICACION</a>
+            <a href="/Ubicacion" class="botones">UBICACION</a>
             <span class="botones">/</span>
-            <a href="/Envios.jsp" class="botones">ENVIOS</a>
+            <a href="/Envios" class="botones">ENVIOS</a>
             <span class="botones"> /</span>
             <a href="/clientes_web/Consulta" class="botones">CONTACTO</a>
         </div>
+        
         <div id="barra-sup2-carrito-mini">
             <div id="carrito-mini-detalles">
                 <s:url action="CarritoAction_show" namespace="/carrito" var="verDetalles" />
@@ -76,9 +72,9 @@
             </s:else>
         </div>
     </div>
-    <div id="barra-sup3">
-
-    </div>
+    
+    <div id="barra-sup3"></div>
+    
     <sec:authorize access="isAuthenticated()">
         <style type="text/css">
             #contenidos,.menu {top:175px;}

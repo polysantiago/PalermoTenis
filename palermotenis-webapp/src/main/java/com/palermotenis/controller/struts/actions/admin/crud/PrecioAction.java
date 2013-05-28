@@ -4,7 +4,7 @@ import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.palermotenis.controller.struts.actions.InputStreamActionSupport;
-import com.palermotenis.model.service.precios.impl.PrecioService;
+import com.palermotenis.model.service.precios.PrecioService;
 
 public class PrecioAction extends InputStreamActionSupport {
 
@@ -33,8 +33,7 @@ public class PrecioAction extends InputStreamActionSupport {
 
     public String create() {
         try {
-            precioService.create(productoId, newPagoId, monedaId, newPresentacionId, valor, valorOferta, cuotas,
-                enOferta);
+            precioService.create(productoId, pagoId, monedaId, presentacionId, valor, valorOferta, cuotas, enOferta);
             success();
         } catch (Exception ex) {
             failure(ex);
@@ -55,7 +54,7 @@ public class PrecioAction extends InputStreamActionSupport {
 
     public String destroy() {
         try {
-            precioService.destroy(productoId, newPagoId, monedaId, newPresentacionId, cuotas);
+            precioService.destroy(productoId, pagoId, monedaId, presentacionId, cuotas);
             success();
         } catch (Exception ex) {
             failure(ex);

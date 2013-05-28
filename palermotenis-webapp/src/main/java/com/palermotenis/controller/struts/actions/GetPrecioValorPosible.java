@@ -8,7 +8,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.model.beans.precios.Precio;
-import com.palermotenis.model.service.precios.impl.PrecioService;
+import com.palermotenis.model.service.precios.PrecioService;
 
 public class GetPrecioValorPosible extends ActionSupport {
 

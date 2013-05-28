@@ -7,13 +7,11 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(value =
     { "classpath:/spring/applicationContext-services.xml", "classpath:/spring/applicationContext-persist.xml",
             "classpath:/spring/test-auxiliary-services.xml" })
-@TransactionConfiguration(defaultRollback = true)
 public abstract class BaseSpringTestCase extends AbstractTransactionalJUnit4SpringContextTests {
 
     private EntityManager entityManager;

@@ -1,15 +1,15 @@
 function fieldsAreValid(presentacionObj){
     if(!presentacionObj.cantidad || presentacionObj.cantidad == ""){
-        error("El campo cantidad no puede estar vac√≠o");
+        error("El campo cantidad no puede estar vacÌo");
         return false;
     } else if(isNaN(presentacionObj.cantidad)){
-        error("El campo cantidad no es v√°lido");
+        error("El campo cantidad no es v·lido");
         return false;
     } else if(!presentacionObj.unidad || presentacionObj.unidad == ""){
-        error("El campo unidad no puede estar vac√≠o");
+        error("El campo unidad no puede estar vacÌo");
         return false;
     } else if((presentacionObj.nombre == "" || !presentacionObj.nombre)
-        && !confirm("El campo nombre est\u00E1 vac\u00Eo. \u00BFQuiere aplicar el nombre por default?")){
+        && !confirm("El campo nombre est\u00E1 vac\u00EDo. \u00BFQuiere aplicar el nombre por default?")){
         return false;
     }
     return true;

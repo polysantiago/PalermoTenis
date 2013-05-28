@@ -1,7 +1,6 @@
 package com.palermotenis.controller.struts.actions.admin.ventas;
 
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,8 +11,8 @@ import org.springframework.security.core.Authentication;
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.model.beans.usuarios.Usuario;
 import com.palermotenis.model.beans.ventas.Listado;
-import com.palermotenis.model.dao.Dao;
-import com.palermotenis.model.service.security.impl.SecurityServiceImpl;
+import com.palermotenis.model.service.security.SecurityService;
+import com.palermotenis.model.service.ventas.VentaService;
 
 public class Autorizar extends ActionSupport {
 
@@ -30,49 +29,42 @@ public class Autorizar extends ActionSupport {
     private Listado listado;
 
     @Autowired
-    private Dao<Listado, String> listadoDao;
+    private VentaService ventaService;
+
+    @Autowired
+    private SecurityService securityService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private SecurityServiceImpl securityUtil;
-
     @Override
     public String execute() {
-
-        Authentication auth = new UsernamePasswordAuthenticationToken(usuario, clave);
         try {
-            Authentication result = authenticationManager.authenticate(auth);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(usuario, clave);
+            Authentication result = authenticationManager.authenticate(authentication);
             Usuario user = (Usuario) result.getPrincipal();
-            if (!securityUtil.isSupervisor(user)) {
+            if (!securityService.isSupervisor(user)) {
                 throw new AccessDeniedException("El usuario no es supervisor");
             }
+            listado = ventaService.authorizeListing(usuario, clave, listadoId);
         } catch (BadCredentialsException ex) {
-            logger.warn("Credenciales erróneas al autorizar listado");
+            logger.debug("Credenciales erróneas al autorizar listado");
             return BAD_CREDENTIALS;
         } catch (AccessDeniedException adex) {
-            logger.warn("Acceso denegado al autorizar listado");
+            logger.debug("Acceso denegado al autorizar listado");
             return ACCESS_DENIED;
-        }
-
-        listado = listadoDao.find(listadoId);
-        listado.setAutorizado(true);
-        try {
-            listadoDao.edit(listado);
-        } catch (HibernateException ex) {
-            logger.error("No existe el listado definido!", ex);
-            return ERROR;
         } catch (Exception ex) {
             logger.error("Ha ocurrido un error al editar " + listado, ex);
             return ERROR;
         }
-
         return SUCCESS;
     }
 
     public Listado getListado() {
-        return listadoDao.find(listadoId);
+        if (listado == null) {
+            listado = ventaService.getListadoById(listadoId);
+        }
+        return listado;
     }
 
     public String getListadoId() {

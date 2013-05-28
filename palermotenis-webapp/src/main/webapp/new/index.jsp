@@ -20,7 +20,7 @@
         <link type="image/x-icon" rel="icon" href="/images/favicon.ico" />
 
         <script charset="iso-8859-1" type="text/javascript" src="/js/main/pack/AC_RunActiveContent.pack.js" ></script>
-        <script charset="iso-8859-1" type="text/javascript" src="assets/js/jquery-1.8.0.min.js"></script>
+        <script charset="iso-8859-1" type="text/javascript" src="assets/js/jquery-1.9.1.min.js"></script>
         <script charset="iso-8859-1" type="text/javascript" src="assets/js/jquery.nivo.slider.js"></script>
         <script charset="iso-8859-1" type="text/javascript" src="assets/js/jquery.roundabout.min.js"></script>
         <script charset="iso-8859-1" type="text/javascript" src="assets/js/bootstrap.min.js"></script>

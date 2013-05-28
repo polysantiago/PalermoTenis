@@ -1,0 +1,38 @@
+@CHARSET "ISO-8859-1";
+
+#okMsg {
+	width: 725px;
+	float: left;
+	padding-left: 15px;
+	padding-top: 15px;
+	display: block;
+	position: absolute;
+	top: 175px;
+	font-size: 11px;
+}
+
+#okMsg a,#okMsg a:visited,#okMsg a:active {
+	text-decoration: none;
+	color: #F86402;
+}
+
+#okMsg a:hover {
+	text-decoration: underline;
+}
+
+#okMsg span.msgGracias {
+	font-size: 18px;
+	font-weight: bold;
+}
+
+#okMsg span.texto-activo {
+	color: #000000;
+}
+
+#okMsg .naranja {
+	color: #E45B00;
+}
+
+#okMsg .naranja a {
+	color: #F86402;
+}

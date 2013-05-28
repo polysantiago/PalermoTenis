@@ -2,23 +2,16 @@ package com.palermotenis.controller.struts.actions.admin.ventas;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.lang.RandomStringUtils;
-import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.Maps;
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.model.beans.Pago;
-import com.palermotenis.model.beans.Stock;
-import com.palermotenis.model.beans.clientes.Cliente;
-import com.palermotenis.model.beans.precios.Precio;
 import com.palermotenis.model.beans.ventas.Listado;
-import com.palermotenis.model.beans.ventas.StockListado;
-import com.palermotenis.model.beans.ventas.StockListadoPK;
-import com.palermotenis.model.dao.Dao;
-import com.palermotenis.model.service.precios.impl.PrecioService;
+import com.palermotenis.model.service.ventas.VentaService;
 
 public class Resumen extends ActionSupport {
 
@@ -33,64 +26,24 @@ public class Resumen extends ActionSupport {
     private List<String> stocks = new ArrayList<String>();
 
     @Autowired
-    private Dao<Pago, Integer> pagoDao;
-
-    @Autowired
-    private Dao<Stock, Integer> stockDao;
-
-    @Autowired
-    private Dao<Listado, String> listadoDao;
-
-    @Autowired
-    private Dao<Cliente, Integer> clienteDao;
-
-    @Autowired
-    private PrecioService precioService;
+    private VentaService ventaService;
 
     @Override
     public String execute() {
-
-        double total = 0.00;
-        listado = new Listado(RandomStringUtils.randomAlphanumeric(10));
-        List<StockListado> stocksListado = new ArrayList<StockListado>();
-        Pago pago = pagoDao.find(pagoId);
-
-        for (String str : stocks) {
-            String[] s = str.split(",");
-            Integer stockId = Integer.parseInt(s[0]);
-            Integer cantidad = Integer.parseInt(s[1]);
-
-            StockListado stockListado = new StockListado();
-            Stock stock = stockDao.find(stockId);
-            Precio precio = precioService.estimarPrecio(stock, pago, cuotas);
-
-            stockListado.setStockListadoPK(new StockListadoPK(listado, stock));
-            stockListado.setCantidad(cantidad);
-            stockListado.setPrecioUnitario(precioService.calculatePrecioUnitarioPesos(precio));
-            stockListado.setSubtotal(precioService.calculateSubtotalPesos(precio, cantidad));
-
-            stocksListado.add(stockListado);
-            total += stockListado.getSubtotal();
+        Map<Integer, Integer> stocksMap = Maps.newLinkedHashMap();
+        for (String stock : stocks) {
+            String[] splitted = stock.split(",");
+            Integer stockId = Integer.parseInt(splitted[0]);
+            Integer cantidad = Integer.parseInt(splitted[1]);
+            stocksMap.put(stockId, cantidad);
         }
 
-        listado.setTotal(total);
-        listado.setStockListados(stocksListado);
-        listado.setPago(pago);
-        listado.setCuotas(cuotas);
-        listado.setCodAutorizacion(RandomStringUtils.randomAlphanumeric(10));
-        listado.setCliente(clienteDao.find(clienteId));
-        listado.setAutorizado(true);
-
         try {
-            listadoDao.create(listado);
-        } catch (HibernateException ex) {
-            Logger.getLogger(Resumen.class.getName()).log(Level.SEVERE, null, ex);
-            return ERROR;
+            listado = ventaService.registerNewPurchase(pagoId, cuotas, clienteId, stocksMap);
         } catch (Exception ex) {
             Logger.getLogger(Resumen.class.getName()).log(Level.SEVERE, null, ex);
             return ERROR;
         }
-
         return SUCCESS;
     }
 

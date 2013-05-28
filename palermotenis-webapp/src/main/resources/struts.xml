@@ -6,6 +6,7 @@
 <struts>
     <package name="default" namespace="/" extends="struts-default,json-default">
         <result-types>
+        	<result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult"/>
             <result-type name="bytesResult" class="com.palermotenis.controller.results.BytesResult" />
             <result-type name="gzipResult" class="com.palermotenis.controller.results.GZIPResult" />
            	<result-type name="json_error" class="com.palermotenis.controller.results.JSONExceptionResult" />
@@ -14,7 +15,7 @@
         <default-action-ref name="index" />
         
         <global-results>
-        	<result name="error">/error.jsp</result>
+        	<result name="error" type="tiles">global.error</result>
         	<result name="json_error" type="json_error">
         		<param name="statusCode">500</param>
         	</result>
@@ -26,7 +27,19 @@
         </global-exception-mappings>
 
         <action name="index">
-            <result>/index.jsp</result>
+            <result type="tiles">main</result>
+        </action>
+        
+        <action name="Envios">
+        	<result type="tiles">envios</result>
+        </action>
+        
+        <action name="Ubicacion">
+        	<result type="tiles">ubicacion</result>
+        </action>
+        
+        <action name="Palermo">
+        	<result type="tiles">palermo</result>
         </action>
 
         <action name="ListarTipoProductos" class="com.palermotenis.controller.struts.actions.ListarTipoProductos">
@@ -55,21 +68,21 @@
         </action>
 
         <action name="MostrarProducto" class="com.palermotenis.controller.struts.actions.MostrarProducto">
-            <result>/Producto.jsp</result>
+            <result>/pages/fragments/producto.jsp</result>
         </action>
         
         <action name="GetCategorias" class="com.palermotenis.controller.struts.actions.GetCategorias" />      
 
         <action name="GetPrecioValorPosible" class="com.palermotenis.controller.struts.actions.GetPrecioValorPosible">
-            <result>/Precio.jsp</result>
+            <result>/pages/fragments/precio.jsp</result>
         </action>
 
         <action name="MostrarMiniaturas_*" method="{1}" class="com.palermotenis.controller.struts.actions.MostrarMiniaturas">
-            <result>/Modelos.jsp</result>
+            <result>/pages/fragments/modelos.jsp</result>
         </action>
 
         <action name="MostrarOfertas" class="com.palermotenis.controller.struts.actions.MostrarOfertas">
-            <result>/Ofertas.jsp</result>
+            <result>/pages/fragments/ofertas.jsp</result>
         </action>
         
         <action name="Latest" class="com.palermotenis.controller.struts.actions.Latest">

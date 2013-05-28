@@ -1,6 +1,5 @@
 package com.palermotenis.controller.struts.actions.admin.compras;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -9,14 +8,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.google.common.collect.Lists;
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.model.beans.Stock;
-import com.palermotenis.model.beans.compras.ProductoCompra;
-import com.palermotenis.model.beans.proveedores.Proveedor;
 import com.palermotenis.model.beans.usuarios.Usuario;
 import com.palermotenis.model.service.compras.CompraService;
-import com.palermotenis.model.service.proveedores.ProveedorService;
-import com.palermotenis.model.service.stock.StockService;
-import com.palermotenis.util.StringUtility;
 
 public class RegistrarCompra extends ActionSupport {
 
@@ -31,32 +24,21 @@ public class RegistrarCompra extends ActionSupport {
     @Autowired
     private CompraService compraService;
 
-    @Autowired
-    private StockService stockService;
-
-    @Autowired
-    private ProveedorService proveedorService;
-
     @Override
     public String execute() {
-        List<ProductoCompra> productosCompra = new ArrayList<ProductoCompra>();
-        for (String str : stocks) {
-            String[] s = str.split(",");
-            Integer stockId = Integer.parseInt(s[0]);
-            Integer cantidad = Integer.parseInt(s[1]);
-            Integer proveedorId = Integer.parseInt(s[2]);
-            Double costo = Double.parseDouble(s[3]);
+        List<List<? extends Number>> stocksList = Lists.newArrayList();
+        for (String stock : stocks) {
+            String[] splitted = stock.split(",");
+            Integer stockId = Integer.parseInt(splitted[0]);
+            Integer cantidad = Integer.parseInt(splitted[1]);
+            Integer proveedorId = Integer.parseInt(splitted[2]);
+            Double costo = Double.parseDouble(splitted[3]);
 
-            Stock stock = stockService.getStockById(stockId);
-            Proveedor proveedor = proveedorService.getProveedorById(proveedorId);
-
-            String stockName = StringUtility.buildNameFromStock(stock);
-            ProductoCompra productoCompra = new ProductoCompra(stockName, costo, cantidad, proveedor, stock);
-            productosCompra.add(productoCompra);
+            stocksList.add(Lists.newArrayList(stockId, cantidad, proveedorId, costo));
         }
 
         try {
-            compraService.registerNewPurchase(usuario, productosCompra);
+            compraService.registerNewPurchase(usuario, stocksList);
         } catch (Exception e) {
             LOGGER.error("Error al crear la compra", e);
             return ERROR;

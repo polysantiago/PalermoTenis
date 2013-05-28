@@ -8,7 +8,7 @@
   </group>
 
   <group name='jquery-main'>
-    <js>/js/jquery/src/jquery-1.4.2.js</js>
+    <js>/js/jquery/src/jquery-1.9.1.js</js>
 	<js>/js/jquery/src/jquery.treeview.js</js>
 	<js>/js/jquery/src/jquery.treeview.async.js</js>
 	<js>/js/jquery/src/jquery.autocomplete.js</js>

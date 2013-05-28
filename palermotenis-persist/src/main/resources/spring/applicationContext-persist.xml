@@ -2,10 +2,25 @@
 <beans
     xmlns="http://www.springframework.org/schema/beans"
     xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:context="http://www.springframework.org/schema/context"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
+
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="locations">
+			<list>
+				<value>classpath:database.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<util:properties id="jpaProperties" location="classpath:jpa.properties" />
     
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
 
@@ -18,19 +33,7 @@
                 <property name="showSql" value="false"/>
             </bean>
         </property>
-        <property name="jpaPropertyMap">
-            <props>
-                <prop key="hibernate.show_sql">false</prop>
-                <prop key="hibernate.current_session_context_class">jta</prop>
-                <prop key="hibernate.format_sql">false</prop>
-                <prop key="hibernate.jdbc.use_get_generated_keys">false</prop>
-                <prop key="hibernate.connection.isolation">1</prop>
-                <prop key="hibernate.connection.release_mode">on_close</prop>
-                <prop key="hibernate.cache.provider_class">org.hibernate.cache.SingletonEhCacheProvider</prop>
-                <prop key="hibernate.cache.use_query_cache">true</prop>
-                <prop key="hibernate.cache.use_second_level_cache">true</prop>
-            </props>
-        </property>
+        <property name="jpaPropertyMap" ref="jpaProperties" />
     </bean>
 
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
@@ -54,13 +57,13 @@
         <property name="numHelperThreads" value="5" />
     </bean>
 
-    <bean id="jtaTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
 
-    <tx:annotation-driven transaction-manager="jtaTransactionManager" />
+    <tx:annotation-driven transaction-manager="transactionManager" />
     
-    <tx:advice id="txAdvice" transaction-manager="jtaTransactionManager">
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
     	<tx:attributes>
     		<tx:method name="get*" no-rollback-for="javax.persistence.NoResultException,javax.persistence.EntityNotFoundException" read-only="true"/>
     		<tx:method name="*"/>

@@ -1,0 +1,45 @@
+@CHARSET "ISO-8859-1";
+
+body {
+	overflow: visible;
+}
+
+#registrarForm {
+	width: 725px;
+	float: left;
+	padding-left: 15px;
+	padding-top: 15px;
+	display: block;
+	position: absolute;
+	top: 110px;
+}
+
+.form-registrar {
+	width: 710px;
+	font-size: 11px;
+	border-width: 1px;
+	border-color: #CCCCCC;
+	border-style: solid;
+	background-color: #e5e5e5;
+}
+
+.form-registrar td {
+	border-spacing: 0px;
+	padding: 5px;
+}
+
+#registrarForm {
+	margin-top: 35px;
+	width: 712px;
+}
+
+#registrarForm #titulo {
+	background-color: #cccccc;
+	font-size: 11px;
+	border: 1px solid #CCCCCC;
+}
+
+.errorMessage {
+	color: red;
+	padding: 25px;
+}

@@ -86,7 +86,7 @@ public class AtributoServiceImpl implements AtributoService {
         AtributoSimple atributoSimple = new AtributoSimple(tipoAtributo, producto);
 
         Valor valorObject = new Valor(tipoAtributo);
-        Object object = ConvertUtils.convert(valorObject, tipoAtributo.getClase());
+        Object object = ConvertUtils.convert(valor, tipoAtributo.getClase());
         valorObject.setUnidad(object);
 
         atributoSimple.setValor(valorObject);

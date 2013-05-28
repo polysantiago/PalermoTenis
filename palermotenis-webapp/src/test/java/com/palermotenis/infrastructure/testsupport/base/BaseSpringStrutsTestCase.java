@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
 
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -17,6 +18,7 @@ import com.opensymphony.xwork2.ActionSupport;
 @ContextConfiguration(value =
     { "classpath:/spring/applicationContext-services.xml", "classpath:/spring/applicationContext-persist.xml",
             "classpath:/spring/test-auxiliary-services.xml" })
+@TransactionConfiguration(defaultRollback = false)
 public abstract class BaseSpringStrutsTestCase<T extends ActionSupport> extends StrutsSpringJUnit4TestCase<T> {
 
     private static final String DEFAULT_NAMESPACE = "/";

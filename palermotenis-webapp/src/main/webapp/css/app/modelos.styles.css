@@ -1,0 +1,72 @@
+@CHARSET "ISO-8859-1";
+
+#contenidos {
+	width: auto;
+}
+
+.modelo {
+	float: left;
+	border-bottom: 1px solid #F8F6F6;
+	width: 152px;
+	margin: 10px 10px;
+	height: 300px;
+	position: relative;
+}
+
+.content {
+	width: 152px;
+}
+
+.imagenDiv {
+	height: 120px;
+	cursor: pointer;
+}
+
+.descWrapper {
+	display: block;
+}
+
+.nombre,.descCorta {
+	color: #000000;
+	font-family: 'Segoe UI', 'Lucida Sans Unicode', 'Lucida Grande',
+		sans-serif;
+	font-size: 11px;
+	line-height: 14px;
+	font-weight: normal;
+}
+
+.nombre {
+	margin-top: 5px;
+	text-decoration: none;
+	text-transform: uppercase;
+	font-weight: bold;
+}
+
+a,a:active,a:visited {
+	text-decoration: none;
+}
+
+.content .comp {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
+.precio {
+	margin: 10px 0;
+	font-weight: bold;
+	width: 152px;
+	text-align: center;
+}
+
+.precio strike {
+	font-size: 11px;
+}
+
+.precio div span.oferta {
+	color: #F86402;
+}
+
+.precio span.consultar {
+	font-size: 13px;
+}

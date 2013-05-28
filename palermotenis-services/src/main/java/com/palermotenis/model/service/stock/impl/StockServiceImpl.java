@@ -151,6 +151,13 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Transactional
+    public void onSold(Stock stock, Integer quantity) {
+        stock.onSold(quantity);
+        stockDao.edit(stock);
+    }
+
+    @Override
     public Stock getStockByProductoClasificable(Integer productoId) {
         Producto producto = getProducto(productoId);
         return stockDao.findBy("ProductoClasificable", "producto", producto);

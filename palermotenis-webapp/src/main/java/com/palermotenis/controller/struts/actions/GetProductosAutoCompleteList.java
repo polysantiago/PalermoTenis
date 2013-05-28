@@ -22,7 +22,7 @@ import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.productos.tipos.TipoProducto;
 import com.palermotenis.model.service.costos.CostoService;
 import com.palermotenis.model.service.pagos.PagoService;
-import com.palermotenis.model.service.precios.impl.PrecioService;
+import com.palermotenis.model.service.precios.PrecioService;
 import com.palermotenis.model.service.stock.StockService;
 
 public class GetProductosAutoCompleteList extends InputStreamActionSupport {

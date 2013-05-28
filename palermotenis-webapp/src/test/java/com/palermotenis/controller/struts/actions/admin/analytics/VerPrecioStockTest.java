@@ -20,7 +20,7 @@ import com.palermotenis.infrastructure.testsupport.base.BaseSpringStrutsTestCase
 import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.precios.Precio;
 import com.palermotenis.model.beans.productos.Producto;
-import com.palermotenis.model.service.precios.impl.PrecioService;
+import com.palermotenis.model.service.precios.PrecioService;
 import com.palermotenis.model.service.stock.StockService;
 import com.palermotenis.support.TestPrecioService;
 import com.palermotenis.support.TestProductoService;

@@ -4,24 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.palermotenis.model.beans.Stock;
 import com.palermotenis.model.beans.ventas.Listado;
-import com.palermotenis.model.beans.ventas.StockListado;
-import com.palermotenis.model.beans.ventas.StockListadoPK;
-import com.palermotenis.model.dao.Dao;
 import com.palermotenis.model.service.security.SecurityService;
+import com.palermotenis.model.service.ventas.VentaService;
 
-/**
- * 
- * @author Poly
- */
 public class ListadoAction extends ActionSupport {
 
     private static final long serialVersionUID = 7498016206955120742L;
+
     private static final Logger logger = Logger.getLogger(ListadoAction.class);
     private static final String NEED_AUTHORIZATION = "needAuth";
 
@@ -34,13 +27,7 @@ public class ListadoAction extends ActionSupport {
     private String accion;
 
     @Autowired
-    private Dao<Listado, String> listadoDao;
-
-    @Autowired
-    private Dao<StockListado, StockListadoPK> stockListadoDao;
-
-    @Autowired
-    private Dao<Stock, Integer> stockDao;
+    private VentaService ventaService;
 
     @Autowired
     private SecurityService securityService;
@@ -57,20 +44,8 @@ public class ListadoAction extends ActionSupport {
     }
 
     private String actualizarCantidades() {
-        listado = listadoDao.find(listadoId);
-
-        for (Integer i : cantidades.keySet()) {
-            Stock stock = stockDao.find(i);
-            StockListado sl = stockListadoDao.find(new StockListadoPK(listado, stock));
-            sl.setCantidad(cantidades.get(i));
-            sl.setSubtotal(sl.getPrecioUnitario() * cantidades.get(i));
-        }
-        updateTotal();
         try {
-            listadoDao.edit(listado);
-        } catch (HibernateException ex) {
-            logger.error("No existe la entidad", ex);
-            return ERROR;
+            listado = ventaService.updateListingQuantities(listadoId, cantidades);
         } catch (Exception ex) {
             logger.error("Error al editar la entidad", ex);
             return ERROR;
@@ -79,29 +54,9 @@ public class ListadoAction extends ActionSupport {
     }
 
     private String actualizarPrecios() {
-        listado = listadoDao.find(listadoId);
-
-        if (securityService.isLoggedInUserSupervisor()) {
-            listado.setAutorizado(true);
-        } else {
-            listado.setAutorizado(false);
-        }
-
-        for (Integer i : precios.keySet()) {
-            Stock stock = stockDao.find(i);
-            StockListadoPK pk = new StockListadoPK(listado, stock);
-            StockListado sl = stockListadoDao.find(pk);
-            sl.setPrecioUnitario(precios.get(i));
-            sl.setSubtotal(sl.getCantidad() * precios.get(i));
-        }
-
-        updateTotal();
-
         try {
-            listadoDao.edit(listado);
-        } catch (HibernateException ex) {
-            logger.error("No existe la entidad", ex);
-            return ERROR;
+            boolean authorized = securityService.isLoggedInUserSupervisor();
+            listado = ventaService.updateListingPrices(listadoId, precios, authorized);
         } catch (Exception ex) {
             logger.error("Error al editar la entidad", ex);
             return ERROR;
@@ -112,14 +67,6 @@ public class ListadoAction extends ActionSupport {
         }
 
         return SUCCESS;
-    }
-
-    private void updateTotal() {
-        double total = 0.00;
-        for (StockListado sl : listado.getStocksListado()) {
-            total += sl.getSubtotal();
-        }
-        listado.setTotal(total);
     }
 
     public void setAccion(String accion) {

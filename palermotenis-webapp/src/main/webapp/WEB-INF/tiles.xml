@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+
+<tiles-definitions>
+
+	<definition name="base" template="/layouts/base.jsp">
+		<put-attribute name="title" value="Palermo Tenis" />
+		<put-attribute name="data" value="/js/common.js" />
+		<put-attribute name="header" value="/WEB-INF/jspf/header.jspf" />
+		<put-list-attribute name="css">
+			<add-attribute value="/css/app/palermo.styles.css" />
+		</put-list-attribute>
+	</definition>
+	
+	<definition name="main" extends="base">
+		<put-attribute name="require" value="app/main" />
+		<put-attribute name="body" value="/pages/main.jsp" />
+		<put-list-attribute name="css">
+			<add-attribute value="/css/app/main.styles.css" />
+			<add-attribute value="/css/jquery/jquery.lightbox-0.5.css" />
+			<add-attribute value="/css/jquery/jquery.treeview.css" />
+			<add-attribute value="/css/jquery/jquery.autocomplete.css" />
+		</put-list-attribute>
+	</definition>
+	
+	<definition name="palermo" extends="base">
+		<put-attribute name="body" value="/pages/palermo.jsp" />
+	</definition>
+	
+	<definition name="envios" extends="base">
+		<put-attribute name="require" value="app/envios" />
+		<put-attribute name="body" value="/pages/envios.jsp" />
+	</definition>
+	
+	<definition name="ubicacion" extends="base">
+		<put-attribute name="require" value="app/ubicacion" />
+		<put-attribute name="body" value="/pages/ubicacion.jsp" />
+		<put-list-attribute name="css">
+			<add-attribute value="/css/app/palermo.styles.css" />
+			<add-attribute value="/css/app/ubicacion.styles.css" />
+		</put-list-attribute>		
+	</definition>
+	
+	
+	
+	<definition name="global.error" extends="base">
+		<put-attribute name="body" value="/pages/error.jsp" />
+	</definition>
+	
+	<definition name="clientes.web.login" extends="base">
+		<put-attribute name="body" value="/pages/clientes_web/login.jsp" />
+		<put-list-attribute name="css">
+			<add-attribute value="/css/app/clientes_web/login.styles.css" />
+		</put-list-attribute>				
+	</definition>
+	
+	<definition name="clientes.web.access.denied" extends="base">
+		<put-attribute name="body" value="/pages/clientes_web/access_denied.jsp" />	
+		<put-list-attribute name="css">
+			<add-attribute value="/css/app/clientes_web/access_denid.styles.css" />
+		</put-list-attribute>	
+	</definition>
+
+	<definition name="clientes.web.consulta" extends="base">
+		<put-attribute name="require" value="clientes/consulta" />
+		<put-attribute name="body" value="/pages/clientes_web/consulta.jsp" />
+	</definition>
+	
+	<definition name="clientes.web.consulta.ok" extends="base">
+		<put-attribute name="require" value="clientes/consulta_ok" />
+		<put-attribute name="body" value="/pages/clientes_web/consulta_ok.jsp" />
+		<put-list-attribute name="css">
+			<add-attribute value="/css/app/clientes_web/consulta_ok.styles.css" />
+		</put-list-attribute>
+	</definition>
+	
+	<definition name="clientes.web.registracion" extends="base">
+		<put-attribute name="require" value="clientes/registracion" />
+		<put-attribute name="body" value="/pages/clientes_web/registracion.jsp" />
+		<put-list-attribute name="css">
+			<add-attribute value="/css/app/palermo.styles.css" />
+			<add-attribute value="/css/app/registracion.styles.css" />
+		</put-list-attribute>				
+	</definition>
+	
+	<definition name="carrito.index" extends="base">
+		<put-attribute name="require" value="carrito/main" />
+		<put-attribute name="body" value="/pages/carrito/main.jsp" />	
+		<put-list-attribute name="css">
+			<add-attribute value="/css/app/carrito/main.styles.css" />
+		</put-list-attribute>			
+	</definition>
+	
+	<definition name="carrito.checkout" extends="base">
+		<put-attribute name="body" value="/pages/carrito/checkout.jsp" />	
+	</definition>
+	
+	<definition name="carrito.checkout.ok" extends="base">
+		<put-attribute name="body" value="/pages/carrito/checkout_ok.jsp" />
+		<put-attribute name="require" value="carrito/checkout.ok" />
+		<put-list-attribute name="css">
+			<add-attribute value="/css/app/palermo.styles.css" />
+			<add-attribute value="/css/app/carrito/checkout.ok.styles.css" />
+		</put-list-attribute>	
+	</definition>
+	
+	<definition name="carrito.checkout.error" extends="base">
+		<put-attribute name="body" value="/pages/carrito/checkout_error.jsp" />
+		<put-list-attribute name="css">
+			<add-attribute value="/css/app/palermo.styles.css" />
+			<add-attribute value="/css/app/carrito/checkout.error.styles.css" />
+		</put-list-attribute>	
+	</definition>
+	
+</tiles-definitions>

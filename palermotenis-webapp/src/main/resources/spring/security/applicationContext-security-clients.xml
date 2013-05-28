@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:sec="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://www.springframework.org/schema/security
+       http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+    <bean id="clientsLogoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
+        <constructor-arg value="/" />
+        <constructor-arg>
+            <list>
+                <bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler" />
+            </list>
+        </constructor-arg>
+        <property name="filterProcessesUrl" value="/clientes_web/Logout" />
+    </bean>
+
+    <bean id="clientsExceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">
+        <property name="authenticationEntryPoint" ref="clientsAuthenticationEntryPoint"/>
+        <property name="accessDeniedHandler" ref="clientsAccessDeniedHandler"/>
+    </bean>
+
+    <bean id="clientsAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+        <property name="loginFormUrl" value="/clientes_web/Login"/>
+    </bean>
+
+    <bean id="clientsAccessDeniedHandler" class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
+        <property name="errorPage" value="/clientes_web/AccessDenied"/>
+    </bean>
+
+    <bean id="clientsFilterSecurityInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <property name="accessDecisionManager" ref="accessDecisionManager"/>
+        <property name="securityMetadataSource">
+            <sec:filter-security-metadata-source request-matcher="ant">
+                <sec:intercept-url pattern="/carrito/checkout/**" access="ROLE_CLIENTE"/>
+            </sec:filter-security-metadata-source>
+        </property>
+    </bean>
+
+    <!-- Authentication Handlers -->
+    <bean id="clientsAuthenticationSuccessHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
+        <property name="defaultTargetUrl" value="/" />
+    </bean>
+    <bean id="clientsAuthenticationFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+        <property name="defaultFailureUrl" value="/clientes_web/login.jsp?loginError" />
+    </bean>
+
+    <bean id="clientsAuthenticationFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <property name="filterProcessesUrl" value="/clientes_web/SecurityCheck"/>
+        <property name="authenticationSuccessHandler" ref="clientsAuthenticationSuccessHandler" />
+        <property name="authenticationFailureHandler" ref="clientsAuthenticationFailureHandler" />
+        <property name="messageSource" ref="messageSource" />
+        <property name="rememberMeServices" ref="rememberMeServices" />
+    </bean>
+
+</beans>

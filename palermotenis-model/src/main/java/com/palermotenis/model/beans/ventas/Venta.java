@@ -1,16 +1,13 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 
 package com.palermotenis.model.beans.ventas;
 
-import com.palermotenis.model.beans.Pago;
-import com.palermotenis.model.beans.clientes.Cliente;
-import com.palermotenis.model.beans.usuarios.Usuario;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -27,18 +24,22 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.google.common.collect.Lists;
+import com.palermotenis.model.beans.Pago;
+import com.palermotenis.model.beans.clientes.Cliente;
+import com.palermotenis.model.beans.usuarios.Usuario;
+
 /**
- *
+ * 
  * @author Poly
  */
 
 @Entity
 @Table(name = "ventas")
-@NamedQueries({
-    @NamedQuery(name = "Venta.findAll", query = "SELECT v FROM Venta v"),
-    @NamedQuery(name = "Venta.findById", query = "SELECT v FROM Venta v WHERE v.id = :id"),
-    @NamedQuery(name = "Venta.findByFecha", query = "SELECT v FROM Venta v WHERE v.fecha = :fecha")
-})
+@NamedQueries(
+    { @NamedQuery(name = "Venta.findAll", query = "SELECT v FROM Venta v"),
+            @NamedQuery(name = "Venta.findById", query = "SELECT v FROM Venta v WHERE v.id = :id"),
+            @NamedQuery(name = "Venta.findByFecha", query = "SELECT v FROM Venta v WHERE v.fecha = :fecha") })
 public class Venta implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -46,7 +47,7 @@ public class Venta implements Serializable {
     @Basic(optional = false)
     @Column(name = "ID")
     private Integer id;
-    
+
     @Basic(optional = false)
     @Column(name = "Fecha")
     @Temporal(TemporalType.TIMESTAMP)
@@ -69,7 +70,7 @@ public class Venta implements Serializable {
     private Pago pago;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "venta")
-    private Collection<ProductoVenta> productos;
+    private List<ProductoVenta> productosVenta = Lists.newArrayList();
 
     @JoinColumn(name = "Usuario", referencedColumnName = "usuario")
     @ManyToOne(optional = false)
@@ -123,26 +124,28 @@ public class Venta implements Serializable {
         this.pago = pago;
     }
 
-    /**
-     * @return the cliente
-     */
     public Cliente getCliente() {
         return cliente;
     }
 
-    /**
-     * @param cliente the cliente to set
-     */
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
 
-    public Collection<ProductoVenta> getProductos() {
-        return productos;
+    public void addProductoVenta(ProductoVenta productoVenta) {
+        if (productosVenta.contains(productoVenta)) {
+            return;
+        }
+        productosVenta.add(productoVenta);
+        productoVenta.setVenta(this);
     }
 
-    public void setProductos(Collection<ProductoVenta> productos) {
-        this.productos = productos;
+    public List<ProductoVenta> getProductos() {
+        return productosVenta;
+    }
+
+    public void setProductos(List<ProductoVenta> productos) {
+        this.productosVenta = productos;
     }
 
     public Usuario getUsuario() {

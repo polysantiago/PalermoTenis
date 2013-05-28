@@ -18,11 +18,12 @@
 	<properties>
 		<org.springframework.version>3.2.2.RELEASE</org.springframework.version>
 		<org.springframework.security.version>3.1.3.RELEASE</org.springframework.security.version>
-		<org.apache.struts.version>2.3.12</org.apache.struts.version>
+		<org.apache.struts.version>2.3.8</org.apache.struts.version>
 		<ro.isdc.wro4j.version>1.6.3</ro.isdc.wro4j.version>
 	</properties>
 	
 	<build>
+		<finalName>palermotenis</finalName>
 		<pluginManagement>
 			<plugins>
 				<!--This plugin's configuration is used to store Eclipse m2e settings 
@@ -54,6 +55,16 @@
 			</plugins>
 		</pluginManagement>
 		<plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <configuration>
+                    <wtpversion>2.0</wtpversion>
+                    <buildOutputDirectory>target/eclipse/classes</buildOutputDirectory>
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadocs>false</downloadJavadocs>
+                </configuration>
+            </plugin>
 			<plugin>
 				<groupId>ro.isdc.wro4j</groupId>
 				<artifactId>wro4j-maven-plugin</artifactId>
@@ -144,12 +155,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.struts</groupId>
-			<artifactId>struts2-junit-plugin</artifactId>
-			<version>${org.apache.struts.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.struts</groupId>
 			<artifactId>struts2-json-plugin</artifactId>
 			<version>${org.apache.struts.version}</version>
 		</dependency>
@@ -157,6 +162,17 @@
 			<groupId>org.apache.struts</groupId>
 			<artifactId>struts2-jasperreports-plugin</artifactId>
 			<version>${org.apache.struts.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-tiles-plugin</artifactId>
+			<version>${org.apache.struts.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-junit-plugin</artifactId>
+			<version>${org.apache.struts.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

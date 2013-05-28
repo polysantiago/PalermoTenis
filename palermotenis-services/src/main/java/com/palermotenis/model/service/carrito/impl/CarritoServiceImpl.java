@@ -22,7 +22,7 @@ import com.palermotenis.model.beans.precios.Precio;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.service.carrito.CarritoService;
 import com.palermotenis.model.service.pagos.PagoService;
-import com.palermotenis.model.service.precios.impl.PrecioService;
+import com.palermotenis.model.service.precios.PrecioService;
 import com.palermotenis.model.service.presentaciones.PresentacionService;
 import com.palermotenis.model.service.productos.ProductoService;
 import com.palermotenis.model.service.stock.StockService;

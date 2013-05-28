@@ -1,0 +1,15 @@
+@CHARSET "ISO-8859-1";
+
+body {
+	overflow: visible;
+}
+
+#login {
+	width: 725px;
+	float: left;
+	padding-left: 15px;
+	padding-top: 15px;
+	display: block;
+	position: absolute;
+	top: 175px;
+}

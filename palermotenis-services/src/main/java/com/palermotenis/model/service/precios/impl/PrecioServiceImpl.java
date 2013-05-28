@@ -36,9 +36,10 @@ import com.palermotenis.model.dao.precios.PrecioPresentacionDao;
 import com.palermotenis.model.dao.precios.PrecioUnidadDao;
 import com.palermotenis.model.service.monedas.MonedaService;
 import com.palermotenis.model.service.pagos.PagoService;
+import com.palermotenis.model.service.precios.PrecioService;
 import com.palermotenis.model.service.presentaciones.PresentacionService;
 import com.palermotenis.model.service.productos.ProductoService;
-import com.palermotenis.model.ws.CurrencyConvertor;
+import com.palermotenis.model.webservices.CurrencyConvertor;
 
 @Service("precioService")
 public class PrecioServiceImpl implements PrecioService {
@@ -320,6 +321,11 @@ public class PrecioServiceImpl implements PrecioService {
     @Override
     public Precio getPrecioById(PrecioPK precioPk) {
         return getPrecio(precioPk);
+    }
+
+    @Override
+    public List<? extends Precio> getPrecios(Integer productoId) {
+        return getPrecios(productoId, null);
     }
 
     @Override

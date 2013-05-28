@@ -63,6 +63,11 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
+    public Cliente getClienteById(Integer clienteId) {
+        return clienteDao.find(clienteId);
+    }
+
+    @Override
     public List<Cliente> getClientesByNombre(String nombre) {
         return clienteDao.query("Nombre", "nombre", nombre);
     }

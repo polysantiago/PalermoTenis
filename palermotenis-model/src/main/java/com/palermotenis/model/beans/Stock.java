@@ -1,6 +1,3 @@
-/*
- * To change this template, choose Tools | Templates and open the template in the editor.
- */
 package com.palermotenis.model.beans;
 
 import java.io.Serializable;
@@ -27,10 +24,6 @@ import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
 import com.palermotenis.model.beans.valores.ValorClasificatorio;
 
-/**
- * 
- * @author Poly
- */
 @Entity
 @Table(name = "stock")
 @NamedQueries(
@@ -100,7 +93,8 @@ import com.palermotenis.model.beans.valores.ValorClasificatorio;
             @NamedQuery(name = "Stock.findBySucursal", query = "SELECT s FROM Stock s WHERE s.sucursal = :sucursal") })
 public class Stock implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 5472751555314019947L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -193,17 +187,10 @@ public class Stock implements Serializable {
         this.valorClasificatorio = valorClasificatorio;
     }
 
-    /**
-     * @return the presentacion
-     */
     public Presentacion getPresentacion() {
         return presentacion;
     }
 
-    /**
-     * @param presentacion
-     *            the presentacion to set
-     */
     public void setPresentacion(Presentacion presentacion) {
         this.presentacion = presentacion;
     }
@@ -233,6 +220,12 @@ public class Stock implements Serializable {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
         return hash;
+    }
+
+    public void onSold(Integer quantity) {
+        if (stock - quantity >= 0) {
+            stock -= quantity;
+        }
     }
 
     @Override

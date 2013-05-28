@@ -1,14 +1,12 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 
 package com.palermotenis.model.beans.ventas;
 
-import com.palermotenis.model.beans.Pago;
-import com.palermotenis.model.beans.clientes.Cliente;
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,19 +19,25 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.google.common.collect.Lists;
+import com.palermotenis.model.beans.Pago;
+import com.palermotenis.model.beans.clientes.Cliente;
+
 /**
- *
+ * 
  * @author Poly
  */
 @Entity
 @Table(name = "listados")
-@NamedQueries({
-    @NamedQuery(name = "Listado.findAll", query = "SELECT l FROM Listado l"),
-    @NamedQuery(name = "Listado.findById", query = "SELECT l FROM Listado l WHERE l.id = :id"),
-    @NamedQuery(name = "Listado.findByTotal", query = "SELECT l FROM Listado l WHERE l.total = :total"),
-    @NamedQuery(name = "Listado.findByCodAutorizacion", query = "SELECT l FROM Listado l WHERE l.codAutorizacion = :codAutorizacion"),
-    @NamedQuery(name = "Listado.findByAutorizado", query = "SELECT l FROM Listado l WHERE l.autorizado = :autorizado")
-})
+@NamedQueries(
+    {
+            @NamedQuery(name = "Listado.findAll", query = "SELECT l FROM Listado l"),
+            @NamedQuery(name = "Listado.findById", query = "SELECT l FROM Listado l WHERE l.id = :id"),
+            @NamedQuery(name = "Listado.findByTotal", query = "SELECT l FROM Listado l WHERE l.total = :total"),
+            @NamedQuery(name = "Listado.findByCodAutorizacion",
+                    query = "SELECT l FROM Listado l WHERE l.codAutorizacion = :codAutorizacion"),
+            @NamedQuery(name = "Listado.findByAutorizado",
+                    query = "SELECT l FROM Listado l WHERE l.autorizado = :autorizado") })
 public class Listado implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -66,7 +70,7 @@ public class Listado implements Serializable {
     private int cuotas;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "stockListadoPK.listado")
-    private Collection<StockListado> stocksListado;
+    private List<StockListado> stocksListado = Lists.newArrayList();
 
     public Listado() {
     }
@@ -140,11 +144,19 @@ public class Listado implements Serializable {
         this.cuotas = cuotas;
     }
 
-    public Collection<StockListado> getStocksListado() {
+    public void addStockListado(StockListado stockListado) {
+        if (stocksListado.contains(stockListado)) {
+            return;
+        }
+        stocksListado.add(stockListado);
+        stockListado.getStockListadoPK().setListado(this);
+    }
+
+    public List<StockListado> getStocksListado() {
         return stocksListado;
     }
 
-    public void setStockListados(Collection<StockListado> stocksListado) {
+    public void setStockListados(List<StockListado> stocksListado) {
         this.stocksListado = stocksListado;
     }
 

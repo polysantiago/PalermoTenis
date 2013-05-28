@@ -4,12 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.palermotenis.model.beans.ventas.Listado;
-import com.palermotenis.model.dao.Dao;
+import com.palermotenis.model.service.ventas.VentaService;
 
-/**
- * 
- * @author Poly
- */
 public class ListarListado extends ActionSupport {
 
     private static final long serialVersionUID = 1144958588010468961L;
@@ -19,19 +15,16 @@ public class ListarListado extends ActionSupport {
     private String listadoId;
 
     @Autowired
-    private Dao<Listado, String> listadoDao;
-
-    @Override
-    public String execute() {
-        listado = listadoDao.find(listadoId);
-        return SUCCESS;
-    }
+    private VentaService ventaService;
 
     public void setListadoId(String listadoId) {
         this.listadoId = listadoId;
     }
 
     public Listado getListado() {
+        if (listado == null) {
+            listado = ventaService.getListadoById(listadoId);
+        }
         return listado;
     }
 

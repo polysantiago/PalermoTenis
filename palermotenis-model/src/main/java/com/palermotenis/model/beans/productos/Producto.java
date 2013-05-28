@@ -2,6 +2,8 @@ package com.palermotenis.model.beans.productos;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -123,19 +125,16 @@ public class Producto implements Serializable {
                     + "AND (SELECT COUNT(*) FROM precios_presentaciones pp WHERE pp.Producto = presentaci0_.Producto AND pp.Presentacion = presentaci0_.Presentacion) > 0")
     private Set<Presentacion> presentaciones;
 
-    @OrderBy(clause = "tipoatribu1_.nombre")
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "Producto", updatable = false)
     @Where(clause = "(SELECT t.tipo FROM tipo_atributos t WHERE t.ID = TipoAtributo) = 'S'")
     private List<AtributoSimple> atributosSimples;
 
-    @OrderBy(clause = "tipoatribu1_.nombre")
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "Producto", updatable = false)
     @Where(clause = "(SELECT t.tipo FROM tipo_atributos t WHERE t.ID = TipoAtributo) = 'T'")
     private List<AtributoTipado> atributosTipados;
 
-    @OrderBy(clause = "tipoatribu1_.nombre")
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "Producto", updatable = false)
     @Where(
@@ -435,18 +434,22 @@ public class Producto implements Serializable {
     }
 
     public List<AtributoSimple> getAtributosSimples() {
+        Collections.sort(atributosSimples, new AtributosComparator());
         return atributosSimples;
     }
 
     public List<AtributoTipado> getAtributosTipados() {
+        Collections.sort(atributosTipados, new AtributosComparator());
         return atributosTipados;
     }
 
     public List<AtributoClasificatorio> getAtributosClasificatorios() {
+        Collections.sort(atributosClasificatorios, new AtributosComparator());
         return atributosClasificatorios;
     }
 
     public List<AtributoMultipleValores> getAtributosMultiplesValores() {
+        Collections.sort(atributosMultiplesValores, new AtributosComparator());
         return atributosMultiplesValores;
     }
 
@@ -510,5 +513,14 @@ public class Producto implements Serializable {
         int hash = 7;
         hash = 23 * hash + (this.id != null ? this.id.hashCode() : 0);
         return hash;
+    }
+
+    private class AtributosComparator implements Comparator<Atributo> {
+
+        @Override
+        public int compare(Atributo atributo, Atributo otro) {
+            return atributo.getTipoAtributo().getNombre().compareTo(otro.getTipoAtributo().getNombre());
+        }
+
     }
 }

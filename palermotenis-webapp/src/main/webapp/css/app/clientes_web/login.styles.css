@@ -1,0 +1,71 @@
+@CHARSET "ISO-8859-1";
+
+body {
+	overflow: visible;
+}
+
+#loginForm {
+	width: 725px;
+	float: left;
+	padding-left: 15px;
+	padding-top: 15px;
+	display: block;
+	position: absolute;
+	top: 150px;
+}
+
+#loginWrapper {
+	float: left;
+	margin-right: 25px;
+}
+
+#titulo {
+	background-color: #cccccc;
+	font-size: 11px;
+	border: 1px solid #CCCCCC;
+	padding: 7px;
+}
+
+.form-ingresar {
+	width: 346px;
+	margin-top: 0px;
+	font-size: 11px;
+	border-width: 1px;
+	border-color: #CCCCCC;
+	border-style: solid;
+	background-color: #E5E5E5;
+}
+
+.form-ingresar td {
+	padding: 7px;
+}
+
+#registrar {
+	background-color: #FD9F01;
+	border-color: -moz-use-text-color #CCCCCC #CCCCCC;
+	border-style: none solid solid;
+	border-width: medium 1px 1px;
+	font-size: 11px;
+	padding: 7px;
+}
+
+#registrar a {
+	font-size: 11px;
+	color: #000000;
+}
+
+.label,.checkboxLabel {
+	font-size: 11px;
+	font-weight: normal;
+}
+
+.error {
+	margin-bottom: 5px;
+	width: 346px;
+}
+
+.login-error {
+	font-size: 11px;
+	font-weight: bold;
+	color: red;
+}

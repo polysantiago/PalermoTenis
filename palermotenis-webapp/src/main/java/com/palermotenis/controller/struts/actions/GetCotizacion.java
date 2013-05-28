@@ -2,7 +2,7 @@ package com.palermotenis.controller.struts.actions;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.palermotenis.model.service.precios.impl.PrecioService;
+import com.palermotenis.model.service.precios.PrecioService;
 
 public class GetCotizacion extends InputStreamActionSupport {
 

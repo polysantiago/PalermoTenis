@@ -38,6 +38,8 @@ public interface StockService {
 
     void clearPresentacion(Stock stock);
 
+    void onSold(Stock stock, Integer quantity);
+
     Stock getStockById(Integer stockId);
 
     Stock getStockByProductoClasificable(Integer productoId);

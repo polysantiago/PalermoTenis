@@ -1,0 +1,167 @@
+@CHARSET "ISO-8859-1";
+
+.pics {
+	height: 342px;
+	width: 332px;
+	padding: 0;
+	margin: 0;
+}
+
+.pics img {
+	padding-top: 15px;
+}
+
+#imagenes {
+	float: left;
+	margin-left: 35px;
+}
+
+#foto-producto-normal {
+	display: table-cell;
+	vertical-align: middle;
+	height: 365px;
+}
+
+#foto-producto-normal * {
+	vertical-align: middle;
+}
+
+#foto-producto-normal a {
+	cursor: pointer;
+}
+
+#miniaturas {
+	text-align: center;
+	width: auto;
+	margin: 10px auto;
+	margin-bottom: 20px;
+}
+
+#miniaturas div.miniatura {
+	float: left;
+	margin-top: 10px;
+	margin-right: 5px;
+	height: 66px;
+}
+
+#miniaturas div.miniatura a * {
+	vertical-align: middle;
+}
+
+#miniaturas div.miniatura a {
+	display: table-cell;
+	vertical-align: middle;
+	border: 1px solid #CCCCCC;
+	height: 67px;
+}
+
+#miniaturas div.miniatura a.hover {
+	border: 1px solid #F86402;
+}
+
+#ampl {
+	text-align: center;
+	margin: 0 auto;
+}
+
+#producto-caract #tit a.link {
+	cursor: pointer;
+}
+
+#producto-caract #tit a.selected {
+	font-weight: bolder;
+	cursor: default;
+}
+
+#producto-caract #tit a.selected:hover {
+	color: #000000;
+}
+
+.producto-precio .valor .oldValor {
+	font-size: 12px;
+	text-decoration: line-through;
+}
+
+.producto-precio .valor span.oferta {
+	color: red;
+}
+
+#imgAgregar {
+	width: 108px;
+	height: 37px;
+	border: 0;
+	margin: 10px auto;
+}
+
+span.error {
+	font-size: 10px;
+	color: red;
+	float: left;
+}
+
+/* Productos Relacionados */
+#productos-relacionados {
+	float: left;
+	width: 452px;
+	height: 260px;
+	background: #FFF;
+	margin-top: 15px;
+	border: 1px solid #CCCCCC;
+	padding: 7px;
+	margin-bottom: 20px;
+	background-image: url('/images/recomendacion_fondo.jpg');
+}
+
+#title-text {
+	text-decoration: none;
+	text-transform: uppercase;
+	font-weight: bold;
+	color: #000000;
+	font-family: 'Segoe UI', 'Lucida Sans Unicode', 'Lucida Grande',
+		sans-serif;
+	font-size: 11px;
+	line-height: 14px;
+	font-weight: normal;
+}
+
+#alt-text {
+	font-weight: bold;
+	color: #F86402;
+}
+
+#texts {
+	margin-top: 220px;
+	text-align: center;
+	display: block;
+}
+
+div.flecha {
+	margin-top: 100px;
+	background-image: url('/images/flechas-5px.jpg');
+	height: 41px;
+	width: 17px;
+	cursor: pointer;
+}
+
+#left-but {
+	float: left;
+}
+
+#left-but:hover {
+	background-position: 17px 0;
+}
+
+#right-but {
+	float: right;
+	margin-right: 13px;
+	background-position: 0 41px;
+}
+
+#right-but:hover {
+	background-position: 17px 41px;
+}
+
+#wrapper {
+	display: block;
+	width: 500px;
+}

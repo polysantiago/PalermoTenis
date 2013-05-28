@@ -39,6 +39,8 @@ import com.palermotenis.model.dao.pedidos.PedidoDao;
 import com.palermotenis.model.dao.pedidos.PedidoProductoDao;
 import com.palermotenis.model.service.carrito.PedidoService;
 import com.palermotenis.model.service.pagos.PagoService;
+import com.palermotenis.model.service.precios.PrecioService;
+import com.palermotenis.model.service.stock.StockService;
 import com.palermotenis.util.StringUtility;
 
 @Service("pedidoService")
@@ -57,6 +59,12 @@ public class PedidoServiceImpl implements PedidoService {
 
     @Autowired
     private PagoService pagoService;
+
+    @Autowired
+    private StockService stockService;
+
+    @Autowired
+    private PrecioService precioService;
 
     @Autowired
     private CurrencyFormatter currencyFormatter;
@@ -101,6 +109,19 @@ public class PedidoServiceImpl implements PedidoService {
 
     @Override
     @Transactional
+    public void delete(Integer pedidoId) {
+        Pedido pedido = getPedido(pedidoId);
+        pedidoDao.destroy(pedido);
+    }
+
+    @Override
+    @Transactional
+    public void onConfirmed(Integer pedidoId) {
+        delete(pedidoId);
+    }
+
+    @Override
+    @Transactional
     public void send(Usuario usuario, Pedido pedido, Carrito carrito) {
         for (Entry<Stock, Item> entry : carrito.getContenido().entrySet()) {
             Stock stock = entry.getKey();
@@ -113,6 +134,110 @@ public class PedidoServiceImpl implements PedidoService {
         enviarCopiaPedido(usuario, carrito);
         informarPedido(usuario, pedido);
         carrito.vaciar();
+    }
+
+    @Override
+    @Transactional
+    public Pedido addItem(Integer pedidoId, Integer stockId) {
+        Stock stock = getStock(stockId);
+        Pedido pedido = getPedido(pedidoId);
+
+        PedidoProducto pedidoProducto = new PedidoProducto(new PedidoProductoPK(pedido, stock), 1);
+        pedidoProducto
+            .setSubtotal(precioService.calculateSubtotalPesos(precioService.estimarPrecio(pedidoProducto), 1));
+        pedidoProductoDao.create(pedidoProducto);
+
+        pedido.addPedidoProducto(pedidoProducto);
+        double total = precioService.calculateTotalPesos(pedido.getPedidosProductos());
+        pedido.setTotal(total);
+        pedidoDao.edit(pedido);
+
+        return pedido;
+    }
+
+    @Override
+    @Transactional
+    public Pedido removeItem(Integer pedidoId, Integer stockId) {
+        Pedido pedido = getPedido(pedidoId);
+        Stock stock = getStock(stockId);
+
+        PedidoProducto pedidoProducto = pedidoProductoDao.find(new PedidoProductoPK(pedido, stock));
+        pedidoProductoDao.destroy(pedidoProducto);
+        pedido.removePedidoProducto(pedidoProducto);
+
+        pedido.setTotal(precioService.calculateTotalPesos(pedido.getPedidosProductos()));
+        pedidoDao.edit(pedido);
+
+        return pedido;
+    }
+
+    @Override
+    public Pedido getPedidoById(Integer pedidoId) {
+        return pedidoDao.find(pedidoId);
+    }
+
+    @Override
+    public List<Pedido> getAllPedidos() {
+        return pedidoDao.findAll();
+    }
+
+    @Override
+    public List<Pedido> getPedidosByEmail(String email) {
+        return pedidoDao.queryBy("Email", "email", email);
+    }
+
+    @Override
+    public List<Pedido> getPedidosByNombreCliente(String nombreCliente) {
+        return pedidoDao.queryBy("Nombre", "nombre", nombreCliente);
+    }
+
+    @Override
+    @Transactional
+    public PedidoProducto updateQuantity(Integer pedidoId, Integer stockId, Integer cantidad) {
+        Pedido pedido = getPedido(pedidoId);
+        Stock stock = getStock(stockId);
+
+        PedidoProducto pedidoProducto = pedidoProductoDao.find(new PedidoProductoPK(pedido, stock));
+        pedidoProducto.setCantidad(cantidad);
+
+        double subtotal = precioService.calculateSubtotalPesos(precioService.estimarPrecio(pedidoProducto), cantidad);
+        double total = precioService.calculateTotalPesos(pedido.getPedidosProductos());
+        pedidoProducto.setSubtotal(subtotal);
+        pedido.setTotal(total);
+
+        pedidoProductoDao.edit(pedidoProducto);
+        pedidoDao.edit(pedido);
+
+        return pedidoProducto;
+    }
+
+    @Override
+    @Transactional
+    public PedidoProducto updateStock(Integer pedidoId, Integer stockId, Integer newStockId) {
+        Pedido pedido = getPedido(pedidoId);
+        Stock stock = getStock(stockId);
+        PedidoProducto pedidoProducto = pedidoProductoDao.find(new PedidoProductoPK(pedido, stock));
+
+        pedidoProductoDao.destroy(pedidoProducto);
+
+        Stock newStock = getStock(newStockId);
+
+        PedidoProducto newPedidoProducto = new PedidoProducto(new PedidoProductoPK(pedido, newStock), 1);
+        double subtotal = precioService.calculateSubtotalPesos(precioService.estimarPrecio(newPedidoProducto), 1);
+        newPedidoProducto.setSubtotal(subtotal);
+        pedidoProductoDao.create(newPedidoProducto);
+
+        double total = precioService.calculateTotalPesos(pedido.getPedidosProductos());
+        pedido.setTotal(total);
+        pedidoDao.edit(pedido);
+
+        return pedidoProducto;
+    }
+
+    @Override
+    public List<PedidoProducto> getDetails(Integer pedidoId) {
+        Pedido pedido = getPedido(pedidoId);
+        return pedidoProductoDao.queryBy("Pedido", "pedido", pedido);
     }
 
     private PedidoProducto createPedidoProducto(Pedido pedido, Item item, Stock stock) {
@@ -190,19 +315,12 @@ public class PedidoServiceImpl implements PedidoService {
         mailSender.send(preparator);
     }
 
-    @Override
-    public List<Pedido> getAllPedidos() {
-        return pedidoDao.findAll();
+    private Pedido getPedido(Integer pedidoId) {
+        return pedidoDao.find(pedidoId);
     }
 
-    @Override
-    public List<Pedido> getPedidosByEmail(String email) {
-        return pedidoDao.queryBy("Email", "email", email);
-    }
-
-    @Override
-    public List<Pedido> getPedidosByNombreCliente(String nombreCliente) {
-        return pedidoDao.queryBy("Nombre", "nombre", nombreCliente);
+    private Stock getStock(Integer stockId) {
+        return stockService.getStockById(stockId);
     }
 
 }

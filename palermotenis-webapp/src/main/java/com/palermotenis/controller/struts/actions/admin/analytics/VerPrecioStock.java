@@ -17,7 +17,7 @@ import com.palermotenis.model.beans.precios.Precio;
 import com.palermotenis.model.beans.precios.pks.PrecioPK;
 import com.palermotenis.model.beans.presentaciones.Presentacion;
 import com.palermotenis.model.beans.productos.Producto;
-import com.palermotenis.model.service.precios.impl.PrecioService;
+import com.palermotenis.model.service.precios.PrecioService;
 import com.palermotenis.model.service.stock.StockService;
 
 public class VerPrecioStock extends InputStreamActionSupport {

@@ -5,11 +5,16 @@
 
 <struts>
     <package name="carrito_operations" namespace="/carrito" extends="struts-default,json-default">
+   	    <result-types>
+        	<result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult"/>
+       	</result-types>
+        
         <action name="CarritoAction_*" method="{1}"  class="com.palermotenis.controller.struts.actions.carrito.CarritoAction">
-            <result>Carrito.jsp</result>
+            <result type="tiles">carrito.index</result>
             <result name="edit" type="json">
                 <param name="root">resultsMap</param>
             </result>
         </action>
+    
     </package>
 </struts>

@@ -5,17 +5,19 @@
 
 <struts>
     <package name="checkout_operations" namespace="/carrito/checkout" extends="struts-default">
+ 	 	<result-types>
+        	<result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult"/>
+       	</result-types>
+    
         <action name="EnviarPedido" class="com.palermotenis.controller.struts.actions.carrito.checkout.EnviarPedido">
-            <result>EnviarPedidoOk.jsp</result>
-            <result name="error">EnviarPedidoError.jsp</result>
+            <result type="tiles">carrito.checkout.ok</result>
+            <result type="tiles" name="error">carrito.checkout.error</result>
         </action>
-        <action name="ConfirmarPedido" class="com.palermotenis.controller.struts.actions.carrito.checkout.ConfirmarPedido">
-            <result>ConfirmarPedidoOk.jsp</result>
-            <result name="error">ConfirmarPedidoError.jsp</result>
-        </action>
+        
         <action name="Checkout">
-            <result>Checkout.jsp</result>
+            <result type="tiles">carrito.checkout</result>
         </action>
+        
     </package>
 
 </struts>

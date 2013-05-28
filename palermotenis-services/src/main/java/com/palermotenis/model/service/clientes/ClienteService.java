@@ -14,6 +14,8 @@ public interface ClienteService {
 
     void createCliente(Cliente cliente);
 
+    Cliente getClienteById(Integer clienteId);
+
     List<Cliente> getAllClientes();
 
     List<Cliente> getClientesByNombre(String nombre);
